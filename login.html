@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="楽ブレ - Googleアカウントでログイン">
+  <title>ログイン｜楽ブレ</title>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #111827;
+      --primary-hover: #1f2937;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --background: #f8fafc;
+      --card: #ffffff;
+      --success: #15803d;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        -apple-system, BlinkMacSystemFont, "Segoe UI",
+        "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+        "Yu Gothic", Meiryo, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 50% 0%, #eef2ff 0%, transparent 38%),
+        var(--background);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 440px;
+      background: var(--card);
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      border-radius: 20px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      padding: 42px 36px 32px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      border-radius: 18px;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -1px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.35;
+      letter-spacing: -0.5px;
+    }
+
+    .lead {
+      margin: 12px 0 30px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .google-login {
+      min-height: 44px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .status {
+      min-height: 24px;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .status.error {
+      color: #dc2626;
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 30px 0 20px;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: var(--border);
+    }
+
+    .notice {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .footer {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      color: #9ca3af;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .loading {
+      display: none;
+      margin-top: 18px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+
+      .login-card {
+        padding: 34px 22px 26px;
+        border-radius: 18px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="login-card">
+    <div class="logo" aria-label="楽ブレ">楽</div>
+
+    <h1>楽ブレへようこそ</h1>
+
+    <p class="lead">
+      Googleアカウントでログインして、<br>
+      履歴書・職務経歴書などの作成をはじめましょう。
+    </p>
+
+    <div
+      id="g_id_onload"
+      data-client_id="746944618768-ubsnk6ueieo4s0cjlbklehjf85evg8ql.apps.googleusercontent.com"
+      data-callback="handleGoogleCredential"
+      data-auto_prompt="false">
+    </div>
+
+    <div class="google-login">
+      <div
+        class="g_id_signin"
+        data-type="standard"
+        data-size="large"
+        data-theme="outline"
+        data-text="signin_with"
+        data-shape="rectangular"
+        data-logo_alignment="left"
+        data-width="320">
+      </div>
+    </div>
+
+    <div id="loading" class="loading">
+      ログイン情報を確認しています…
+    </div>
+
+    <div id="status" class="status" aria-live="polite"></div>
+
+    <div class="divider">ご利用について</div>
+
+    <p class="notice">
+      ログインにはGoogleアカウントを使用します。<br>
+      ログイン後、楽ブレ本体ページへ移動します。
+    </p>
+
+    <div class="footer">
+      © 2026 Version-K / 楽ブレ
+    </div>
+  </main>
+
+  <script>
+    /**
+     * 楽ブレ ログイン設定
+     *
+     * 1. YOUR_GOOGLE_CLIENT_ID をGoogle Cloudで取得した
+     *    OAuth 2.0 クライアントIDへ変更してください。
+     * 2. RAKUBURE_APP_URL を現在の楽ブレ本体HTMLのURLへ変更してください。
+     */
+    const RAKUBURE_LOGIN_CONFIG = {
+      GOOGLE_CLIENT_ID:
+        "746944618768-ubsnk6ueieo4s0cjlbklehjf85evg8ql.apps.googleusercontent.com",
+
+      // ログイン成功後に移動する楽ブレ本体
+      RAKUBURE_APP_URL:
+        "./index.html"
+    };
+
+    /**
+     * Google Identity Servicesからcredentialを受け取る
+     */
+    function handleGoogleCredential(response) {
+      if (!response || !response.credential) {
+        showStatus("Googleログインに失敗しました。もう一度お試しください。", true);
+        return;
+      }
+
+      setLoading(true);
+
+      /*
+       * ここではまだGASへ送信しません。
+       *
+       * 次の工程で、
+       * Google IDトークン(response.credential)
+       * ↓
+       * GAS
+       * ↓
+       * 本人確認
+       * ↓
+       * ユーザー管理
+       *
+       * という処理を追加します。
+       */
+
+      try {
+        // 現段階ではログイン情報をsessionStorageへ一時保存。
+        // 本番ではGAS側でトークン検証を行ってから利用します。
+        sessionStorage.setItem(
+          "RAKUBURE_GOOGLE_CREDENTIAL",
+          response.credential
+        );
+
+        showStatus("ログインしました。楽ブレを起動します。", false, true);
+
+        setTimeout(() => {
+          window.location.href = RAKUBURE_LOGIN_CONFIG.RAKUBURE_APP_URL;
+        }, 500);
+
+      } catch (error) {
+        console.error("Login handling error:", error);
+        showStatus("ログイン処理中にエラーが発生しました。", true);
+        setLoading(false);
+      }
+    }
+
+    function showStatus(message, isError = false, isSuccess = false) {
+      const status = document.getElementById("status");
+      status.textContent = message;
+      status.className = "status";
+
+      if (isError) {
+        status.classList.add("error");
+      }
+
+      if (isSuccess) {
+        status.classList.add("success");
+      }
+    }
+
+    function setLoading(isLoading) {
+      document
+        .getElementById("loading")
+        .classList.toggle("show", isLoading);
+    }
+
+    /**
+     * Google Identity Services初期化後の確認
+     */
+    window.addEventListener("load", () => {
+      const clientId =
+        RAKUBURE_LOGIN_CONFIG.GOOGLE_CLIENT_ID;
+
+      if (
+        !clientId ||
+        clientId.includes("YOUR_GOOGLE_CLIENT_ID")
+      ) {
+        showStatus(
+          "Googleログイン設定がまだ完了していません。Client IDを設定してください。"
+        );
+      }
+    });
+  </script>
+</body>
+</html>
