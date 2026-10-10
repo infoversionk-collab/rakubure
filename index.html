@@ -1,0 +1,6159 @@
+<!doctype html>
+
+
+
+
+
+
+
+
+<html lang="ja">
+
+
+
+
+
+
+
+
+<head>
+
+
+
+
+
+
+
+
+<meta charset="utf-8">
+
+
+
+
+
+
+
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+
+
+
+
+
+
+
+<title>楽ブレ｜書類自動生成システム</title>
+
+
+
+
+
+
+
+
+<meta name="description" content="候補者情報PDFから必要な書類をスムーズに作成できる書類自動生成システム">
+
+
+
+
+
+
+
+
+<style>
+
+
+
+
+
+
+
+
+  :root{
+
+
+
+
+
+
+
+
+    --blue:#1261d8;
+
+
+
+
+
+
+
+
+    --blue2:#2d8cff;
+
+
+
+
+
+
+
+
+    --navy:#102a56;
+
+
+
+
+
+
+
+
+    --pink:#f2268f;
+
+
+
+
+
+
+
+
+    --yellow:#ffd21c;
+
+
+
+
+
+
+
+
+    --green:#19a957;
+
+
+
+
+
+
+
+
+    --line:#dbe5f3;
+
+
+
+
+
+
+
+
+    --muted:#71819a;
+
+
+
+
+
+
+
+
+    --bg:#f5f9ff;
+
+
+
+
+
+
+
+
+    --white:#fff;
+
+
+
+
+
+
+
+
+    --shadow:0 18px 50px rgba(21,70,130,.10);
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  *{box-sizing:border-box}
+
+
+
+
+
+
+
+
+  html{scroll-behavior:smooth}
+
+
+
+
+
+
+
+
+  body{
+
+
+
+
+
+
+
+
+    margin:0;
+
+
+
+
+
+
+
+
+    color:var(--navy);
+
+
+
+
+
+
+
+
+    background:
+
+
+
+
+
+
+
+
+      radial-gradient(circle at 12% 10%,rgba(39,142,255,.10),transparent 28%),
+
+
+
+
+
+
+
+
+      radial-gradient(circle at 90% 15%,rgba(242,38,143,.08),transparent 25%),
+
+
+
+
+
+
+
+
+      var(--bg);
+
+
+
+
+
+
+
+
+    font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+
+
+
+
+
+
+
+
+    line-height:1.6;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  button,input{font:inherit}
+
+
+
+
+
+
+
+
+  button{cursor:pointer}
+
+
+
+
+
+
+
+
+  .header{
+
+
+
+
+
+
+
+
+    position:sticky;top:0;z-index:20;
+
+
+
+
+
+
+
+
+    display:flex;align-items:center;gap:22px;
+
+
+
+
+
+
+
+
+    padding:14px 4vw;
+
+
+
+
+
+
+
+
+    background:rgba(255,255,255,.90);
+
+
+
+
+
+
+
+
+    backdrop-filter:blur(14px);
+
+
+
+
+
+
+
+
+    border-bottom:1px solid rgba(18,97,216,.10);
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .logo{position:relative;display:flex;align-items:center;text-decoration:none;min-width:160px}
+
+
+
+
+
+
+
+
+  .logo-word{
+
+
+
+
+
+
+
+
+    position:relative;z-index:2;
+
+
+
+
+
+
+
+
+    font-size:31px;font-weight:1000;letter-spacing:-.08em;
+
+
+
+
+
+
+
+
+    color:#fff;
+
+
+
+
+
+
+
+
+    -webkit-text-stroke:2px #123c91;
+
+
+
+
+
+
+
+
+    text-shadow:3px 3px 0 #f2268f;
+
+
+
+
+
+
+
+
+    padding:0 4px;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .logo-splash{position:absolute;border-radius:45% 55% 50% 50%;filter:saturate(1.15)}
+
+
+
+
+
+
+
+
+  .logo-splash-pink{width:72px;height:30px;left:3px;top:8px;background:#f2268f;transform:rotate(-12deg)}
+
+
+
+
+
+
+
+
+  .logo-splash-blue{width:88px;height:36px;left:38px;top:2px;background:#159ce8;transform:rotate(9deg)}
+
+
+
+
+
+
+
+
+  .logo-splash-yellow{width:58px;height:27px;left:86px;top:11px;background:#ffd21c;transform:rotate(-7deg)}
+
+
+
+
+
+
+
+
+  .header-title{display:flex;flex-direction:column}
+
+
+
+
+
+
+
+
+  .header-title strong{font-size:16px}
+
+
+
+
+
+
+
+
+  .header-title span{font-size:12px;color:var(--muted)}
+
+
+
+
+
+
+
+
+  .guide{
+
+
+
+
+
+
+
+
+    margin-left:auto;border:1.5px solid var(--blue);background:#fff;color:var(--blue);
+
+
+
+
+
+
+
+
+    border-radius:999px;padding:9px 18px;font-weight:800;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  main{max-width:1120px;margin:0 auto;padding:32px 20px 60px}
+
+
+
+
+
+
+
+
+  .hero{
+
+
+
+
+
+
+
+
+    min-height:310px;display:grid;grid-template-columns:1fr 390px;gap:20px;
+
+
+
+
+
+
+
+
+    align-items:center;padding:20px 28px 28px;overflow:hidden;
+
+
+
+
+
+
+
+
+    border-radius:30px;
+
+
+
+
+
+
+
+
+    background:linear-gradient(135deg,#fff 0%,#f4f9ff 62%,#fff 100%);
+
+
+
+
+
+
+
+
+    box-shadow:var(--shadow);position:relative;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .hero:after{
+
+
+
+
+
+
+
+
+    content:"";position:absolute;right:-100px;top:-120px;width:430px;height:430px;
+
+
+
+
+
+
+
+
+    background:conic-gradient(from 20deg,var(--blue),#1bb7f0,var(--pink),var(--yellow),var(--blue));
+
+
+
+
+
+
+
+
+    filter:blur(55px);opacity:.15;border-radius:50%;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .tag{display:inline-block;padding:6px 12px;border-radius:999px;background:#e8f2ff;color:var(--blue);font-weight:900;font-size:11px;letter-spacing:.12em}
+
+
+
+
+
+
+
+
+  h1{font-size:clamp(36px,5vw,58px);line-height:1.15;margin:16px 0 14px;letter-spacing:-.04em}
+
+
+
+
+
+
+
+
+  h1 em{font-style:normal;color:var(--blue)}
+
+
+
+
+
+
+
+
+  .hero-copy p{font-size:16px;color:#4d6280}
+
+
+
+
+
+
+
+
+  .hero-illustration{height:250px;position:relative}
+
+
+
+
+
+
+
+
+  .splash{position:absolute;border-radius:50%;filter:saturate(1.3);opacity:.92}
+
+
+
+
+
+
+
+
+  .splash.pink{width:180px;height:150px;background:#f2268f;left:80px;top:25px;transform:rotate(-18deg)}
+
+
+
+
+
+
+
+
+  .splash.blue{width:210px;height:165px;background:#0799e7;left:135px;top:5px;transform:rotate(8deg)}
+
+
+
+
+
+
+
+
+  .splash.yellow{width:160px;height:140px;background:#ffd21c;left:225px;top:42px;transform:rotate(18deg)}
+
+
+
+
+
+
+
+
+  .paper{
+
+
+
+
+
+
+
+
+    position:absolute;background:#fff;border:3px solid #153d8c;border-radius:7px;
+
+
+
+
+
+
+
+
+    box-shadow:0 12px 25px rgba(0,0,0,.14);padding:13px;color:#153d8c;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .paper b{display:block;font-size:16px;margin-bottom:12px}
+
+
+
+
+
+
+
+
+  .paper i{display:block;height:6px;background:#d8e7fb;margin:8px 0;border-radius:5px}
+
+
+
+
+
+
+
+
+  .paper i.short{width:60%}
+
+
+
+
+
+
+
+
+  .paper-a{width:150px;height:190px;left:70px;top:48px;transform:rotate(-9deg)}
+
+
+
+
+
+
+
+
+  .paper-b{width:160px;height:195px;left:210px;top:28px;transform:rotate(10deg)}
+
+
+
+
+
+
+
+
+  .folder{position:absolute;right:0;bottom:10px;width:135px;height:95px;background:#ffc400;border:4px solid #173b84;border-radius:8px 8px 14px 14px;transform:rotate(-4deg);z-index:5}
+
+
+
+
+
+
+
+
+  .folder span{position:absolute;left:12px;top:-18px;width:58px;height:22px;background:#ffc400;border:4px solid #173b84;border-bottom:0;border-radius:8px 8px 0 0}
+
+
+
+
+
+
+
+
+  .folder b{position:absolute;left:35px;top:30px;color:#173b84}
+
+
+
+
+
+
+
+
+  .pencil{position:absolute;right:80px;bottom:2px;width:110px;height:14px;border-radius:8px;background:linear-gradient(90deg,#fff 75%,#f2268f 76%);border:3px solid #173b84;transform:rotate(-23deg);z-index:6}
+
+
+
+
+
+
+
+
+  .spark{position:absolute;right:12px;top:12px;font-size:46px;color:#f2268f;z-index:8}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .flow{margin-top:24px}
+
+
+
+
+
+
+
+
+  .step{
+
+
+
+
+
+
+
+
+    background:#fff;border:1px solid rgba(18,97,216,.12);border-radius:24px;
+
+
+
+
+
+
+
+
+    box-shadow:var(--shadow);padding:26px;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .step-head{display:flex;align-items:center;gap:16px;padding-bottom:18px;border-bottom:1px solid #edf1f7}
+
+
+
+
+
+
+
+
+  .step-head>span{
+
+
+
+
+
+
+
+
+    width:48px;height:48px;border-radius:15px;display:grid;place-items:center;
+
+
+
+
+
+
+
+
+    background:linear-gradient(135deg,#0e61df,#268fff);color:#fff;font-size:18px;font-weight:1000;
+
+
+
+
+
+
+
+
+    flex:none;
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .step-head small{display:block;color:var(--blue);font-weight:1000;letter-spacing:.12em;font-size:11px}
+
+
+
+
+
+
+
+
+  .step-head h2{margin:2px 0 0;font-size:23px;letter-spacing:-.03em}
+
+
+
+
+
+
+
+
+  .step-head>b{margin-left:auto;color:#6c7d96;font-size:12px}
+
+
+
+
+
+
+
+
+  .connector{text-align:center;color:var(--blue);font-size:28px;font-weight:900;padding:8px}
+
+
+
+
+
+
+
+
+  .upload-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;padding-top:20px}
+
+
+
+
+
+
+
+
+  .dropzone{
+
+
+
+
+
+
+
+
+    min-height:220px;border:2px dashed #7eb1ff;border-radius:18px;
+
+
+
+
+
+
+
+
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+
+
+
+
+
+
+
+
+    background:#fbfdff;color:#21385e;transition:.2s
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .dropzone.dragover{background:#edf6ff;border-color:var(--blue);transform:scale(1.01)}
+
+
+
+
+
+
+
+
+  .dropzone input{display:none}
+
+
+
+
+
+
+
+
+  .cloud{font-size:50px;color:var(--blue);line-height:1}
+
+
+
+
+
+
+
+
+  .dropzone span{
+
+
+
+
+
+
+
+
+    border:1.5px solid var(--blue);border-radius:10px;padding:9px 30px;color:var(--blue);font-weight:900
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .dropzone small{color:#8290a5}
+
+
+
+
+
+
+
+
+  .file-panel{border:1px solid var(--line);border-radius:18px;padding:18px;min-height:220px;background:#fbfdff}
+
+
+
+
+
+
+
+
+  .empty{height:100%;display:grid;place-items:center;color:#8a98aa}
+
+
+
+
+
+
+
+
+  .file-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #dce5f2;border-radius:14px;padding:16px}
+
+
+
+
+
+
+
+
+  .pdf-icon{color:#ef3434;font-size:24px;font-weight:1000}
+
+
+
+
+
+
+
+
+  .file-meta{flex:1;min-width:0}.file-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-size{font-size:12px;color:#71819a}
+
+
+
+
+
+
+
+
+  .remove-file{border:0;background:none;color:#7c8899;font-size:24px}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .doc-options{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-top:20px}
+
+
+
+
+
+
+
+
+  .doc-option{
+
+
+
+
+
+
+
+
+    position:relative;border:2px solid #e0e7f0;border-radius:18px;padding:22px 16px;
+
+
+
+
+
+
+
+
+    text-align:center;cursor:pointer;transition:.2s;background:#fff
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .doc-option.active{border-color:var(--blue);box-shadow:0 8px 20px rgba(18,97,216,.10)}
+
+
+
+
+  .doc-option:focus-visible{outline:3px solid rgba(18,97,216,.25);outline-offset:3px}
+
+
+
+
+
+
+
+
+  .doc-option input{position:absolute;opacity:0}
+
+
+
+
+
+
+
+
+  .box{position:absolute;left:14px;top:14px;width:24px;height:24px;border:2px solid #aab7c9;border-radius:5px;color:transparent}
+
+
+
+
+
+
+
+
+  .doc-option.active .box{background:var(--blue);border-color:var(--blue);color:#fff}
+
+
+
+
+
+
+
+
+  .doc-icon{margin:0 auto 10px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#eaf3ff;color:var(--blue);font-size:24px;font-weight:900}
+
+
+
+
+
+
+
+
+  .doc-icon.yellow{background:#fff6db;color:#e4a900}
+
+
+
+
+
+
+
+
+  .doc-option strong,.doc-option small{display:block}
+
+
+
+
+
+
+
+
+  .doc-option strong{font-size:18px}.doc-option small{color:#71819a;margin-top:5px;font-size:12px}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .privacy-card{
+
+
+
+
+
+
+
+
+    margin-top:20px;border:1px solid #dbe5f3;border-radius:18px;padding:20px;
+
+
+
+
+
+
+
+
+    background:#fbfdff;display:grid;grid-template-columns:auto 1fr;gap:14px
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .privacy-icon{width:44px;height:44px;border-radius:50%;background:#eaf3ff;color:var(--blue);display:grid;place-items:center;font-size:22px}
+
+
+
+
+
+
+
+
+  .privacy-card h3{margin:0 0 4px}.privacy-card p{margin:0;color:#667991;font-size:13px}
+
+
+
+
+
+
+
+
+  .privacy-card a{display:inline-block;margin-top:7px;color:var(--blue);font-size:12px;font-weight:800}
+
+
+
+
+
+
+
+
+  .consent{grid-column:1/-1;display:flex;align-items:center;gap:9px;padding-top:13px;border-top:1px solid #e7edf5;font-weight:800}
+
+
+
+
+
+
+
+
+  .consent input{width:20px;height:20px;accent-color:var(--blue)}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ===== 保存方法：ここが今回の修正ポイント ===== */
+
+
+
+
+
+
+
+
+  .storage-options{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding-top:20px}
+
+
+
+
+
+
+
+
+  .storage-option{
+
+
+
+
+
+
+
+
+    position:relative;display:block;min-height:160px;padding:22px 20px 18px;
+
+
+
+
+
+
+
+
+    border:2px solid #dfe7f1;border-radius:18px;background:#fff;cursor:pointer;
+
+
+
+
+
+
+
+
+    transition:.2s ease;outline:none
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .storage-option:hover{border-color:#8db8ff;transform:translateY(-2px)}
+
+
+
+
+  .storage-option:focus-visible{outline:3px solid rgba(18,97,216,.25);outline-offset:3px}
+
+
+
+
+
+
+
+
+  .storage-option.selected{
+
+
+
+
+
+
+
+
+    border-color:var(--blue);
+
+
+
+
+
+
+
+
+    background:linear-gradient(180deg,#f8fbff,#fff);
+
+
+
+
+
+
+
+
+    box-shadow:0 10px 24px rgba(18,97,216,.12)
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .storage-option input{
+
+
+
+
+
+
+
+
+    position:absolute;opacity:0;width:1px;height:1px;pointer-events:none
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .storage-check{
+
+
+
+
+
+
+
+
+    position:absolute;right:14px;top:14px;width:25px;height:25px;border-radius:50%;
+
+
+
+
+
+
+
+
+    border:2px solid #aab8ca;background:#fff;display:grid;place-items:center;
+
+
+
+
+
+
+
+
+    color:transparent;font-weight:1000
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .storage-option.selected .storage-check{background:var(--blue);border-color:var(--blue);color:#fff}
+
+
+
+
+
+
+
+
+  .storage-icon{
+
+
+
+
+
+
+
+
+    width:54px;height:54px;border-radius:15px;background:#edf5ff;color:var(--blue);
+
+
+
+
+
+
+
+
+    display:grid;place-items:center;font-size:11px;font-weight:1000;letter-spacing:.03em;margin-bottom:14px
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .storage-option:nth-child(2) .storage-icon{background:#effbf4;color:var(--green)}
+
+
+
+
+
+
+
+
+  .storage-option:nth-child(3) .storage-icon{background:#fff6d9;color:#d69b00}
+
+
+
+
+
+
+
+
+  .storage-option strong{display:block;font-size:17px}
+
+
+
+
+
+
+
+
+  .storage-option small{display:block;color:#71819a;font-size:12px;margin-top:6px;line-height:1.55}
+
+
+
+
+
+
+
+
+  .recommended{
+
+
+
+
+
+
+
+
+    position:absolute;left:14px;top:-12px;padding:4px 10px;border-radius:999px;
+
+
+
+
+
+
+
+
+    background:#ffd21c;color:#533f00;font-size:10px;font-weight:1000;font-style:normal
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  .generate{width:100%;border:0;border-radius:16px;padding:17px 20px;margin-top:20px;background:linear-gradient(100deg,#1976ef,#1749d2);color:#fff;font-size:22px;font-weight:1000;box-shadow:0 12px 26px rgba(18,97,216,.25)}
+
+
+
+
+
+
+
+
+  .generate:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+
+
+
+
+
+
+
+
+  .disabled-note{text-align:center;color:#8290a5;font-size:12px;margin:9px 0 0}
+
+
+
+
+
+
+
+
+  .progress{margin-top:18px;padding:18px;border:1px solid #dbe5f3;border-radius:16px;background:#fbfdff}
+
+
+
+
+
+
+
+
+  .progress-title{display:flex;align-items:center;gap:10px}.progress-title b{margin-left:auto;color:var(--blue);font-size:20px;font-weight:1000}
+
+
+
+
+
+
+
+
+  .spinner{width:18px;height:18px;border:3px solid #dbe7f8;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}
+
+
+
+
+
+
+
+
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+
+
+
+
+
+
+
+  .progress-track{height:8px;background:#e9eef5;border-radius:99px;overflow:hidden;margin:13px 0}
+
+
+
+
+
+
+
+
+  .progress-track span{display:block;height:100%;width:0;min-width:0;border-radius:99px;background:linear-gradient(90deg,#1476ef,#8b3ff1);transition:width .35s ease}
+
+
+
+
+
+
+
+
+  .hidden{display:none!important}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  .complete-box{margin-top:20px;border:1px solid #bde6cd;border-radius:18px;padding:20px;background:#fbfffc}
+
+
+
+
+
+
+
+
+  .complete-title{display:flex;gap:14px;align-items:center;padding-bottom:15px;border-bottom:1px solid #dcefe3}
+
+
+
+
+
+
+
+
+  .complete-title>span{width:48px;height:48px;border-radius:14px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:26px;font-weight:1000}
+
+
+
+
+
+
+
+
+  .complete-title h3{margin:0;color:#158b4b}.complete-title p{margin:3px 0 0;color:#6f8190;font-size:12px}
+
+
+
+
+
+
+
+
+  .result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+
+
+
+
+
+
+
+
+  .result-card{border:1px solid #dbe5f3;border-radius:16px;padding:18px;background:#fff}
+
+
+
+
+
+
+
+
+  .result-card .result-type{font-weight:1000;font-size:18px}.result-card .result-size{color:#7a8aa0;font-size:12px;margin:4px 0 13px}
+
+
+
+
+
+
+
+
+  .result-card button{width:100%;padding:11px;border:1.5px solid #8ab6ff;background:#fff;color:var(--blue);border-radius:10px;font-weight:900;margin-top:8px}.result-card .edit-source-btn{background:#eef7ff;border-color:var(--blue);font-weight:1000;box-shadow:0 4px 12px rgba(18,97,216,.10)}.result-card .result-source-note{font-size:11px;color:#71819a;margin-top:5px}
+
+
+
+
+
+
+
+
+  .zip{width:100%;border:0;border-radius:13px;padding:15px;margin-top:16px;background:linear-gradient(100deg,#1261d8,#8739ee);color:#fff;font-weight:1000;font-size:17px}
+
+
+
+
+
+
+
+
+  .benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:25px;border-radius:20px;overflow:hidden;background:#dfe7f1;box-shadow:var(--shadow)}
+
+
+
+
+
+
+
+
+  .benefits>div{background:#fff;padding:22px;text-align:center}.benefits b{display:block;color:var(--blue);font-size:12px}.benefits strong{display:block;margin-top:3px}.benefits span{display:block;color:#71819a;font-size:12px;margin-top:4px}
+
+
+
+
+
+
+
+
+  footer{padding:25px 20px 40px;text-align:center;color:#728198;font-size:12px}
+
+
+
+
+
+
+
+
+  footer a{color:var(--blue);margin:0 12px;text-decoration:none}
+
+
+
+
+
+
+
+
+  footer span{display:block;margin-top:8px}
+
+
+
+
+
+
+
+
+  .modal{position:fixed;inset:0;z-index:50;background:rgba(12,28,55,.48);display:grid;place-items:center;padding:20px}
+
+
+
+
+
+
+
+
+  .modal-card{width:min(520px,100%);background:#fff;border-radius:22px;padding:28px;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.25)}
+
+
+
+
+
+
+
+
+  .modal-card button{position:absolute;right:14px;top:10px;border:0;background:none;font-size:28px;color:#64748b}
+  .privacy-modal-card{
+    width:min(820px,100%);
+    max-height:min(86vh,900px);
+    overflow:hidden;
+    background:#fff;
+    border-radius:22px;
+    position:relative;
+    box-shadow:0 30px 70px rgba(0,0,0,.25);
+    display:flex;
+    flex-direction:column;
+  }
+  .privacy-modal-head{
+    padding:24px 28px 16px;
+    border-bottom:1px solid #e7edf5;
+    flex:0 0 auto;
+  }
+  .privacy-modal-head h2{margin:0 42px 6px 0}
+  .privacy-modal-head p{margin:0;color:#667991;font-size:12px}
+  .privacy-modal-body{
+    overflow:auto;
+    padding:22px 28px 28px;
+    color:#334155;
+    line-height:1.75;
+    font-size:13px;
+  }
+  .privacy-modal-body h3{
+    margin:24px 0 8px;
+    font-size:16px;
+    color:#17233d;
+  }
+  .privacy-modal-body h3:first-child{margin-top:0}
+  .privacy-modal-body p{margin:8px 0}
+  .privacy-modal-body ul,.privacy-modal-body ol{padding-left:22px;margin:8px 0}
+  .privacy-modal-body li{margin:4px 0}
+  .privacy-modal-body .privacy-note{
+    padding:12px 14px;
+    border-radius:12px;
+    background:#f5f8fc;
+    border:1px solid #e5ebf3;
+  }
+  .privacy-modal-body .privacy-contact{
+    padding:14px;
+    border-radius:12px;
+    background:#eef6ff;
+    border:1px solid #d7e9ff;
+  }
+  .privacy-modal-close{
+    position:absolute;
+    right:14px;
+    top:10px;
+    border:0;
+    background:none;
+    font-size:28px;
+    color:#64748b;
+    cursor:pointer;
+    z-index:2;
+  }
+  @media (max-width:640px){
+    .privacy-modal-card{max-height:90vh;border-radius:16px}
+    .privacy-modal-head{padding:20px 20px 14px}
+    .privacy-modal-body{padding:18px 20px 24px;font-size:12px}
+  }
+
+
+
+
+
+
+
+
+
+
+  .modal-card li{margin:10px 0}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  @media(max-width:820px){
+
+
+
+
+
+
+
+
+    .header{padding:12px 18px}.header-title{display:none}
+
+
+
+
+
+
+
+
+    main{padding:18px 12px 40px}
+
+
+
+
+
+
+
+
+    .hero{grid-template-columns:1fr;min-height:0;padding:24px}.hero-illustration{height:220px}
+
+
+
+
+
+
+
+
+    .upload-grid,.doc-options,.storage-options,.result-grid{grid-template-columns:1fr}
+
+
+
+
+
+
+
+
+    .benefits{grid-template-columns:1fr 1fr}
+
+
+
+
+
+
+
+
+    .step{padding:18px}.step-head{align-items:flex-start}.step-head>b{display:none}
+
+
+
+
+
+
+
+
+    .privacy-card{grid-template-columns:auto 1fr}
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  @media(max-width:480px){
+
+
+
+
+
+
+
+
+    h1{font-size:38px}.benefits{grid-template-columns:1fr}.logo-word{font-size:26px}
+
+
+
+
+
+
+
+
+    .hero-illustration{transform:scale(.88);transform-origin:center}
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+</style>
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+
+
+
+
+<body>
+
+
+
+
+
+
+
+
+<header class="header">
+
+
+
+
+
+
+
+
+<a class="logo" href="#" aria-label="楽ブレ">
+
+
+
+
+
+
+
+
+  <span class="logo-splash logo-splash-pink"></span>
+
+
+
+
+
+
+
+
+  <span class="logo-splash logo-splash-blue"></span>
+
+
+
+
+
+
+
+
+  <span class="logo-splash logo-splash-yellow"></span>
+
+
+
+
+
+
+
+
+  <span class="logo-word">楽ブレ</span>
+
+
+
+
+
+
+
+
+</a>
+
+
+
+
+
+
+
+
+<div class="header-title">
+
+
+
+
+
+
+
+
+  <strong>書類自動生成システム</strong>
+
+
+
+
+
+
+
+
+  <span>候補者情報から必要な書類を、もっとカンタンに。</span>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<button class="guide" id="guideBtn" type="button">？ 使い方</button>
+
+
+
+
+
+
+
+
+</header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<main>
+
+
+
+
+
+
+
+
+<section class="hero">
+
+
+
+
+
+
+
+
+  <div class="hero-copy">
+
+
+
+
+
+
+
+
+    <span class="tag">DOCUMENT GENERATION</span>
+
+
+
+
+
+
+
+
+    <h1>書類作成を、<br><em>もっとラクに。</em></h1>
+
+
+
+
+
+
+
+
+    <p>PDFをアップロードして、必要な書類を選ぶだけ。<br>シンプルな操作で書類作成をサポートします。</p>
+
+
+
+
+
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+  <div class="hero-illustration" aria-hidden="true">
+
+
+
+
+
+
+
+
+    <div class="splash pink"></div><div class="splash blue"></div><div class="splash yellow"></div>
+
+
+
+
+
+
+
+
+    <div class="paper paper-a"><b>履歴書</b><i></i><i></i><i class="short"></i><i></i></div>
+
+
+
+
+
+
+
+
+    <div class="paper paper-b"><b>職務経歴書</b><i></i><i class="short"></i><i></i><i></i></div>
+
+
+
+
+
+
+
+
+    <div class="folder"><span></span><b>書類</b></div>
+
+
+
+
+
+
+
+
+    <div class="pencil"></div><div class="spark">✦</div>
+
+
+
+
+
+
+
+
+  </div>
+
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="flow">
+
+
+
+
+
+
+
+
+  <!-- STEP 01 -->
+
+
+
+
+
+
+
+
+  <article class="step" id="step1">
+
+
+
+
+
+
+
+
+    <div class="step-head"><span>01</span><div><small>STEP 01</small><h2>候補者情報PDFをアップロード</h2></div><b>PDFのみ・最大10MB／最大10件</b></div>
+
+
+
+
+
+
+
+
+    <div class="upload-grid">
+
+
+
+
+
+
+
+
+      <label class="dropzone" id="dropzone">
+
+
+
+
+
+
+
+
+        <input id="fileInput" type="file" accept="application/pdf" multiple>
+
+
+
+
+
+
+
+
+        <div class="cloud">↑</div>
+
+
+
+
+
+
+
+
+        <strong>PDFを複数ドラッグ＆ドロップ</strong>
+
+
+
+
+
+
+
+
+        <small>または</small>
+
+
+
+
+
+
+
+
+        <span>ファイルを選択</span>
+
+
+
+
+
+
+
+
+        <small>PDFのみ対応（1ファイル最大10MB・最大10件・合計50MB）</small>
+
+
+
+
+
+
+
+
+      </label>
+
+
+
+
+
+
+
+
+      <div class="file-panel" id="filePanel"><div class="empty">まだファイルが選択されていません</div></div>
+
+
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+  </article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="connector">↓</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- STEP 02 -->
+
+
+
+
+
+
+
+
+  <article class="step" id="step2">
+
+
+
+
+
+
+
+
+    <div class="step-head"><span>02</span><div><small>STEP 02</small><h2>作成する書類を選択</h2></div><b>複数選択できます</b></div>
+
+
+
+
+
+
+
+
+    <p style="margin:18px 0 0;color:#71819a;font-size:12px;">
+      ※ スキルシートを選択すると、BPO向けスキルシートも自動生成します。
+    </p>
+
+
+
+
+    <div class="doc-options">
+
+
+
+
+
+
+
+
+      <label class="doc-option active" tabindex="0"><input type="checkbox" value="履歴書" checked><span class="box">✓</span><div class="doc-icon">▤</div><strong>履歴書</strong><small>基本情報・学歴・職歴など</small></label>
+
+
+
+
+
+
+
+
+      <label class="doc-option active" tabindex="0"><input type="checkbox" value="職務経歴書" checked><span class="box">✓</span><div class="doc-icon">▥</div><strong>職務経歴書</strong><small>職歴・スキル・実績など</small></label>
+
+
+
+
+
+
+
+
+      <label class="doc-option" tabindex="0"><input type="checkbox" value="推薦状"><span class="box">✓</span><div class="doc-icon yellow">♡</div><strong>推薦状</strong><small>候補者の強みをまとめた推薦文</small></label>
+
+
+
+
+
+
+
+
+      <label class="doc-option" tabindex="0"><input type="checkbox" value="スキルシート_BPO"><span class="box">✓</span><div class="doc-icon">BPO</div><strong>スキルシート</strong><small>BPO向けスキル・職務経歴など</small></label>
+
+
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+  </article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="connector">↓</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- STEP 03 -->
+
+
+
+
+
+
+
+
+  <article class="step privacy-step" id="step3">
+
+
+
+
+
+
+
+
+    <div class="step-head"><span>03</span><div><small>STEP 03</small><h2>個人情報の取り扱いを確認</h2></div></div>
+
+
+
+
+
+
+
+
+    <div class="privacy-card">
+
+
+
+
+
+
+
+
+      <div class="privacy-icon">♢</div>
+
+
+
+
+
+
+
+
+      <div>
+
+
+
+
+
+
+
+
+        <h3>個人情報の取り扱いについて</h3>
+
+
+
+
+
+
+
+
+        <p>アップロードされた個人情報は、OCR・AIによる分析および書類生成に必要な範囲で取り扱います。<br>個人情報の取扱いをご確認のうえ、同意してから生成を開始してください。</p>
+
+
+
+
+
+
+
+
+        <a href="#" id="privacyLink">個人情報の取り扱いについて確認する</a>
+
+
+
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+
+      <label class="consent"><input type="checkbox" id="consent"><span>個人情報の取り扱いについて確認しました</span></label>
+
+
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+  </article>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="connector">↓</div>
+  <!-- STEP 04：データ生成 -->
+  <article class="step generate-step" id="step4">
+    <div class="step-head">
+      <span>04</span>
+      <div><small>STEP 04</small><h2>データを生成する</h2></div>
+      <b>PDF変換なし・データのみ</b>
+    </div>
+    <button class="generate" id="generateBtn" disabled type="button">
+      <span>✦</span> データを生成する <b>›</b>
+    </button>
+    <p class="disabled-note" id="generateNote">PDF・作成書類・個人情報の確認が必要です</p>
+    <div class="progress hidden" id="progress">
+      <div class="progress-title">
+        <span class="spinner"></span>
+        <strong id="progressTitle">AIでデータを生成しています...</strong>
+        <b id="progressPercent">0%</b>
+      </div>
+      <div class="progress-track"><span id="progressBar"></span></div>
+      <small id="progressText">処理を開始しています...</small>
+    </div>
+  </article>
+  <div class="connector">↓</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- STEP 05 -->
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <div class="connector">↓</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- STEP 06 -->
+
+
+
+
+
+
+
+
+  <article class="step result hidden" id="result">
+
+
+
+
+
+
+
+
+    <div class="step-head"><span class="complete">06</span><div><small>STEP 06</small><h2>生成されたデータを確認・保存</h2></div></div>
+
+
+
+
+
+
+
+
+    <div class="complete-box">
+
+
+
+
+
+
+
+
+      <div class="complete-title"><span>✓</span><div><h3>書類の生成が完了しました！</h3><p>生成されたできます。必要に応じてGoogleスプレッドシート・Googleドキュメントで編集できます。</p></div></div>
+
+
+
+
+
+
+
+
+      <div class="result-grid" id="resultGrid"></div>
+
+
+
+
+
+
+
+
+      <button class="zip hidden" id="zipBtn" type="button">↓ データをまとめてダウンロード</button>
+
+
+
+
+
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+  </article>
+
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<section class="benefits">
+
+
+
+
+
+
+
+
+  <div><b>01</b><strong>かんたん操作</strong><span>アップロードして選ぶだけ</span></div>
+
+
+
+
+
+
+
+
+  <div><b>02</b><strong>書類作成を効率化</strong><span>手作業の負担を軽減</span></div>
+
+
+
+
+
+
+
+
+  <div><b>03</b><strong>必要な書類だけ</strong><span>自由に組み合わせ可能</span></div>
+
+
+
+
+
+
+
+
+  <div><b>04</b><strong>データ生成</strong><span>PDF変換なしでデータを取得</span></div>
+
+
+
+
+
+
+
+
+</section>
+
+
+
+
+
+
+
+
+</main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<footer>
+<a href="#" id="footerTermsLink">利用規約</a>
+<a href="#" id="footerPrivacyLink">プライバシーポリシー</a>
+<a href="mailto:info.versionk@gmail.com">お問い合わせ</a>
+<span>© 2026 楽ブレ｜書類自動生成システム</span>
+</footer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="modal hidden" id="termsModal" aria-hidden="true">
+<div class="privacy-modal-card" role="dialog" aria-modal="true" aria-labelledby="termsModalTitle">
+  <button id="closeTermsModal" class="privacy-modal-close" type="button" aria-label="閉じる">×</button>
+  <div class="privacy-modal-head">
+    <h2 id="termsModalTitle">楽ブレ 利用規約</h2>
+    <p>最終更新日：2026年9月8日</p>
+  </div>
+  <div class="privacy-modal-body">
+    <p>この利用規約（以下「本規約」といいます。）は、Version-K（以下「当社」といいます。）が提供する「楽ブレ」（以下「本サービス」といいます。）の利用条件を定めるものです。</p>
+    <p>本サービスを利用するすべての利用者（以下「利用者」といいます。）は、本規約に同意したうえで、本サービスを利用するものとします。</p>
+
+    <h3>第1条（本サービスについて）</h3>
+    <ol>
+      <li>本サービスは、利用者がアップロードした履歴書、職務経歴書その他の書類等をもとに、OCR、AIその他の技術を利用して、転職・就職活動等に使用する各種書類の作成を支援するサービスです。</li>
+      <li>本サービスでは、以下の書類等を生成する機能を提供します。
+        <ul>
+          <li>履歴書</li><li>職務経歴書</li><li>推薦状</li><li>スキルシート_BPO</li><li>その他、当社が提供する応募・採用関連書類</li>
+        </ul>
+      </li>
+      <li>本サービスは、書類作成を支援することを目的としたものであり、就職、転職、採用、内定、年収その他の特定の結果を保証するものではありません。</li>
+    </ol>
+
+    <h3>第2条（利用者）</h3>
+    <ol>
+      <li>本サービスを利用する者は、本規約に同意したうえで本サービスを利用するものとします。</li>
+      <li>利用者は、本サービスを利用するために必要な機器、通信環境、ソフトウェア等を自己の責任および費用において準備するものとします。</li>
+      <li>未成年者が本サービスを利用する場合は、必要に応じて親権者その他の法定代理人の同意を得たうえで利用するものとします。</li>
+    </ol>
+
+    <h3>第3条（本サービスの利用）</h3>
+    <ol>
+      <li>利用者は、本サービスの利用に際して、正確かつ適切な情報を提供するものとします。</li>
+      <li>利用者は、自らが本サービスにアップロードする情報について、適法な利用権限を有していることを保証するものとします。</li>
+      <li>利用者は、アップロードした書類および生成された書類の内容を確認したうえで利用するものとします。</li>
+      <li>利用者は、AI等によって生成された情報について、誤り、不正確な情報または事実と異なる内容が含まれる可能性があることを理解したうえで利用するものとします。</li>
+    </ol>
+
+    <h3>第4条（アップロードする情報）</h3>
+    <ol>
+      <li>利用者は、本サービスにアップロードするファイルについて、自己の責任において管理するものとします。</li>
+      <li>利用者は、以下に該当する情報を、不必要に本サービスへアップロードしてはならないものとします。
+        <ul><li>本サービスの利用目的に必要のない個人情報</li><li>第三者の個人情報</li><li>第三者の権利を侵害する情報</li><li>法令により取り扱いが制限されている情報</li><li>その他、当社が不適切と判断する情報</li></ul>
+      </li>
+      <li>第三者の個人情報を含む書類をアップロードする場合、利用者は、当該情報を本サービスで取り扱うために必要な権限または同意を得たうえで利用するものとします。</li>
+      <li>利用者が権限なく第三者の情報をアップロードしたことにより第三者との間で紛争等が生じた場合、利用者自身の責任および費用において解決するものとします。</li>
+    </ol>
+
+    <h3>第5条（AIによる生成について）</h3>
+    <ol>
+      <li>本サービスでは、AI技術を利用して、利用者が提供した情報を整理、分析および文章生成する場合があります。</li>
+      <li>AIによって生成された情報には、以下のような問題が含まれる可能性があります。
+        <ul><li>事実と異なる情報</li><li>誤った情報</li><li>不正確な表現</li><li>情報の不足</li><li>意図しない表現</li><li>その他、利用者が意図しない内容</li></ul>
+      </li>
+      <li>利用者は、生成された履歴書、職務経歴書、推薦状、スキルシートその他の情報を、企業その他の第三者へ提出・提供する前に必ず確認するものとします。</li>
+      <li>AIによる生成結果について、当社はその正確性、完全性、有用性、特定目的への適合性を保証するものではありません。</li>
+    </ol>
+
+    <h3>第6条（生成物の利用）</h3>
+    <ol>
+      <li>本サービスによって生成された履歴書、職務経歴書、推薦状、スキルシートその他の文章・データについて、利用者は自己の責任において利用するものとします。</li>
+      <li>利用者は、生成された内容について必要に応じて修正、編集または確認を行ったうえで利用するものとします。</li>
+      <li>生成物を企業、求人媒体、採用担当者その他の第三者へ提出する場合も、利用者自身の責任において行うものとします。</li>
+      <li>当社は、生成物を利用したことによって生じた採用、不採用、選考結果、契約その他の結果について責任を負いません。</li>
+    </ol>
+
+    <h3>第7条（禁止事項）</h3>
+    <p>利用者は、本サービスの利用にあたり、以下の行為を行ってはならないものとします。</p>
+    <ol>
+      <li>法令または公序良俗に違反する行為</li><li>犯罪行為または犯罪行為に関連する行為</li><li>当社または第三者の著作権、商標権、特許権その他の知的財産権を侵害する行為</li><li>当社または第三者の名誉、信用、プライバシーその他の権利・利益を侵害する行為</li><li>虚偽の情報を意図的に入力またはアップロードする行為</li><li>他人になりすまして本サービスを利用する行為</li><li>第三者の個人情報を、必要な権限または同意なくアップロードする行為</li><li>本サービスを利用して、第三者に対する詐欺、なりすましその他の不正行為を行う行為</li><li>本サービスのシステム、サーバーまたはネットワークに過度な負荷を与える行為</li><li>本サービスへの不正アクセスまたは不正アクセスを試みる行為</li><li>本サービスのプログラム、ソースコードその他の構成要素を不正に取得、解析、改変または複製する行為</li><li>本サービスを利用して、本サービスと競合するサービスを不正に構築または提供する行為</li><li>当社の許可なく、本サービスを商業目的で再販売、転貸、譲渡または提供する行為</li><li>その他、当社が本サービスの運営上不適切と判断する行為</li>
+    </ol>
+
+    <h3>第8条（サービスの変更・停止・中断）</h3>
+    <p>当社は、以下の場合、本サービスの全部または一部を変更、停止または中断することがあります。</p>
+    <ol><li>本サービスの保守、点検、更新または修理を行う場合</li><li>コンピューター、サーバー、通信設備等に障害が発生した場合</li><li>天災地変、停電、通信障害その他の不可抗力が発生した場合</li><li>外部サービス、AIサービス、クラウドサービスその他本サービスの提供に必要なサービスに障害または変更が発生した場合</li><li>その他、当社が本サービスの運営上必要と判断した場合</li></ol>
+    <p>当社は、可能な限り事前に利用者へ通知するよう努めますが、緊急の場合はこの限りではありません。</p>
+
+    <h3>第9条（利用制限・利用停止）</h3>
+    <p>当社は、利用者が以下のいずれかに該当すると判断した場合、事前に通知することなく、本サービスの利用を制限または停止することがあります。</p>
+    <ol><li>本規約に違反した場合</li><li>虚偽の情報を提供した場合</li><li>不正な目的で本サービスを利用した場合</li><li>本サービスの運営を妨害した場合</li><li>その他、当社が利用者による本サービスの利用を不適切と判断した場合</li></ol>
+
+    <h3>第10条（データの保存および削除）</h3>
+    <ol>
+      <li>本サービスでは、利用者がアップロードしたファイル、OCR等により抽出された情報、AIによる分析結果、生成された書類その他のデータを、本サービスの提供に必要な範囲で保存する場合があります。</li>
+      <li>保存されるデータの取扱いについては、当社が別途定める「プライバシーポリシー」に従うものとします。</li>
+      <li>本サービスに保存された利用者の個人情報および関連データは、原則として、利用者から削除の依頼があるまで保存します。</li>
+      <li>利用者から削除の依頼があった場合、本人確認その他必要な確認を行ったうえで、法令上保存が必要な情報等を除き、当社所定の方法により削除します。</li>
+    </ol>
+
+    <h3>第11条（知的財産権）</h3>
+    <ol><li>本サービスに関するプログラム、デザイン、画面、ロゴ、文章、画像その他のコンテンツに関する著作権その他の知的財産権は、当社または正当な権利者に帰属します。</li><li>利用者は、当社または正当な権利者の許可なく、本サービスのコンテンツを複製、転載、改変、販売、配布その他の方法で利用してはなりません。</li><li>利用者が本サービスにアップロードする書類・情報について、当該情報に関する権利は原則として利用者または正当な権利者に帰属します。</li><li>利用者は、当社に対し、本サービスを提供するために必要な範囲で、アップロードされた情報を処理、保存、変換、分析するための権限を付与するものとします。</li></ol>
+
+    <h3>第12条（第三者サービス）</h3>
+    <ol><li>本サービスでは、Google等の外部サービス、クラウドサービス、AIサービスその他の第三者が提供するサービスを利用する場合があります。</li><li>外部サービスの仕様変更、停止、障害、サービス終了その他当社の合理的な管理を超える事情によって本サービスの全部または一部が利用できなくなった場合、当社はその責任を負わないものとします。</li><li>外部サービスの利用については、必要に応じて各サービス提供者が定める利用規約、プライバシーポリシーその他の条件が適用されます。</li></ol>
+
+    <h3>第13条（免責事項）</h3>
+    <ol><li>当社は、本サービスが利用者の特定の目的に適合することを保証するものではありません。</li><li>当社は、本サービスにより生成される情報について、その正確性、完全性、最新性、有用性または特定目的への適合性を保証するものではありません。</li><li>当社は、本サービスの利用によって、利用者が希望する就職、転職、採用、内定、年収その他の結果が得られることを保証しません。</li><li>利用者が生成物を第三者へ提出・提供したことによって生じた問題については、利用者自身の責任において対応するものとします。</li><li>当社は、利用者が本サービスを利用したことにより第三者との間で生じた紛争等について、当社の故意または重過失による場合を除き、責任を負わないものとします。</li><li>当社は、通信環境、端末、ブラウザ、外部サービスその他利用者の環境に起因して発生した問題について、責任を負わないものとします。</li></ol>
+
+    <h3>第14条（損害賠償）</h3>
+    <ol><li>利用者が本規約に違反し、当社または第三者に損害を与えた場合、利用者はその損害を賠償する責任を負うものとします。</li><li>当社が利用者に対して損害賠償責任を負う場合であっても、当社に故意または重過失がある場合を除き、当社の責任は、通常かつ直接の損害に限られるものとします。</li><li>当社は、特別損害、間接損害、逸失利益その他の将来利益について、当社に故意または重過失がある場合を除き、責任を負わないものとします。</li></ol>
+
+    <h3>第15条（規約の変更）</h3>
+    <ol><li>当社は、必要に応じて本規約を変更することがあります。</li><li>本規約を変更する場合、当社は、本サービス上への掲載その他適切な方法により、変更内容および変更時期を利用者へお知らせします。</li><li>変更後の規約は、本サービス上に掲載した時点その他当社が定める時点から効力を生じるものとします。</li></ol>
+
+    <h3>第16条（プライバシーポリシー）</h3>
+    <p>本サービスにおける個人情報の取扱いについては、当社が別途定める「楽ブレ プライバシーポリシー」が適用されます。</p>
+    <p>利用者は、本サービスを利用する前に、プライバシーポリシーの内容を確認するものとします。</p>
+
+    <h3>第17条（権利義務の譲渡禁止）</h3>
+    <p>利用者は、当社の事前の書面による承諾なく、本規約上の地位または本規約に基づく権利もしくは義務を第三者へ譲渡、承継、担保設定その他の処分をすることはできません。</p>
+
+    <h3>第18条（分離可能性）</h3>
+    <p>本規約の一部が法令等により無効または執行不能と判断された場合でも、本規約のその他の規定は引き続き有効に存続するものとします。</p>
+
+    <h3>第19条（準拠法）</h3>
+    <p>本規約の成立、効力、解釈および履行については、日本法を準拠法とします。</p>
+
+    <h3>第20条（協議および管轄裁判所）</h3>
+    <ol><li>本サービスに関して利用者と当社との間で問題が生じた場合、当社と利用者は、誠実に協議し、その解決を図るものとします。</li><li>本サービスに関して訴訟の必要が生じた場合、当社の所在地を管轄する地方裁判所または簡易裁判所を第一審の専属的合意管轄裁判所とします。</li></ol>
+
+    <h3>附則</h3>
+    <p>本規約は、2026年9月8日から施行します。</p>
+    <p class="privacy-contact"><strong>運営者：</strong>Version-K<br><strong>サービス名：</strong>楽ブレ<br><strong>代表者：</strong>山﨑 健勝<br><strong>お問い合わせ：</strong><br><a href="mailto:info.versionk@gmail.com">info.versionk@gmail.com</a></p>
+  </div>
+</div>
+</div>
+
+<div class="modal hidden" id="privacyModal" aria-hidden="true">
+<div class="privacy-modal-card" role="dialog" aria-modal="true" aria-labelledby="privacyModalTitle">
+  <button id="closePrivacyModal" class="privacy-modal-close" type="button" aria-label="閉じる">×</button>
+
+
+  <div class="privacy-modal-head">
+    <h2 id="privacyModalTitle">楽ブレ 個人情報の取扱いについて</h2>
+    <p>最終更新日：2026年9月8日</p>
+  </div>
+
+
+  <div class="privacy-modal-body">
+    <p>Version-K（以下「当社」といいます。）は、当社が提供する「楽ブレ」（以下「本サービス」といいます。）において取得する個人情報について、個人情報の保護に関する法律その他の関連法令およびガイドラインを遵守し、適切に取り扱います。</p>
+
+
+    <h3>1．取得する情報</h3>
+    <p>当社は、本サービスの提供に必要な範囲で、以下の情報を取得する場合があります。</p>
+    <p><strong>（1）アップロードされた書類に含まれる情報</strong></p>
+    <ul>
+      <li>氏名</li><li>生年月日</li><li>住所</li><li>電話番号</li><li>メールアドレス</li>
+      <li>学歴</li><li>職歴</li><li>勤務先に関する情報</li><li>資格・免許</li>
+      <li>保有スキル</li><li>職務内容</li><li>自己PR</li><li>志望動機</li>
+      <li>希望条件</li><li>その他、アップロードされた書類に記載された情報</li>
+    </ul>
+    <p><strong>（2）本サービスの利用に関する情報</strong></p>
+    <ul>
+      <li>アップロードしたファイルに関する情報</li>
+      <li>選択した生成書類の種類</li>
+      <li>生成処理に関する情報</li>
+      <li>アクセス日時</li>
+      <li>エラー情報</li>
+      <li>サービスの利用状況</li>
+      <li>その他、本サービスの提供・改善に必要な情報</li>
+    </ul>
+    <p class="privacy-note">利用者は、本サービスの利用に必要のない個人情報や第三者の個人情報等を含む書類を、不必要にアップロードしないようご注意ください。</p>
+
+
+    <h3>2．個人情報の利用目的</h3>
+    <p>当社は、取得した個人情報を以下の目的で利用します。</p>
+    <ol>
+      <li><strong>応募・人材関連書類の作成</strong><br>利用者がアップロードした情報をもとに、AIその他の技術を利用して、履歴書、職務経歴書、推薦状、スキルシート_BPO、その他、本サービスで提供する応募・採用関連書類を生成するため。</li>
+      <li><strong>情報の読み取り・整理・分析</strong><br>アップロードされたPDF等からOCR等の技術を用いて文字情報を読み取り、職歴、学歴、スキル、資格等の情報を整理・構造化するため。</li>
+      <li><strong>企業情報等の調査</strong><br>応募書類の作成・内容の補完等に必要な範囲で、勤務先・企業等に関する公開情報を調査・整理するため。</li>
+      <li><strong>本サービスの提供・維持・改善</strong><br>本サービスの正常な提供、不具合への対応、システムの保守、品質向上等のため。</li>
+      <li><strong>お問い合わせへの対応</strong><br>利用者からのお問い合わせ、データ削除依頼その他の連絡に対応するため。</li>
+      <li><strong>不正利用等の防止</strong><br>不正アクセス、不正利用、規約違反その他の不正行為の防止・調査のため。</li>
+      <li><strong>法令等への対応</strong><br>法令、裁判所、行政機関その他の公的機関から適法な要請を受けた場合に対応するため。</li>
+    </ol>
+
+
+    <h3>3．AIによる情報処理について</h3>
+    <p>本サービスでは、利用者がアップロードした情報を整理・分析し、各種書類を生成するためにAI技術を利用します。</p>
+    <ul>
+      <li>PDF等からの文字情報の抽出</li>
+      <li>学歴・職歴・スキル等の整理</li>
+      <li>職務経験の分析</li>
+      <li>文章の作成・整理・校正</li>
+      <li>履歴書の作成</li>
+      <li>職務経歴書の作成</li>
+      <li>推薦文の作成</li>
+      <li>スキルシートの作成</li>
+    </ul>
+    <p>AIによって生成された内容は、必ずしも正確性、完全性を保証するものではありません。利用者は、生成された書類の内容を自身で確認し、事実と異なる内容等がある場合は、必要な修正を行ったうえで利用してください。</p>
+
+
+    <h3>4．外部サービスの利用</h3>
+    <p>本サービスでは、サービスの提供、データ保存、文字情報の抽出、AIによる分析・生成等を行うため、Googleが提供するサービスを含む外部サービスを利用する場合があります。</p>
+    <p>本サービスの処理過程において、利用者がアップロードした情報が、サービス提供に必要な範囲で外部サービスを通じて処理される場合があります。</p>
+    <p>当社は、外部サービスを利用する場合、個人情報の安全管理および適切な取扱いに配慮します。</p>
+
+
+    <h3>5．第三者への提供</h3>
+    <p>当社は、次の場合を除き、利用者本人の同意なく個人情報を第三者へ提供しません。</p>
+    <ol>
+      <li>本人の同意がある場合</li>
+      <li>法令に基づく場合</li>
+      <li>人の生命、身体または財産の保護のために必要であり、本人の同意を得ることが困難な場合</li>
+      <li>公衆衛生の向上または児童の健全な育成の推進のために特に必要であり、本人の同意を得ることが困難な場合</li>
+      <li>国の機関、地方公共団体またはその委託を受けた者が法令上の事務を遂行するために協力する必要がある場合</li>
+      <li>その他、法令により認められる場合</li>
+    </ol>
+    <p>なお、本サービスの提供に必要な範囲で個人情報の取扱いを外部事業者へ委託する場合があります。この場合、当社は委託先に対して必要かつ適切な監督を行います。</p>
+
+
+    <h3>6．個人情報・生成データの保存</h3>
+    <p>本サービスでは、サービスの提供および利用者による継続的な利用のため、アップロードされたファイルおよび生成されたデータを保存する場合があります。</p>
+    <ul>
+      <li>アップロードされたPDF等の原本</li>
+      <li>OCR等により抽出された情報</li>
+      <li>AIによる分析結果</li>
+      <li>生成された履歴書</li>
+      <li>生成された職務経歴書</li>
+      <li>生成された推薦状</li>
+      <li>生成されたスキルシート</li>
+      <li>その他、本サービスの提供に必要なデータ</li>
+    </ul>
+    <p><strong>保存期間：</strong>本サービスに保存された利用者の個人情報および関連データは、原則として、<strong>利用者から削除の依頼があるまで保存します。</strong></p>
+    <p>利用者から削除の依頼を受けた場合、本人確認その他必要な確認を行ったうえで、法令上保存する必要がある情報等を除き、当社所定の方法により削除します。</p>
+
+
+    <h3>7．個人情報の安全管理</h3>
+    <p>当社は、取得した個人情報について、漏えい、滅失、毀損、不正アクセス等を防止するため、必要かつ適切な安全管理措置を講じます。</p>
+    <ul>
+      <li>アクセス権限の適切な管理</li>
+      <li>不正アクセス等への対策</li>
+      <li>個人情報を取り扱うシステムおよびアカウントの適切な管理</li>
+      <li>関係者に対する必要な教育・監督</li>
+      <li>委託先に対する必要かつ適切な監督</li>
+      <li>その他、個人情報保護に必要な安全管理措置</li>
+    </ul>
+
+
+    <h3>8．生成された情報について</h3>
+    <p>本サービスは、AI等の技術を利用して書類作成を支援するサービスです。</p>
+    <p>AIによる生成処理の性質上、生成された書類に、誤った情報、不正確な表現、事実と異なる内容等が含まれる可能性があります。</p>
+    <p>利用者は、生成された書類を企業その他の第三者へ提出する前に、必ず内容を確認してください。</p>
+    <p>本サービスの利用によって生成された情報の最終的な利用については、利用者自身の判断および責任において行うものとします。</p>
+
+
+    <h3>9．個人情報の開示・訂正・削除等</h3>
+    <p>利用者本人から、当社が保有する自己の個人情報について、開示、訂正、追加、削除、利用停止または消去等の請求があった場合、法令に基づき適切に対応します。</p>
+    <p>ご希望の場合は、下記のお問い合わせ窓口までご連絡ください。必要に応じて、本人確認をお願いする場合があります。</p>
+
+
+    <h3>10．データの削除依頼</h3>
+    <p>本サービスに保存された個人情報および関連データの削除を希望する場合は、以下のお問い合わせ先までご連絡ください。</p>
+    <p class="privacy-contact"><strong>お問い合わせ先：</strong><br><a href="mailto:info.versionk@gmail.com">info.versionk@gmail.com</a></p>
+    <p>削除依頼の際には、削除対象となるデータを特定するため、氏名その他必要な情報をご確認させていただく場合があります。</p>
+    <p>本人確認および対象データの確認完了後、法令上保存が必要な情報等を除き、当社所定の方法により削除します。</p>
+
+
+    <h3>11．Cookie等について</h3>
+    <p>本サービスでは、サービスの提供、利便性の向上、利用状況の確認、不具合の把握等を目的として、Cookieその他の類似技術を利用する場合があります。</p>
+    <p>利用者はブラウザの設定等によりCookieの利用を制限することができます。ただし、Cookieを無効にした場合、本サービスの一部機能が正常に利用できなくなる場合があります。</p>
+
+
+    <h3>12．第三者の個人情報について</h3>
+    <p>利用者が、本人以外の第三者の個人情報を含む書類を本サービスへアップロードする場合、当該情報を本サービスで取り扱うために必要な権限または同意を得たうえで利用してください。</p>
+    <p>利用者が権限なく第三者の個人情報をアップロードしたことによって生じた問題については、利用者自身の責任において対応するものとします。</p>
+
+
+    <h3>13．未成年者の利用</h3>
+    <p>未成年者が本サービスを利用する場合は、必要に応じて親権者その他の法定代理人の同意を得たうえで利用してください。</p>
+
+
+    <h3>14．本サービスに関する免責</h3>
+    <p>本サービスは、履歴書、職務経歴書、推薦状、スキルシート等の作成を支援するものであり、就職、転職、採用、内定その他特定の結果を保証するものではありません。</p>
+    <p>利用者は、生成された書類の内容を確認したうえで、自身の責任において利用するものとします。</p>
+
+
+    <h3>15．本内容の変更</h3>
+    <p>当社は、法令の改正、本サービスの内容変更、利用するシステム・外部サービスの変更その他必要に応じて、本「個人情報の取扱いについて」を変更する場合があります。</p>
+    <p>重要な変更を行う場合は、本サービス上への掲載その他適切な方法により利用者へお知らせします。</p>
+    <p>変更後の内容は、本サービス上に掲載した時点から適用されるものとします。</p>
+
+
+    <h3>16．お問い合わせ窓口</h3>
+    <p class="privacy-contact">
+      <strong>運営者</strong><br>Version-K<br><br>
+      <strong>サービス名</strong><br>楽ブレ<br><br>
+      <strong>代表者</strong><br>山﨑 健勝<br><br>
+      <strong>お問い合わせ先</strong><br>
+      <a href="mailto:info.versionk@gmail.com">info.versionk@gmail.com</a>
+    </p>
+
+
+    <p>制定日：2026年9月8日<br>最終更新日：2026年9月8日</p>
+  </div>
+</div>
+</div>
+
+
+<div class="modal hidden" id="guideModal">
+
+
+
+
+
+
+
+
+<div class="modal-card">
+
+
+
+
+
+
+
+
+  <button id="closeModal" type="button">×</button>
+
+
+
+
+
+
+
+
+  <h2>使い方</h2>
+
+
+
+
+
+
+
+
+  <ol>
+
+
+
+
+
+
+
+
+    <li>候補者情報PDFを複数アップロード（履歴書・職務経歴書・面談シートなど）</li>
+
+
+
+
+
+
+
+
+    <li>作成する書類を選択</li>
+
+
+
+
+
+
+
+
+    <li>個人情報の取り扱いを確認</li>
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+    <li>書類を生成</li>
+
+
+
+
+
+
+
+
+    <li>生成されたデータを確認・保存</li>
+
+
+
+
+
+
+
+
+  </ol>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+
+
+
+
+
+
+(() => {
+
+
+
+
+
+
+
+
+"use strict";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+
+
+
+
+   楽ブレ Web API 設定
+
+
+
+
+   ========================================= */
+
+
+
+
+// GASのWebApi.gsに設定したAPIキーと同じ値を入力
+
+
+
+
+const API_TOKEN = "Rakubure_API_2026_AIzaSyDT9gpTxStu7fnK9GlIOnn79mVz9IxCstA";
+
+
+
+
+
+
+
+
+const state = {
+  files: [],
+  storageMode: "data"
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const $ = (selector) => document.querySelector(selector);
+
+
+
+
+
+
+
+
+const $$ = (selector) => Array.from(document.querySelectorAll(selector));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const fileInput = $("#fileInput");
+
+
+
+
+
+
+
+
+const dropzone = $("#dropzone");
+
+
+
+
+
+
+
+
+const filePanel = $("#filePanel");
+
+
+
+
+
+
+
+
+const consent = $("#consent");
+
+
+
+
+
+
+
+
+const generateBtn = $("#generateBtn");
+
+
+
+
+
+
+
+
+const generateNote = $("#generateNote");
+
+
+
+
+
+
+
+
+const progress = $("#progress");
+
+
+
+
+
+
+
+
+const progressBar = $("#progressBar");
+
+
+
+
+
+
+
+
+const progressText = $("#progressText");
+
+
+
+
+const progressPercent = $("#progressPercent");
+
+
+
+
+
+
+
+
+const result = $("#result");
+
+
+
+
+
+
+
+
+const resultGrid = $("#resultGrid");
+
+const requiredElements = {
+  fileInput, dropzone, filePanel, consent, generateBtn,
+  generateNote, progress, progressBar, progressText,
+  progressPercent, result, resultGrid
+};
+const missingElements = Object.entries(requiredElements)
+  .filter(([, element]) => !element)
+  .map(([name]) => name);
+
+if (missingElements.length) {
+  console.error("楽ブレ: 必須DOMが見つかりません:", missingElements);
+  throw new Error(
+    "画面の読み込みに失敗しました。HTMLの構造を確認してください。"
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* -----------------------------
+   複数PDFファイル選択
+----------------------------- */
+
+
+
+
+const MAX_FILES = 10;
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_TOTAL_SIZE = 50 * 1024 * 1024;
+
+
+
+
+function showFiles(fileList) {
+  const incoming = Array.from(fileList || []);
+  if (!incoming.length) return;
+
+
+
+
+  const valid = [];
+  const errors = [];
+
+
+
+
+  for (const file of incoming) {
+    if (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name)) {
+      errors.push(`${file.name}: PDFファイルではありません`);
+      continue;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      errors.push(`${file.name}: 1ファイル10MBを超えています`);
+      continue;
+    }
+    valid.push(file);
+  }
+
+
+
+
+  const merged = [...state.files];
+
+
+
+
+  for (const file of valid) {
+    const duplicate = merged.some(
+      existing =>
+        existing.name === file.name &&
+        existing.size === file.size &&
+        existing.lastModified === file.lastModified
+    );
+    if (!duplicate) merged.push(file);
+  }
+
+
+
+
+  if (merged.length > MAX_FILES) {
+    errors.push(`添付できるPDFは最大${MAX_FILES}件です`);
+    merged.splice(MAX_FILES);
+  }
+
+
+
+
+  const totalSize = merged.reduce((sum, file) => sum + file.size, 0);
+  if (totalSize > MAX_TOTAL_SIZE) {
+    errors.push("PDFの合計サイズは50MB以下にしてください");
+    alert(errors.join("\n"));
+    return;
+  }
+
+
+
+
+  state.files = merged;
+  renderFileList();
+
+
+
+
+  if (errors.length) alert(errors.join("\n"));
+  updateGenerateState();
+}
+
+
+
+
+function renderFileList() {
+  if (!state.files.length) {
+    filePanel.innerHTML =
+      '<div class="empty">まだファイルが選択されていません</div>';
+    return;
+  }
+
+
+
+
+  const totalSize = state.files.reduce((sum, file) => sum + file.size, 0);
+  const totalMb = (totalSize / (1024 * 1024)).toFixed(1);
+
+
+
+
+  filePanel.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <strong>${state.files.length}件のPDFを選択中</strong>
+      <small style="color:#71819a;">合計 ${totalMb}MB / 50MB</small>
+    </div>
+    <div style="display:grid;gap:10px;">
+      ${state.files.map((file, index) => {
+        const mb = (file.size / (1024 * 1024)).toFixed(1);
+        return `
+          <div class="file-item">
+            <div class="pdf-icon">PDF</div>
+            <div class="file-meta">
+              <div class="file-name">${escapeHtml(file.name)}</div>
+              <div class="file-size">${mb}MB</div>
+            </div>
+            <button class="remove-file" data-file-index="${index}"
+              type="button" aria-label="ファイルを削除">×</button>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+
+
+
+
+  filePanel.querySelectorAll("[data-file-index]").forEach(button => {
+    button.addEventListener("click", () => {
+      const index = Number(button.getAttribute("data-file-index"));
+      state.files.splice(index, 1);
+      renderFileList();
+      updateGenerateState();
+    });
+  });
+}
+
+
+
+
+fileInput.addEventListener("change", e => {
+  showFiles(e.target.files);
+  fileInput.value = "";
+});
+
+
+
+
+["dragenter", "dragover"].forEach(type => {
+  dropzone.addEventListener(type, e => {
+    e.preventDefault();
+    dropzone.classList.add("dragover");
+  });
+});
+
+
+
+
+["dragleave", "drop"].forEach(type => {
+  dropzone.addEventListener(type, e => {
+    e.preventDefault();
+    dropzone.classList.remove("dragover");
+  });
+});
+
+
+
+
+dropzone.addEventListener("drop", e => {
+  showFiles(e.dataTransfer.files);
+});
+
+
+
+
+/* -----------------------------
+
+
+
+
+   書類選択
+
+
+
+
+   ※ checkbox と label の二重反応を防止
+
+
+
+
+----------------------------- */
+
+
+
+
+const docOptions = $$(".doc-option");
+
+
+
+
+
+
+
+
+function syncDocumentOption(option) {
+
+
+
+
+  const checkbox = option.querySelector("input[type='checkbox']");
+
+
+
+
+  option.classList.toggle("active", checkbox.checked);
+
+
+
+
+  option.setAttribute("aria-pressed", String(checkbox.checked));
+
+
+
+
+}
+
+
+
+
+
+
+
+
+docOptions.forEach(option => {
+
+
+
+
+  const checkbox = option.querySelector("input[type='checkbox']");
+
+
+
+
+
+
+
+
+  syncDocumentOption(option);
+
+
+
+
+
+
+
+
+  checkbox.addEventListener("change", () => {
+
+
+
+
+    syncDocumentOption(option);
+
+
+
+
+    updateGenerateState();
+
+
+
+
+  });
+
+
+
+
+
+
+
+
+  option.addEventListener("click", (e) => {
+
+
+
+
+    if (e.target === checkbox) return;
+
+
+
+
+
+
+
+
+    e.preventDefault();
+
+
+
+
+    checkbox.checked = !checkbox.checked;
+
+
+
+
+    syncDocumentOption(option);
+
+
+
+
+    updateGenerateState();
+
+
+
+
+  });
+
+
+
+
+
+
+
+
+  option.addEventListener("keydown", (e) => {
+
+
+
+
+    if (e.key === "Enter" || e.key === " ") {
+
+
+
+
+      e.preventDefault();
+
+
+
+
+      checkbox.checked = !checkbox.checked;
+
+
+
+
+      syncDocumentOption(option);
+
+
+
+
+      updateGenerateState();
+
+
+
+
+    }
+
+
+
+
+  });
+
+
+
+
+});
+
+
+
+
+
+
+
+
+function getSelectedDocuments() {
+
+
+
+
+  return docOptions
+
+
+
+
+    .map(option => option.querySelector("input[type='checkbox']"))
+
+
+
+
+    .filter(input => input.checked)
+
+
+
+
+    .map(input => input.value);
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/* -----------------------------
+
+
+
+
+   保存方法選択
+
+
+
+
+   ※ カードクリックを明示制御して確実に選択できるよう修正
+
+
+
+
+----------------------------- */
+
+
+
+
+
+
+
+
+const storageOptions = $$(".storage-option");
+
+
+
+
+
+
+
+
+function syncStorageOption(option) {
+
+
+
+
+  const radio = option.querySelector("input[type='radio']");
+
+
+
+
+  const selected = radio.checked;
+
+
+
+
+
+
+
+
+  option.classList.toggle("selected", selected);
+
+
+
+
+  option.setAttribute("aria-checked", String(selected));
+
+
+
+
+  option.setAttribute("role", "radio");
+
+
+
+
+  option.setAttribute("tabindex", "0");
+
+
+
+
+}
+
+
+
+
+
+
+
+
+function selectStorage(option) {
+
+
+
+
+  const radio = option.querySelector("input[type='radio']");
+
+
+
+
+
+
+
+
+  storageOptions.forEach(item => {
+
+
+
+
+    const itemRadio = item.querySelector("input[type='radio']");
+
+
+
+
+
+
+
+
+    itemRadio.checked = false;
+
+
+
+
+    item.classList.remove("selected");
+
+
+
+
+    item.setAttribute("aria-checked", "false");
+
+
+
+
+  });
+
+
+
+
+
+
+
+
+  radio.checked = true;
+
+
+
+
+  state.storageMode = radio.value;
+
+
+
+
+
+
+
+
+  syncStorageOption(option);
+
+
+
+
+
+
+
+
+  document.body.dataset.storageMode = state.storageMode;
+
+
+
+
+
+
+
+
+  updateGenerateState();
+
+
+
+
+}
+
+
+
+
+
+
+
+
+storageOptions.forEach(option => {
+
+
+
+
+  const radio = option.querySelector("input[type='radio']");
+
+
+
+
+
+
+
+
+  syncStorageOption(option);
+
+
+
+
+
+
+
+
+  option.addEventListener("click", e => {
+
+
+
+
+    e.preventDefault();
+
+
+
+
+    selectStorage(option);
+
+
+
+
+  });
+
+
+
+
+
+
+
+
+  option.addEventListener("keydown", e => {
+
+
+
+
+    if (e.key === "Enter" || e.key === " ") {
+
+
+
+
+      e.preventDefault();
+
+
+
+
+      selectStorage(option);
+
+
+
+
+      return;
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+
+
+
+
+      e.preventDefault();
+
+
+
+
+
+
+
+
+      const index = storageOptions.indexOf(option);
+
+
+
+
+      const next =
+
+
+
+
+        storageOptions[(index + 1) % storageOptions.length];
+
+
+
+
+
+
+
+
+      next.focus();
+
+
+
+
+      selectStorage(next);
+
+
+
+
+      return;
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+
+
+
+
+      e.preventDefault();
+
+
+
+
+
+
+
+
+      const index = storageOptions.indexOf(option);
+
+
+
+
+      const prev =
+
+
+
+
+        storageOptions[
+
+
+
+
+          (index - 1 + storageOptions.length) %
+
+
+
+
+          storageOptions.length
+
+
+
+
+        ];
+
+
+
+
+
+
+
+
+      prev.focus();
+
+
+
+
+      selectStorage(prev);
+
+
+
+
+    }
+
+
+
+
+  });
+
+
+
+
+
+
+
+
+  radio.addEventListener("change", () => {
+
+
+
+
+    if (radio.checked) {
+
+
+
+
+      selectStorage(option);
+
+
+
+
+    }
+
+
+
+
+  });
+
+
+
+
+});
+
+
+
+
+
+
+
+
+// 初期値：PDF＋データ
+
+
+
+
+const defaultStorageOption =
+
+
+
+
+  document.querySelector("[data-storage='both']");
+
+
+
+
+
+
+
+
+if (defaultStorageOption) {
+
+
+
+
+  selectStorage(defaultStorageOption);
+
+
+
+
+}
+
+
+
+
+
+
+
+
+/* -----------------------------
+
+
+
+
+
+
+
+
+   同意・生成ボタン
+
+
+
+
+
+
+
+
+----------------------------- */
+
+
+
+
+
+
+
+
+consent.addEventListener("change", updateGenerateState);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function updateGenerateState() {
+
+
+
+
+
+
+
+
+  const hasFile = state.files.length > 0;
+
+
+
+
+
+
+
+
+  const hasDocs = getSelectedDocuments().length > 0;
+
+
+
+
+
+
+
+
+  const hasConsent = consent.checked;
+
+
+
+
+
+
+
+
+  const hasStorage = true;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  generateBtn.disabled = !(hasFile && hasDocs && hasConsent && hasStorage);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  if (generateBtn.disabled) {
+
+
+
+
+
+
+
+
+    const missing = [];
+
+
+
+
+
+
+
+
+    if (!hasFile) missing.push("PDF");
+
+
+
+
+
+
+
+
+    if (!hasDocs) missing.push("作成書類");
+
+
+
+
+
+
+
+
+    if (!hasConsent) missing.push("個人情報の確認");
+
+
+
+
+
+
+
+
+    generateNote.textContent = "未選択：" + missing.join("・");
+
+
+
+
+
+
+
+
+  } else {
+
+
+
+
+
+
+
+
+    generateNote.textContent = "";
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* -----------------------------
+
+
+
+
+
+
+
+
+   生成処理
+
+
+
+
+   GAS Web API：files[] としてPDFを送信
+
+
+
+
+
+
+
+
+----------------------------- */
+
+
+
+
+const GAS_WEB_APP_URL =
+"https://script.google.com/macros/s/AKfycbybptovZ67BMtkDaC7tRBLHFoQS9DXbr43oeEiSBmOfsXBTK3bwA800baKvpOMOo0yn/exec";
+
+
+
+
+function setProgress(percent, message) {
+
+
+
+
+  const value = Math.max(0, Math.min(100, Number(percent) || 0));
+
+
+
+
+  progressBar.style.width = value + "%";
+
+
+
+
+  progressPercent.textContent = Math.round(value) + "%";
+
+
+
+
+  progressText.textContent = message || "";
+
+
+
+
+}
+
+
+
+
+
+
+
+
+function animateProgress(start, end, duration = 1200) {
+
+
+
+
+  const began = performance.now();
+
+
+
+
+
+
+
+
+  return new Promise(resolve => {
+
+
+
+
+    function tick(now) {
+
+
+
+
+      const ratio = Math.min(1, (now - began) / duration);
+
+
+
+
+      const value = start + (end - start) * ratio;
+
+
+
+
+
+
+
+
+      setProgress(value, progressText.textContent);
+
+
+
+
+
+
+
+
+      if (ratio < 1) {
+
+
+
+
+        requestAnimationFrame(tick);
+
+
+
+
+      } else {
+
+
+
+
+        resolve();
+
+
+
+
+      }
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    requestAnimationFrame(tick);
+
+
+
+
+  });
+
+
+
+
+}
+
+
+
+
+
+
+
+
+generateBtn.addEventListener("click", async () => {
+
+
+
+
+
+
+
+
+  if (generateBtn.disabled || !state.files.length) return;
+
+
+
+
+
+
+
+
+  const documents = getSelectedDocuments();
+
+
+
+
+
+
+
+
+  if (documents.length === 0) {
+
+
+
+
+    alert("作成する書類を1つ以上選択してください。");
+
+
+
+
+    return;
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  if (!consent.checked) {
+
+
+
+
+    alert("個人情報の取り扱いへの確認が必要です。");
+
+
+
+
+    return;
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+  generateBtn.disabled = true;
+
+
+
+
+  progress.classList.remove("hidden");
+
+
+
+
+  result.classList.add("hidden");
+
+
+
+
+
+
+
+
+  setProgress(10, "PDFを読み込んでいます...");
+
+
+
+
+
+
+
+
+  try {
+
+
+
+
+
+
+
+
+    if (!API_TOKEN || API_TOKEN.trim() === "") {
+      throw new Error(
+        "API認証情報が設定されていません。GASのWebApi.gsと同じAPI_TOKENを設定してください。"
+      );
+    }
+
+    const encodedFiles = [];
+
+
+
+
+    for (let i = 0; i < state.files.length; i++) {
+      const file = state.files[i];
+      setProgress(
+        10 + Math.round((i / state.files.length) * 20),
+        `${i + 1}/${state.files.length}件目のPDFを読み込んでいます...`
+      );
+
+
+
+
+      encodedFiles.push({
+        fileName: file.name,
+        mimeType: file.type || "application/pdf",
+        fileBase64: await fileToBase64(file)
+      });
+    }
+
+
+
+
+    setProgress(35, `${state.files.length}件のPDFをまとめてAI分析しています...`);
+
+
+
+
+    let progressRunning = true;
+    const progressMessages = [
+      "AIが候補者情報を解析しています...",
+      "職歴・スキル情報を整理しています...",
+      "企業情報を確認しています...",
+      "スキルシート_BPOのデータを整形しています...",
+      "書類データを生成しています..."
+    ];
+    const progressTimer = setInterval(() => {
+      if (!progressRunning) return;
+      const current = Number(progressPercent.textContent.replace("%", "")) || 35;
+      const next = Math.min(92, current + 1);
+      let idx = 0;
+      if (next >= 55) idx = 1;
+      if (next >= 70) idx = 2;
+      if (next >= 80) idx = 3;
+      if (next >= 88) idx = 4;
+      setProgress(next, progressMessages[idx]);
+    }, 900);
+
+    /*
+ * GAS doPost() の仕様に合わせて送信。
+ *
+ * files[] に全PDFを入れているため、
+ * 旧仕様の fileBase64 / fileName / mimeType は送らない。
+ * 旧仕様を同時に送ると、1枚目のPDFが二重登録されます。
+ */
+const requestBody = {
+  token: API_TOKEN,
+  files: encodedFiles,
+  documents: documents,
+  consent: consent.checked
+};
+
+const response = await fetch(
+  GAS_WEB_APP_URL,
+  {
+    method: "POST",
+    mode: "cors",
+    credentials: "omit",
+    redirect: "follow",
+    cache: "no-store",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8",
+      "Accept": "application/json"
+    },
+    body: JSON.stringify(requestBody)
+  }
+);
+
+
+
+
+    progressRunning = false;
+    clearInterval(progressTimer);
+    setProgress(94, "GASから生成結果を受け取っています...");
+
+
+
+
+
+
+
+
+    const text = await response.text();
+
+    if (!response.ok) {
+      const preview = String(text || "").replace(/\s+/g, " ").slice(0, 300);
+      throw new Error(
+        `GAS APIへの通信に失敗しました（HTTP ${response.status}）。` +
+        (preview ? `\nレスポンス: ${preview}` : "")
+      );
+    }
+
+    let apiResult;
+
+
+
+
+
+
+
+
+    try {
+
+
+
+
+      apiResult = JSON.parse(text);
+
+
+
+
+    } catch (parseError) {
+      console.error("GAS RAW RESPONSE:", text);
+      const preview = String(text || "").replace(/\s+/g, " ").slice(0, 300);
+      throw new Error(
+        "GAS APIからJSONではないレスポンスが返りました。" +
+        (preview ? `\nレスポンス: ${preview}` : "")
+      );
+    }
+
+
+
+
+
+
+
+
+    console.log("GAS API RESPONSE:", apiResult);
+
+
+
+
+
+
+
+
+    if (!response.ok || !apiResult.success) {
+
+
+
+
+      throw new Error(
+
+
+
+
+        apiResult.error ||
+
+
+
+
+        apiResult.message ||
+
+
+
+
+        `APIエラー（HTTP ${response.status}）`
+
+
+
+
+      );
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    setProgress(100, "生成が完了しました。元データを編集できます。");
+
+
+
+
+
+
+
+
+    renderApiResult(apiResult);
+
+
+
+
+
+
+
+
+    result.classList.remove("hidden");
+
+
+
+
+    result.scrollIntoView({
+
+
+
+
+      behavior: "smooth",
+
+
+
+
+      block: "start"
+
+
+
+
+    });
+
+
+
+
+
+
+
+
+  } catch (error) {
+
+    console.error("楽ブレ生成エラー:", error);
+
+    setProgress(0, "生成に失敗しました。");
+
+    let errorMessage = error && error.message
+      ? error.message
+      : String(error || "不明なエラー");
+
+    if (/Load failed|Failed to fetch|NetworkError|fetch/i.test(errorMessage)) {
+      errorMessage =
+        "GAS Web APIとの通信に失敗しました。\n\n" +
+        "確認してください：\n" +
+        "・GASを最新バージョンでデプロイしているか\n" +
+        "・WebアプリのURLが現在のGASのURLか\n" +
+        "・Webアプリのアクセス権が「全員」になっているか\n" +
+        "・GASの実行履歴で doPost が実行されているか\n\n" +
+        "今回のHTMLはGASの files[] 仕様に合わせて送信しています。";
+    }
+
+    alert(
+      "書類の生成に失敗しました。\n\n" +
+      errorMessage
+    );
+
+  } finally {
+
+
+
+
+
+
+
+
+    updateGenerateState();
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+async function fileToBase64(file) {
+
+
+
+
+
+
+
+
+  return new Promise((resolve, reject) => {
+
+
+
+
+
+
+
+
+    const reader = new FileReader();
+
+
+
+
+
+
+
+
+    reader.onload = () => {
+
+
+
+
+
+
+
+
+      const result = String(reader.result);
+
+
+
+
+
+
+
+
+      const commaIndex = result.indexOf(",");
+
+
+
+
+
+
+
+
+      if (commaIndex === -1) {
+
+
+
+
+        reject(
+
+
+
+
+          new Error("PDFデータの読み込みに失敗しました。")
+
+
+
+
+        );
+
+
+
+
+        return;
+
+
+
+
+      }
+
+
+
+
+
+
+
+
+      resolve(
+
+
+
+
+        result.substring(commaIndex + 1)
+
+
+
+
+      );
+
+
+
+
+
+
+
+
+    };
+
+
+
+
+
+
+
+
+    reader.onerror = () => {
+
+
+
+
+      reject(
+
+
+
+
+        new Error("PDFファイルを読み込めませんでした。")
+
+
+
+
+      );
+
+
+
+
+    };
+
+
+
+
+
+
+
+
+    reader.readAsDataURL(file);
+
+
+
+
+
+
+
+
+  });
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function getDataDownloadUrl(file) {
+  const sourceId = file && file.sourceFileId ? String(file.sourceFileId) : "";
+  if (!sourceId) return file && file.downloadUrl ? file.downloadUrl : "";
+
+  const sourceType = String(file.sourceType || "");
+  if (sourceType.includes("スプレッドシート") || file.spreadsheetUrl) {
+    return `https://docs.google.com/spreadsheets/d/${encodeURIComponent(sourceId)}/export?format=xlsx`;
+  }
+  if (sourceType.includes("ドキュメント") || file.documentUrl) {
+    return `https://docs.google.com/document/d/${encodeURIComponent(sourceId)}/export?format=docx`;
+  }
+  return file.downloadUrl || "";
+}
+
+function renderApiResult(apiResult) {
+  const files = Array.isArray(apiResult.files)
+    ? apiResult.files
+    : Array.isArray(apiResult.results) ? apiResult.results : [];
+
+  if (files.length === 0) {
+    resultGrid.innerHTML = `
+      <div class="result-card" style="grid-column:1/-1">
+        <div class="result-type">データ生成完了</div>
+        <div class="result-size">生成されたデータの保存が完了しました。</div>
+      </div>`;
+    $("#zipBtn").classList.add("hidden");
+    return;
+  }
+
+  resultGrid.innerHTML = files.map(file => {
+    const downloadUrl = getDataDownloadUrl(file);
+    const sourceUrl = file.spreadsheetUrl || file.documentUrl || file.sourceUrl || file.editUrl || "";
+    const editLabel = file.spreadsheetUrl
+      ? "Googleスプレッドシートで編集 ↗"
+      : file.documentUrl
+        ? "Googleドキュメントで編集 ↗"
+        : "生成データを開く ↗";
+
+    return `
+      <div class="result-card">
+        <div class="result-type">${escapeHtml(file.type || "生成データ")}</div>
+        <div class="result-size">${escapeHtml(file.name || "")}</div>
+        <div class="result-source-note">
+          ${file.spreadsheetUrl ? "Googleスプレッドシート" :
+            file.documentUrl ? "Googleドキュメント" : "生成データ"}
+        </div>
+        ${sourceUrl ? `
+          <button type="button" class="edit-source-btn"
+            data-source-url="${escapeHtml(sourceUrl)}">${editLabel}</button>` : ""}
+        ${downloadUrl ? `` : ""}
+      </div>`;
+  }).join("");
+
+  resultGrid.querySelectorAll("[data-source-url]").forEach(button => {
+    button.addEventListener("click", () => {
+      const url = button.getAttribute("data-source-url");
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+    });
+  });
+
+  resultGrid.querySelectorAll("[data-download-url]").forEach(button => {
+    button.addEventListener("click", () => {
+      const url = button.getAttribute("data-download-url");
+      if (url) window.open(url, "_blank", "noopener,noreferrer");
+    });
+  });
+
+  $("#zipBtn").classList.add("hidden");
+}
+
+$("#zipBtn").addEventListener("click", () => {});
+
+
+
+
+
+
+
+
+/* -----------------------------
+
+
+
+
+
+
+
+
+   使い方モーダル
+
+
+
+
+
+
+
+
+----------------------------- */
+
+
+
+
+
+
+
+
+$("#guideBtn").addEventListener("click", () => $("#guideModal").classList.remove("hidden"));
+
+
+
+
+
+
+
+
+$("#closeModal").addEventListener("click", () => $("#guideModal").classList.add("hidden"));
+
+
+
+
+
+
+
+
+$("#guideModal").addEventListener("click", e => {
+
+
+
+
+
+
+
+
+  if (e.target.id === "guideModal") $("#guideModal").classList.add("hidden");
+
+
+
+
+
+
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const footerTermsLink = $("#footerTermsLink");
+if (footerTermsLink) {
+  footerTermsLink.addEventListener("click", e => {
+    e.preventDefault();
+    const modal = $("#termsModal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.setAttribute("aria-hidden", "false");
+    }
+  });
+}
+
+const closeTermsModal = $("#closeTermsModal");
+if (closeTermsModal) {
+  closeTermsModal.addEventListener("click", () => {
+    const modal = $("#termsModal");
+    if (modal) {
+      modal.classList.add("hidden");
+      modal.setAttribute("aria-hidden", "true");
+    }
+  });
+}
+
+const termsModal = $("#termsModal");
+if (termsModal) {
+  termsModal.addEventListener("click", e => {
+    if (e.target === termsModal) {
+      termsModal.classList.add("hidden");
+      termsModal.setAttribute("aria-hidden", "true");
+    }
+  });
+}
+
+$("#privacyLink").addEventListener("click", e => {
+  e.preventDefault();
+  const modal = $("#privacyModal");
+  if (modal) {
+    modal.classList.remove("hidden");
+    modal.setAttribute("aria-hidden", "false");
+  }
+});
+
+const footerPrivacyLink = $("#footerPrivacyLink");
+if (footerPrivacyLink) {
+  footerPrivacyLink.addEventListener("click", e => {
+    e.preventDefault();
+    const modal = $("#privacyModal");
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.setAttribute("aria-hidden", "false");
+    }
+  });
+}
+
+
+$("#closePrivacyModal").addEventListener("click", () => {
+  const modal = $("#privacyModal");
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+  }
+});
+
+
+$("#privacyModal").addEventListener("click", e => {
+  if (e.target.id === "privacyModal") {
+    const modal = $("#privacyModal");
+    modal.classList.add("hidden");
+    modal.setAttribute("aria-hidden", "true");
+  }
+});
+
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    const modal = $("#privacyModal");
+    if (modal && !modal.classList.contains("hidden")) {
+      modal.classList.add("hidden");
+      modal.setAttribute("aria-hidden", "true");
+    }
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function wait(ms) {
+
+
+
+
+
+
+
+
+  return new Promise(resolve => setTimeout(resolve, ms));
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function escapeHtml(value) {
+
+
+
+
+
+
+
+
+  return String(value).replace(/[&<>"']/g, char => ({
+
+
+
+
+
+
+
+
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+
+
+
+
+
+
+
+
+  }[char]));
+
+
+
+
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 外部のapp.jsからも参照できるように公開
+
+
+
+
+
+
+
+
+window.RakuBureApp = {
+
+
+
+
+
+
+
+
+  getStorageMode: () => "data",
+
+
+
+
+
+
+
+
+  getSelectedDocuments,
+
+
+
+
+
+
+
+
+  getFiles: () => state.files.slice(),
+  getFile: () => state.files[0] || null
+
+
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+updateGenerateState();
+
+
+
+
+
+
+
+
+})();
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+</body>
+
+
+
+
+
+
+
+
+</html>
