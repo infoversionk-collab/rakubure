@@ -5285,23 +5285,34 @@ generateBtn.addEventListener("click", async () => {
       setProgress(next, progressMessages[idx]);
     }, 900);
 
-    /*
- * GAS doPost() の仕様に合わせて送信。
- *
- * files[] に全PDFを入れているため、
- * 旧仕様の fileBase64 / fileName / mimeType は送らない。
- * 旧仕様を同時に送ると、1枚目のPDFが二重登録されます。
+```javascript
+/*
+ * GASへ書類生成リクエストを送信する。
+ * Google認証情報を必ず付与し、複数PDFを files[] で送信する。
  */
+
+const googleCredential = sessionStorage.getItem(
+  "RAKUBURE_GOOGLE_CREDENTIAL"
+);
+
+if (!googleCredential) {
+  throw new Error(
+    "Googleの認証情報がありません。ログイン画面から再ログインしてください。"
+  );
+}
+
 const requestBody = {
-  token: API_TOKEN,
+  googleCredential: googleCredential,
   files: encodedFiles,
   documents: documents,
   consent: consent.checked
 };
 
-const response = await fetch(
-  GAS_WEB_APP_URL,
-  {
+let response;
+let apiResult;
+
+try {
+  response = await fetch(GAS_WEB_APP_URL, {
     method: "POST",
     mode: "cors",
     credentials: "omit",
@@ -5312,437 +5323,186 @@ const response = await fetch(
       "Accept": "application/json"
     },
     body: JSON.stringify(requestBody)
-  }
-);
-
-
-
-
-    progressRunning = false;
-    clearInterval(progressTimer);
-    setProgress(94, "GASから生成結果を受け取っています...");
-
-
-
-
-
-
-
-
-    const text = await response.text();
-
-    if (!response.ok) {
-      const preview = String(text || "").replace(/\s+/g, " ").slice(0, 300);
-      throw new Error(
-        `GAS APIへの通信に失敗しました（HTTP ${response.status}）。` +
-        (preview ? `\nレスポンス: ${preview}` : "")
-      );
-    }
-
-    let apiResult;
-
-
-
-
-
-
-
-
-    try {
-
-
-
-
-      apiResult = JSON.parse(text);
-
-
-
-
-    } catch (parseError) {
-      console.error("GAS RAW RESPONSE:", text);
-      const preview = String(text || "").replace(/\s+/g, " ").slice(0, 300);
-      throw new Error(
-        "GAS APIからJSONではないレスポンスが返りました。" +
-        (preview ? `\nレスポンス: ${preview}` : "")
-      );
-    }
-
-
-
-
-
-
-
-
-    console.log("GAS API RESPONSE:", apiResult);
-
-
-
-
-
-
-
-
-    if (!response.ok || !apiResult.success) {
-
-
-
-
-      throw new Error(
-
-
-
-
-        apiResult.error ||
-
-
-
-
-        apiResult.message ||
-
-
-
-
-        `APIエラー（HTTP ${response.status}）`
-
-
-
-
-      );
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-    setProgress(100, "生成が完了しました。元データを編集できます。");
-
-
-
-
-
-
-
-
-    renderApiResult(apiResult);
-
-
-
-
-
-
-
-
-    result.classList.remove("hidden");
-
-
-
-
-    result.scrollIntoView({
-
-
-
-
-      behavior: "smooth",
-
-
-
-
-      block: "start"
-
-
-
-
-    });
-
-
-
-
-
-
-
-
-  } catch (error) {
-
-    console.error("楽ブレ生成エラー:", error);
-
-    setProgress(0, "生成に失敗しました。");
-
-    let errorMessage = error && error.message
-      ? error.message
-      : String(error || "不明なエラー");
-
-    if (/Load failed|Failed to fetch|NetworkError|fetch/i.test(errorMessage)) {
-      errorMessage =
-        "GAS Web APIとの通信に失敗しました。\n\n" +
-        "確認してください：\n" +
-        "・GASを最新バージョンでデプロイしているか\n" +
-        "・WebアプリのURLが現在のGASのURLか\n" +
-        "・Webアプリのアクセス権が「全員」になっているか\n" +
-        "・GASの実行履歴で doPost が実行されているか\n\n" +
-        "今回のHTMLはGASの files[] 仕様に合わせて送信しています。";
-    }
-
-    alert(
-      "書類の生成に失敗しました。\n\n" +
-      errorMessage
-    );
-
-  } finally {
-
-
-
-
-
-
-
-
-    updateGenerateState();
-
-
-
-
-
-
-
-
-  }
-
-
-
-
-
-
-
-
-});
-
-
-
-
-
-
-
-
-
-
-
-
-async function fileToBase64(file) {
-
-
-
-
-
-
-
-
-  return new Promise((resolve, reject) => {
-
-
-
-
-
-
-
-
-    const reader = new FileReader();
-
-
-
-
-
-
-
-
-    reader.onload = () => {
-
-
-
-
-
-
-
-
-      const result = String(reader.result);
-
-
-
-
-
-
-
-
-      const commaIndex = result.indexOf(",");
-
-
-
-
-
-
-
-
-      if (commaIndex === -1) {
-
-
-
-
-        reject(
-
-
-
-
-          new Error("PDFデータの読み込みに失敗しました。")
-
-
-
-
-        );
-
-
-
-
-        return;
-
-
-
-
-      }
-
-
-
-
-
-
-
-
-      resolve(
-
-
-
-
-        result.substring(commaIndex + 1)
-
-
-
-
-      );
-
-
-
-
-
-
-
-
-    };
-
-
-
-
-
-
-
-
-    reader.onerror = () => {
-
-
-
-
-      reject(
-
-
-
-
-        new Error("PDFファイルを読み込めませんでした。")
-
-
-
-
-      );
-
-
-
-
-    };
-
-
-
-
-
-
-
-
-    reader.readAsDataURL(file);
-
-
-
-
-
-
-
-
   });
 
+  progressRunning = false;
+  clearInterval(progressTimer);
+  setProgress(94, "GASから生成結果を受け取っています...");
 
+  const text = await response.text();
 
+  if (!response.ok) {
+    const preview = String(text || "")
+      .replace(/\s+/g, " ")
+      .slice(0, 300);
 
+    throw new Error(
+      `GAS APIへの通信に失敗しました（HTTP ${response.status}）。` +
+      (preview ? `\nレスポンス: ${preview}` : "")
+    );
+  }
 
+  try {
+    apiResult = JSON.parse(text);
+  } catch (parseError) {
+    console.error("GAS RAW RESPONSE:", text);
 
+    const preview = String(text || "")
+      .replace(/\s+/g, " ")
+      .slice(0, 300);
 
+    throw new Error(
+      "GAS APIからJSONではないレスポンスが返りました。" +
+      (preview ? `\nレスポンス: ${preview}` : "")
+    );
+  }
 
+  console.log("GAS API RESPONSE:", apiResult);
+
+  if (!apiResult || apiResult.success !== true) {
+    throw new Error(
+      apiResult && (apiResult.error || apiResult.message)
+        ? (apiResult.error || apiResult.message)
+        : "書類生成に失敗しました。GASの実行ログを確認してください。"
+    );
+  }
+
+  setProgress(100, "生成が完了しました。元データを編集できます。");
+
+  renderApiResult(apiResult);
+
+  result.classList.remove("hidden");
+  result.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+} catch (error) {
+  console.error("楽ブレ生成エラー:", error);
+
+  progressRunning = false;
+  if (typeof progressTimer !== "undefined") {
+    clearInterval(progressTimer);
+  }
+
+  setProgress(0, "生成に失敗しました。");
+
+  let errorMessage = error && error.message
+    ? error.message
+    : String(error || "不明なエラー");
+
+  if (/Load failed|Failed to fetch|NetworkError/i.test(errorMessage)) {
+    errorMessage =
+      "GAS Web APIとの通信に失敗しました。\n\n" +
+      "次の項目を確認してください。\n" +
+      "・GASのWebアプリが最新バージョンでデプロイされているか\n" +
+      "・GAS_WEB_APP_URLが正しいか\n" +
+      "・Webアプリのアクセス権が適切に設定されているか\n" +
+      "・ブラウザのNetworkタブとGASの実行ログにエラーがないか";
+  }
+
+  alert("書類の生成に失敗しました。\n\n" + errorMessage);
+
+} finally {
+  updateGenerateState();
 }
 
 
+/* PDFをBase64に変換する */
+async function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const dataUrl = String(reader.result || "");
+      const commaIndex = dataUrl.indexOf(",");
+
+      if (commaIndex === -1) {
+        reject(new Error("PDFデータの読み込みに失敗しました。"));
+        return;
+      }
+
+      resolve(dataUrl.substring(commaIndex + 1));
+    };
+
+    reader.onerror = () => {
+      reject(new Error("PDFファイルを読み込めませんでした。"));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
 
 
-
-
-
-
-
-
-
-
+/* 生成データのダウンロードURLを取得する */
 function getDataDownloadUrl(file) {
-  const sourceId = file && file.sourceFileId ? String(file.sourceFileId) : "";
-  if (!sourceId) return file && file.downloadUrl ? file.downloadUrl : "";
+  const sourceId = file && file.sourceFileId
+    ? String(file.sourceFileId)
+    : "";
+
+  if (!sourceId) {
+    return file && file.downloadUrl ? file.downloadUrl : "";
+  }
 
   const sourceType = String(file.sourceType || "");
-  if (sourceType.includes("スプレッドシート") || file.spreadsheetUrl) {
-    return `https://docs.google.com/spreadsheets/d/${encodeURIComponent(sourceId)}/export?format=xlsx`;
+
+  if (
+    sourceType.includes("スプレッドシート") ||
+    file.spreadsheetUrl
+  ) {
+    return (
+      "https://docs.google.com/spreadsheets/d/" +
+      encodeURIComponent(sourceId) +
+      "/export?format=xlsx"
+    );
   }
-  if (sourceType.includes("ドキュメント") || file.documentUrl) {
-    return `https://docs.google.com/document/d/${encodeURIComponent(sourceId)}/export?format=docx`;
+
+  if (
+    sourceType.includes("ドキュメント") ||
+    file.documentUrl
+  ) {
+    return (
+      "https://docs.google.com/document/d/" +
+      encodeURIComponent(sourceId) +
+      "/export?format=docx"
+    );
   }
+
   return file.downloadUrl || "";
 }
 
+
+/* GASから返された生成結果を表示する */
 function renderApiResult(apiResult) {
   const files = Array.isArray(apiResult.files)
     ? apiResult.files
-    : Array.isArray(apiResult.results) ? apiResult.results : [];
+    : Array.isArray(apiResult.results)
+      ? apiResult.results
+      : [];
 
   if (files.length === 0) {
     resultGrid.innerHTML = `
       <div class="result-card" style="grid-column:1/-1">
         <div class="result-type">データ生成完了</div>
-        <div class="result-size">生成されたデータの保存が完了しました。</div>
+        <div class="result-size">
+          生成されたデータがありません。GASのレスポンスを確認してください。
+        </div>
       </div>`;
+
     $("#zipBtn").classList.add("hidden");
     return;
   }
 
   resultGrid.innerHTML = files.map(file => {
     const downloadUrl = getDataDownloadUrl(file);
-    const sourceUrl = file.spreadsheetUrl || file.documentUrl || file.sourceUrl || file.editUrl || "";
+
+    const sourceUrl =
+      file.spreadsheetUrl ||
+      file.documentUrl ||
+      file.sourceUrl ||
+      file.editUrl ||
+      "";
+
     const editLabel = file.spreadsheetUrl
       ? "Googleスプレッドシートで編集 ↗"
       : file.documentUrl
@@ -5751,131 +5511,102 @@ function renderApiResult(apiResult) {
 
     return `
       <div class="result-card">
-        <div class="result-type">${escapeHtml(file.type || "生成データ")}</div>
-        <div class="result-size">${escapeHtml(file.name || "")}</div>
-        <div class="result-source-note">
-          ${file.spreadsheetUrl ? "Googleスプレッドシート" :
-            file.documentUrl ? "Googleドキュメント" : "生成データ"}
+        <div class="result-type">
+          ${escapeHtml(file.type || "生成データ")}
         </div>
-        ${sourceUrl ? `
-          <button type="button" class="edit-source-btn"
-            data-source-url="${escapeHtml(sourceUrl)}">${editLabel}</button>` : ""}
-        ${downloadUrl ? `` : ""}
-      </div>`;
+
+        <div class="result-size">
+          ${escapeHtml(file.name || "")}
+        </div>
+
+        <div class="result-source-note">
+          ${
+            file.spreadsheetUrl
+              ? "Googleスプレッドシート"
+              : file.documentUrl
+                ? "Googleドキュメント"
+                : "生成データ"
+          }
+        </div>
+
+        ${
+          sourceUrl
+            ? `
+              <button
+                type="button"
+                class="edit-source-btn"
+                data-source-url="${escapeHtml(sourceUrl)}"
+              >${editLabel}</button>
+            `
+            : ""
+        }
+
+        ${
+          downloadUrl
+            ? `
+              <button
+                type="button"
+                class="edit-source-btn"
+                data-download-url="${escapeHtml(downloadUrl)}"
+              >データをダウンロード ↗</button>
+            `
+            : ""
+        }
+      </div>
+    `;
   }).join("");
 
   resultGrid.querySelectorAll("[data-source-url]").forEach(button => {
     button.addEventListener("click", () => {
       const url = button.getAttribute("data-source-url");
-      if (url) window.open(url, "_blank", "noopener,noreferrer");
+      if (url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
     });
   });
 
   resultGrid.querySelectorAll("[data-download-url]").forEach(button => {
     button.addEventListener("click", () => {
       const url = button.getAttribute("data-download-url");
-      if (url) window.open(url, "_blank", "noopener,noreferrer");
+      if (url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
     });
   });
 
   $("#zipBtn").classList.add("hidden");
 }
 
+
+/* ZIP機能は現在未実装 */
 $("#zipBtn").addEventListener("click", () => {});
 
 
+/* 使い方モーダル */
+$("#guideBtn").addEventListener("click", () => {
+  $("#guideModal").classList.remove("hidden");
+});
 
-
-
-
-
-
-/* -----------------------------
-
-
-
-
-
-
-
-
-   使い方モーダル
-
-
-
-
-
-
-
-
------------------------------ */
-
-
-
-
-
-
-
-
-$("#guideBtn").addEventListener("click", () => $("#guideModal").classList.remove("hidden"));
-
-
-
-
-
-
-
-
-$("#closeModal").addEventListener("click", () => $("#guideModal").classList.add("hidden"));
-
-
-
-
-
-
-
+$("#closeModal").addEventListener("click", () => {
+  $("#guideModal").classList.add("hidden");
+});
 
 $("#guideModal").addEventListener("click", e => {
-
-
-
-
-
-
-
-
-  if (e.target.id === "guideModal") $("#guideModal").classList.add("hidden");
-
-
-
-
-
-
-
-
+  if (e.target.id === "guideModal") {
+    $("#guideModal").classList.add("hidden");
+  }
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* 利用規約モーダル */
 const footerTermsLink = $("#footerTermsLink");
+
 if (footerTermsLink) {
   footerTermsLink.addEventListener("click", e => {
     e.preventDefault();
+
     const modal = $("#termsModal");
+
     if (modal) {
       modal.classList.remove("hidden");
       modal.setAttribute("aria-hidden", "false");
@@ -5884,9 +5615,11 @@ if (footerTermsLink) {
 }
 
 const closeTermsModal = $("#closeTermsModal");
+
 if (closeTermsModal) {
   closeTermsModal.addEventListener("click", () => {
     const modal = $("#termsModal");
+
     if (modal) {
       modal.classList.add("hidden");
       modal.setAttribute("aria-hidden", "true");
@@ -5895,6 +5628,7 @@ if (closeTermsModal) {
 }
 
 const termsModal = $("#termsModal");
+
 if (termsModal) {
   termsModal.addEventListener("click", e => {
     if (e.target === termsModal) {
@@ -5904,20 +5638,16 @@ if (termsModal) {
   });
 }
 
-$("#privacyLink").addEventListener("click", e => {
-  e.preventDefault();
-  const modal = $("#privacyModal");
-  if (modal) {
-    modal.classList.remove("hidden");
-    modal.setAttribute("aria-hidden", "false");
-  }
-});
 
-const footerPrivacyLink = $("#footerPrivacyLink");
-if (footerPrivacyLink) {
-  footerPrivacyLink.addEventListener("click", e => {
+/* プライバシーポリシーモーダル */
+const privacyLink = $("#privacyLink");
+
+if (privacyLink) {
+  privacyLink.addEventListener("click", e => {
     e.preventDefault();
+
     const modal = $("#privacyModal");
+
     if (modal) {
       modal.classList.remove("hidden");
       modal.setAttribute("aria-hidden", "false");
@@ -5925,235 +5655,82 @@ if (footerPrivacyLink) {
   });
 }
 
+const footerPrivacyLink = $("#footerPrivacyLink");
 
-$("#closePrivacyModal").addEventListener("click", () => {
-  const modal = $("#privacyModal");
-  if (modal) {
-    modal.classList.add("hidden");
-    modal.setAttribute("aria-hidden", "true");
-  }
-});
+if (footerPrivacyLink) {
+  footerPrivacyLink.addEventListener("click", e => {
+    e.preventDefault();
 
-
-$("#privacyModal").addEventListener("click", e => {
-  if (e.target.id === "privacyModal") {
     const modal = $("#privacyModal");
-    modal.classList.add("hidden");
-    modal.setAttribute("aria-hidden", "true");
-  }
-});
 
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.setAttribute("aria-hidden", "false");
+    }
+  });
+}
 
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") {
+const closePrivacyModal = $("#closePrivacyModal");
+
+if (closePrivacyModal) {
+  closePrivacyModal.addEventListener("click", () => {
     const modal = $("#privacyModal");
-    if (modal && !modal.classList.contains("hidden")) {
+
+    if (modal) {
       modal.classList.add("hidden");
       modal.setAttribute("aria-hidden", "true");
     }
+  });
+}
+
+const privacyModal = $("#privacyModal");
+
+if (privacyModal) {
+  privacyModal.addEventListener("click", e => {
+    if (e.target === privacyModal) {
+      privacyModal.classList.add("hidden");
+      privacyModal.setAttribute("aria-hidden", "true");
+    }
+  });
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    [$("#privacyModal"), $("#termsModal"), $("#guideModal")].forEach(modal => {
+      if (modal && !modal.classList.contains("hidden")) {
+        modal.classList.add("hidden");
+        modal.setAttribute("aria-hidden", "true");
+      }
+    });
   }
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* 指定時間待機 */
 function wait(ms) {
-
-
-
-
-
-
-
-
   return new Promise(resolve => setTimeout(resolve, ms));
-
-
-
-
-
-
-
-
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/* HTMLエスケープ */
 function escapeHtml(value) {
-
-
-
-
-
-
-
-
   return String(value).replace(/[&<>"']/g, char => ({
-
-
-
-
-
-
-
-
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-
-
-
-
-
-
-
-
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
   }[char]));
-
-
-
-
-
-
-
-
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// 外部のapp.jsからも参照できるように公開
-
-
-
-
-
-
-
-
+/* 外部のapp.jsから参照できるように公開 */
 window.RakuBureApp = {
-
-
-
-
-
-
-
-
   getStorageMode: () => "data",
-
-
-
-
-
-
-
-
   getSelectedDocuments,
-
-
-
-
-
-
-
-
   getFiles: () => state.files.slice(),
   getFile: () => state.files[0] || null
-
-
-
-
-
-
-
-
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 updateGenerateState();
-
-
-
-
-
-
-
-
-})();
-
-
-
-
-
-
-
-
-</script>
-
-
-
-
-
-
-
-
-</body>
-
-
-
-
-
-
-
-
-</html>
+```
