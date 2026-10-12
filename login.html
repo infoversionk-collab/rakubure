@@ -1,12 +1,12 @@
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="楽ブレ - Googleアカウントでログイン">
   <title>ログイン｜楽ブレ</title>
 
+  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -14,10 +14,13 @@
 
     :root {
       --primary: #111827;
+      --text: #111827;
       --muted: #6b7280;
       --border: #e5e7eb;
-      --error: #dc2626;
+      --background: #f8fafc;
+      --card: #ffffff;
       --success: #15803d;
+      --error: #dc2626;
     }
 
     body {
@@ -27,63 +30,82 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f8fafc;
-      color: var(--primary);
+      background:
+        radial-gradient(circle at 50% 0%, #eef2ff 0%, transparent 38%),
+        var(--background);
+      color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "Yu Gothic", Meiryo, sans-serif;
+        "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
     }
 
-    .card {
+    .login-card {
       width: 100%;
       max-width: 560px;
-      padding: 42px 30px 32px;
+      padding: 42px 32px 32px;
       text-align: center;
-      background: #fff;
-      border: 1px solid var(--border);
+      background: var(--card);
+      border: 1px solid rgba(229, 231, 235, 0.9);
       border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, .07);
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
     }
 
     .logo {
       width: 80px;
       height: 80px;
       margin: 0 auto 24px;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       border-radius: 24px;
       background: var(--primary);
       color: #fff;
       font-size: 40px;
       font-weight: 900;
+      letter-spacing: -1px;
     }
 
-    h1 { margin: 0; font-size: 30px; }
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.4;
+      letter-spacing: -0.5px;
+    }
+
     .lead {
-      margin: 20px 0 32px;
+      margin: 18px 0 32px;
       color: var(--muted);
+      font-size: 15px;
       line-height: 1.9;
     }
 
     .google-login {
       min-height: 48px;
       display: flex;
+      align-items: center;
       justify-content: center;
     }
 
-    #status {
-      margin-top: 20px;
+    .status {
+      min-height: 24px;
+      margin-top: 18px;
       color: var(--muted);
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      line-height: 1.8;
       font-size: 14px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
     }
 
-    #status.error { color: var(--error); }
-    #status.success { color: var(--success); }
+    .status.error { color: var(--error); }
+    .status.success { color: var(--success); }
 
-    #loading { display: none; margin-top: 12px; color: var(--muted); }
-    #loading.show { display: block; }
+    .loading {
+      display: none;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .loading.show { display: block; }
 
     .divider {
       display: flex;
@@ -91,34 +113,47 @@
       gap: 12px;
       margin: 34px 0 20px;
       color: #9ca3af;
+      font-size: 13px;
     }
 
-    .divider::before, .divider::after {
+    .divider::before,
+    .divider::after {
       content: "";
       height: 1px;
       flex: 1;
       background: var(--border);
     }
 
-    .notice { color: var(--muted); font-size: 13px; line-height: 1.9; }
-    footer {
+    .notice {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .footer {
       margin-top: 30px;
       padding-top: 20px;
       border-top: 1px solid var(--border);
       color: #9ca3af;
       font-size: 12px;
+      line-height: 1.7;
     }
 
     @media (max-width: 480px) {
       body { padding: 14px; }
-      .card { padding: 32px 18px; }
+      .login-card {
+        padding: 34px 20px 26px;
+        border-radius: 20px;
+      }
       h1 { font-size: 25px; }
+      .lead { font-size: 14px; }
     }
   </style>
 </head>
 
 <body>
-  <main class="card">
+  <main class="login-card">
     <div class="logo" aria-label="楽ブレ">楽</div>
 
     <h1>楽ブレへようこそ</h1>
@@ -128,9 +163,10 @@
       履歴書・職務経歴書などの作成をはじめましょう。
     </p>
 
+    <!-- Google OAuth Client ID -->
     <div
       id="g_id_onload"
-      data-client_id="490441638610-hb6vqjd0o1a608n8glubko8kta5el407.apps.googleusercontent.com"
+      data-client_id="746944618768-ubsnk6ueieo4s0cjlbklehjf85evg8ql.apps.googleusercontent.com"
       data-callback="handleGoogleCredential"
       data-auto_prompt="false">
     </div>
@@ -143,146 +179,165 @@
         data-theme="outline"
         data-text="signin_with"
         data-shape="rectangular"
-        data-logo_alignment="left">
+        data-logo_alignment="left"
+        data-width="320">
       </div>
     </div>
 
-    <div id="loading">Google認証を確認しています…</div>
-    <div id="status" role="status" aria-live="polite"></div>
+    <div id="loading" class="loading">Google認証を確認しています…</div>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
 
     <div class="divider">ご利用について</div>
 
     <p class="notice">
       ログインにはGoogleアカウントを使用します。<br>
-      GAS側で認証が確認された場合のみ、本体ページへ移動します。
+      認証が確認された場合のみ、楽ブレ本体ページへ移動します。
     </p>
 
-    <footer>© 2026 Version-K / 楽ブレ</footer>
+    <div class="footer">© 2026 Version-K / 楽ブレ</div>
   </main>
 
   <script>
     "use strict";
 
-    const CONFIG = {
-      CLIENT_ID:
+    const RAKUBURE_LOGIN_CONFIG = {
+      GOOGLE_CLIENT_ID:
         "490441638610-hb6vqjd0o1a608n8glubko8kta5el407.apps.googleusercontent.com",
 
-      GAS_URL:
+      GAS_WEB_APP_URL:
         "https://script.google.com/macros/s/AKfycbybptovZ67BMtkDaC7tRBLHFoQS9DXbr43oeEiSBmOfsXBTK3bwA800baKvpOMOo0yn/exec",
 
       APP_URL: "./index.html"
     };
 
-    function setStatus(message, type = "") {
-      const el = document.getElementById("status");
-      el.textContent = message;
-      el.className = type;
-    }
-
-    function setLoading(loading) {
-      document.getElementById("loading").classList.toggle("show", loading);
-    }
-
+    /**
+     * Google Identity ServicesからIDトークンを受け取り、
+     * GAS側で認証確認を行います。
+     *
+     * GASの doPost(e) には action === "auth" の分岐が必要です。
+     * ブラウザからGASへのfetchはCORS等で失敗する可能性があります。
+     * 認証に失敗した場合は本体へ移動しません。
+     */
     async function handleGoogleCredential(response) {
       if (!response || !response.credential) {
-        setStatus("Google認証情報を取得できませんでした。再度お試しください。", "error");
+        showStatus(
+          "Googleログイン情報を取得できませんでした。もう一度お試しください。",
+          "error"
+        );
         return;
       }
 
       setLoading(true);
-      setStatus("Googleアカウントを確認しています…");
+      showStatus("Googleアカウントを確認しています…");
 
       sessionStorage.removeItem("RAKUBURE_GOOGLE_CREDENTIAL");
       sessionStorage.removeItem("RAKUBURE_GOOGLE_EMAIL");
 
       try {
-        /*
-         * GAS側に action === "auth" の処理が必要です。
-         * GAS側でGoogle IDトークンの署名・audience・有効期限・
-         * 許可メールアドレスを検証してください。
-         */
-        const responseFromGas = await fetch(CONFIG.GAS_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "text/plain;charset=UTF-8"
-          },
-          body: JSON.stringify({
-            action: "auth",
-            googleCredential: response.credential
-          }),
-          redirect: "follow",
-          cache: "no-store"
-        });
+        const gasResponse = await fetch(
+          RAKUBURE_LOGIN_CONFIG.GAS_WEB_APP_URL,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain;charset=UTF-8"
+            },
+            body: JSON.stringify({
+              action: "auth",
+              googleCredential: response.credential
+            }),
+            redirect: "follow",
+            cache: "no-store"
+          }
+        );
 
-        if (!responseFromGas.ok) {
+        if (!gasResponse.ok) {
           throw new Error(
-            "GASからHTTP " + responseFromGas.status +
+            "GASからHTTP " + gasResponse.status +
             " が返されました。デプロイ設定を確認してください。"
           );
         }
 
-        const result = await responseFromGas.json();
+        const result = await gasResponse.json();
 
         if (
+          !result ||
           result.success !== true ||
           result.authenticated !== true
         ) {
           throw new Error(
-            result.message ||
-            result.error ||
-            "このGoogleアカウントは利用できないか、認証に失敗しました。"
+            result && (result.message || result.error)
+              ? (result.message || result.error)
+              : "このGoogleアカウントは利用できないか、認証に失敗しました。"
           );
         }
 
-        /*
-         * 認証確認が成功した場合のみ保存します。
-         * 本体側でもトークンをGASに送信し、毎回検証してください。
-         */
+        // 本体側でもGASがIDトークンを再検証することが必須
         sessionStorage.setItem(
           "RAKUBURE_GOOGLE_CREDENTIAL",
           response.credential
         );
-
         sessionStorage.setItem(
           "RAKUBURE_GOOGLE_EMAIL",
           String(result.email || "")
         );
 
-        setStatus("認証に成功しました。本体ページへ移動します。", "success");
+        showStatus(
+          "認証に成功しました。楽ブレを起動します。",
+          "success"
+        );
 
-        window.location.replace(CONFIG.APP_URL);
+        window.setTimeout(() => {
+          window.location.replace(RAKUBURE_LOGIN_CONFIG.APP_URL);
+        }, 400);
 
       } catch (error) {
-        console.error("Rakubure authentication error:", error);
+        console.error("Rakubure login error:", error);
 
         sessionStorage.removeItem("RAKUBURE_GOOGLE_CREDENTIAL");
         sessionStorage.removeItem("RAKUBURE_GOOGLE_EMAIL");
 
-        let detail = error?.message || "不明なエラー";
+        let detail = error && error.message
+          ? error.message
+          : "不明なエラー";
 
         if (
           error instanceof TypeError ||
           /Failed to fetch|Load failed/i.test(detail)
         ) {
           detail =
-            "GASとの通信に失敗しました。\n" +
-            "GASのWebアプリ公開設定、デプロイURL、ブラウザの通信制限を確認してください。";
+            "GASとの通信に失敗しました。Webアプリのデプロイ設定、" +
+            "URL、ブラウザの通信制限を確認してください。";
         }
 
-        setStatus(
+        showStatus(
           "ログインを完了できませんでした。\n" + detail,
           "error"
         );
-
       } finally {
         setLoading(false);
       }
     }
 
+    function showStatus(message, type = "") {
+      const status = document.getElementById("status");
+      status.textContent = message;
+      status.className = "status";
+      if (type) status.classList.add(type);
+    }
+
+    function setLoading(isLoading) {
+      document.getElementById("loading")
+        .classList.toggle("show", isLoading);
+    }
+
     window.addEventListener("load", () => {
+      if (!RAKUBURE_LOGIN_CONFIG.GOOGLE_CLIENT_ID) {
+        showStatus("Google Client IDが設定されていません。", "error");
+      }
+
       if (!window.google || !window.google.accounts) {
-        setStatus(
-          "Googleログインを読み込めませんでした。ページを再読み込みしてください。",
+        showStatus(
+          "Googleログインを読み込めませんでした。ネットワークを確認して再読み込みしてください。",
           "error"
         );
       }
@@ -290,4 +345,3 @@
   </script>
 </body>
 </html>
-```
