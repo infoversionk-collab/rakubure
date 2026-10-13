@@ -2196,36 +2196,69 @@
 
 
 
-/* 楽ブレの新しいロゴ */
+
+/* ヘッダー全体 */
+.header {
+  min-height: 100px;
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* 楽ブレのロゴ */
 .logo {
   display: inline-flex;
   align-items: center;
-  flex: 0 0 280px;
-  width: 280px;
+  flex: 0 0 150px;
+  width: 150px;
   flex-shrink: 0;
   text-decoration: none;
 }
 
+/* ロゴ画像 */
 .logo-image {
   display: block;
-  width: 280px;
-  height: 110px;
+  width: 150px;
+  height: 76px;
   object-fit: contain;
   object-position: left center;
 }
 
+/* タイトル部分 */
+.header-title {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 使い方ボタン */
+.guide {
+  flex-shrink: 0;
+}
+
 /* スマートフォン対応 */
 @media (max-width: 600px) {
+  .header {
+    min-height: 76px;
+    padding: 8px 16px;
+    gap: 12px;
+  }
+
   .logo {
-    flex: 0 0 140px;
-    width: 140px;
+    flex: 0 0 90px;
+    width: 90px;
   }
 
   .logo-image {
-    width: 140px;
-    height: 70px;
+    width: 90px;
+    height: 54px;
+  }
+
+  .header-title {
+    flex: 1;
   }
 }
+
 
 
 
