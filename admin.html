@@ -1,3 +1,11 @@
+楽ブレ 管理画面（admin.html）修正版コード
+========================================
+
+使い方：下のコード全体をコピーして、GitHubの admin.html の内容と置き換えてください。
+※ この文書の説明部分はHTMLコードに含めず、<!doctype html> から </html> までをコピーしてください。
+
+----- ここからHTMLコード -----
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -31,7 +39,7 @@ button{font:inherit;border:0;border-radius:9px;padding:10px 13px;font-weight:700
 <main>
 <section id="loginView" class="login-card"><div class="logo">楽</div><h1>管理者ログイン</h1><p>ユーザーの利用申請・承認・利用停止を管理します。<br>管理者として登録されたGoogleアカウントのみ利用できます。</p><button id="signInBtn" class="primary">Googleでログイン</button><div id="loginMessage" class="message" style="margin-top:16px;text-align:left"></div></section>
 <section id="adminView" class="hidden">
-<div class="notice"><b>初期設定が必要です。</b><br>下のコードにある <code>firebaseConfig</code> と <code>ADMIN_UIDS</code> を設定してください。さらにFirestoreセキュリティルールで管理者UIDのみ読み書きを許可してください。HTML内のチェックだけでは安全ではありません。</div>
+<div class="notice"><b>管理者専用画面</b><br>管理者の許可リストに登録されたアカウントのみ利用できます。データ保護のため、Firestoreのセキュリティルールでも管理者以外の読み書きを制限してください。</div>
 <div id="message" class="message"></div><div class="hero"><div><h1>ユーザー管理</h1><div class="sub">Firestore の <code>users/{UID}</code> を管理します。</div></div><button id="refreshBtn" class="secondary">一覧を更新</button></div>
 <div class="stats"><div class="stat"><div class="stat-label">全ユーザー</div><div class="stat-value" id="countAll">—</div></div><div class="stat"><div class="stat-label">承認待ち</div><div class="stat-value" id="countPending">—</div></div><div class="stat"><div class="stat-label">利用中</div><div class="stat-value" id="countApproved">—</div></div><div class="stat"><div class="stat-label">停止中</div><div class="stat-value" id="countSuspended">—</div></div></div>
 <div class="panel"><div class="toolbar"><input id="searchInput" type="search" placeholder="メールアドレス・UIDで検索"><select id="statusFilter"><option value="all">すべてのステータス</option><option value="pending">承認待ち</option><option value="approved">利用中</option><option value="suspended">停止中</option></select><span id="resultCount" class="sub"></span></div>
@@ -55,12 +63,21 @@ const firebaseConfig = {
 };
 
 /* 管理者本人のFirebase Authentication UIDを設定。メールアドレスではなくUIDを使う */
-const ADMIN_UIDS=["brXaOJ96fBdPUtn5viOIaHjndbl1"];
+const ADMIN_UIDS = ["brXaOJ96fBdPUtn5viOIaHjndbl1"];
 const $=id=>document.getElementById(id);
 let auth,db,users=[];
 function msg(el,text,type="info"){el.textContent=text;el.className="message show "+type}
 function clearMsg(el){el.textContent="";el.className="message"}
-function configured(){return firebaseConfig.apiKey!=="YOUR_FIREBASE_API_KEY"&&firebaseConfig.messagingSenderId!=="YOUR_MESSAGING_SENDER_ID"&&firebaseConfig.appId!=="YOUR_FIREBASE_APP_ID"&&ADMIN_UIDS.length&&ADMIN_UIDS.every(x=>x&&!x.startsWith("REPLACE_"))}
+function configured() {
+  const configComplete = Boolean(firebaseConfig.apiKey) &&
+    Boolean(firebaseConfig.authDomain) &&
+    Boolean(firebaseConfig.projectId) &&
+    Boolean(firebaseConfig.appId) &&
+    !firebaseConfig.apiKey.startsWith("YOUR_");
+  const adminListComplete = ADMIN_UIDS.length > 0 &&
+    ADMIN_UIDS.every(uid => uid && !uid.startsWith("REPLACE_"));
+  return configComplete && adminListComplete;
+}
 function statusOf(u){if(u.status==="suspended"||u.status==="SUSPENDED")return "suspended";if(u.approved===true&&u.status==="approved")return "approved";return "pending"}
 function dateOf(v){if(!v)return "—";let d=typeof v.toDate==="function"?v.toDate():new Date(v);return isNaN(d.getTime())?"—":d.toLocaleString("ja-JP")}
 function el(tag,cls,text){let e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
@@ -77,8 +94,27 @@ list.forEach(u=>{let s=statusOf(u),r=el("tr"),uc=el("td"),uid=el("td"),sc=el("td
 if(s==="pending"){actions.append(button("承認","approve",()=>setStatus(u.uid,true,"approved")));actions.append(button("停止","suspend",()=>setStatus(u.uid,false,"suspended")))}else if(s==="approved"){actions.append(button("利用停止","suspend",()=>setStatus(u.uid,false,"suspended")))}else{actions.append(button("利用再開","approve",()=>setStatus(u.uid,true,"approved")))}
 ac.append(actions);r.append(uc,uid,sc,dc,ac);$("usersBody").append(r)})}
 function button(text,cls,fn){let b=el("button",cls,text);b.type="button";b.addEventListener("click",fn);return b}
-async function setStatus(uid,approved,status){if(!confirm(uid+" の利用状態を「"+(status==="approved"?"承認":"停止")+"」に変更しますか？"))return;try{let data={approved,status,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};if(approved)data.approvedAt=firebase.firestore.FieldValue.serverTimestamp();await db.collection("users").doc(uid).set(data,{merge:true});msg($("message"),"利用状態を更新しました。","ok");await loadUsers()}catch(e){msg($("message"),"更新できません。Firestoreルールで管理者の書き込みが許可されているか確認してください。\n"+e.message,"error")}}
+async function setStatus(uid, approved, status) {
+  if (!confirm(uid + " の利用状態を「" + (status === "approved" ? "承認" : "停止") + "」に変更しますか？")) return;
+  try {
+    const data = {
+      approved,
+      status,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+    if (approved) data.approvedAt = firebase.firestore.FieldValue.serverTimestamp();
+    // 既存のユーザードキュメントのみを更新します。
+    await db.collection("users").doc(uid).update(data);
+    msg($("message"), "利用状態を更新しました。", "ok");
+    await loadUsers();
+  } catch (e) {
+    msg($("message"), "更新できません。Firestoreのセキュリティルールと対象ユーザーを確認してください。\n" + e.message, "error");
+  }
+}
 $("signInBtn").addEventListener("click",login);$("refreshBtn").addEventListener("click",loadUsers);$("searchInput").addEventListener("input",render);$("statusFilter").addEventListener("change",render);$("signOutBtn").addEventListener("click",async()=>{await auth.signOut();loginView()});
 try{firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.firestore();auth.onAuthStateChanged(onSignedIn)}catch(e){loginView();msg($("loginMessage"),"Firebase初期化エラー: "+e.message,"error")}
 </script>
 </body></html>
+
+
+----- ここまでHTMLコード -----
