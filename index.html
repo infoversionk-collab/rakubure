@@ -2195,29 +2195,35 @@
 
 
 
+
 /* 楽ブレの新しいロゴ */
 .logo {
   display: inline-flex;
   align-items: center;
+  flex: 0 0 280px;
+  width: 280px;
   flex-shrink: 0;
+  text-decoration: none;
 }
-
-
 
 .logo-image {
   display: block;
-  width: 200px;
-  height: 70px;
+  width: 280px;
+  height: 110px;
   object-fit: contain;
   object-position: left center;
 }
 
-
-
+/* スマートフォン対応 */
 @media (max-width: 600px) {
+  .logo {
+    flex: 0 0 140px;
+    width: 140px;
+  }
+
   .logo-image {
-    width: 120px;
-    height: 56px;
+    width: 140px;
+    height: 70px;
   }
 }
 
