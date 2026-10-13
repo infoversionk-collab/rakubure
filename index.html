@@ -2197,67 +2197,92 @@
 
 
 
+
 /* ヘッダー全体 */
 .header {
-  min-height: 100px;
-  padding: 12px 32px;
   display: flex;
   align-items: center;
   gap: 24px;
+  min-height: 96px;
+  padding: 12px 32px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
-/* 楽ブレのロゴ */
+/* 左側のロゴ */
 .logo {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  flex: 0 0 150px;
-  width: 150px;
-  flex-shrink: 0;
+  flex: 0 0 120px;
+  width: 120px;
+  min-width: 0;
   text-decoration: none;
 }
 
 /* ロゴ画像 */
 .logo-image {
   display: block;
-  width: 150px;
-  height: 76px;
+  width: 120px;
+  height: 72px;
   object-fit: contain;
   object-position: left center;
 }
 
-/* タイトル部分 */
+/* タイトルと説明文 */
 .header-title {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
+}
+
+.header-title strong,
+.header-title span {
+  display: block;
+}
+
+.header-title strong {
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.header-title span {
+  margin-top: 3px;
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 /* 使い方ボタン */
 .guide {
   flex-shrink: 0;
+  margin-left: auto;
 }
 
-/* スマートフォン対応 */
+/* スマートフォン */
 @media (max-width: 600px) {
   .header {
-    min-height: 76px;
-    padding: 8px 16px;
     gap: 12px;
+    min-height: 76px;
+    padding: 8px 14px;
   }
 
   .logo {
-    flex: 0 0 90px;
-    width: 90px;
+    flex: 0 0 76px;
+    width: 76px;
   }
 
   .logo-image {
-    width: 90px;
-    height: 54px;
+    width: 76px;
+    height: 52px;
   }
 
-  .header-title {
-    flex: 1;
+  .header-title strong {
+    font-size: 13px;
+  }
+
+  .header-title span {
+    font-size: 10px;
   }
 }
+
 
 
 
