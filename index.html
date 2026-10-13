@@ -2198,6 +2198,7 @@
 
 
 
+
 /* ヘッダー全体 */
 .header {
   display: flex;
@@ -2250,10 +2251,64 @@
   line-height: 1.5;
 }
 
+/* 右側のボタン配置 */
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ログイン・ログアウトボタン共通 */
+.login-button,
+.logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 20px;
+  border: 1px solid #1769ff;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+/* ログインボタン */
+.login-button {
+  color: #fff;
+  background: #1769ff;
+}
+
+.login-button:hover {
+  background: #0757df;
+}
+
+/* ログアウトボタン */
+.logout-button {
+  color: #1769ff;
+  background: #fff;
+}
+
+.logout-button:hover {
+  background: #edf4ff;
+}
+
+/* 非表示状態を維持 */
+.login-button[hidden],
+.logout-button[hidden] {
+  display: none;
+}
+
 /* 使い方ボタン */
 .guide {
   flex-shrink: 0;
-  margin-left: auto;
+  margin-left: 0;
 }
 
 /* スマートフォン */
@@ -2274,12 +2329,27 @@
     height: 52px;
   }
 
+  .header-title {
+    flex: 1 1 auto;
+  }
+
   .header-title strong {
     font-size: 13px;
   }
 
   .header-title span {
     font-size: 10px;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .login-button,
+  .logout-button {
+    min-height: 38px;
+    padding: 0 10px;
+    font-size: 12px;
   }
 }
 
