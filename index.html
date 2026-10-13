@@ -5263,15 +5263,24 @@ const googleCredential = sessionStorage.getItem(
 
 
 if (!googleCredential) {
-  alert(
+  const loginUrl =
+    "https://infoversionk-collab.github.io/rakubure/login.html";
+
+  const goToLogin = confirm(
     "楽ブレをご利用いただきありがとうございます。\n\n" +
     "書類を生成するには、アカウント登録とログインが必要です。\n\n" +
-    "初めてご利用の方はアカウント登録をお願いいたします。\n" +
-    "登録済みの方は、ログイン画面から再度ログインしてください。"
+    "初めてご利用の方は、アカウント登録をお願いいたします。\n" +
+    "登録済みの方は「OK」を押すとログイン画面へ移動できます。\n\n" +
+    "※アカウント登録後、利用承認が必要な場合があります。"
   );
 
-  progress.classList.add("hidden");
-  generateBtn.disabled = false;
+  if (goToLogin) {
+    window.location.href = loginUrl;
+  } else {
+    progress.classList.add("hidden");
+    generateBtn.disabled = false;
+  }
+
   return;
 }
 
