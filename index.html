@@ -5116,17 +5116,7 @@ generateBtn.addEventListener("click", async () => {
 
 
 
-
-
-
-
-
   if (generateBtn.disabled || !state.files.length) return;
-
-
-
-
-
 
 
 
@@ -5134,25 +5124,13 @@ generateBtn.addEventListener("click", async () => {
 
 
 
-
-
-
-
-
   if (documents.length === 0) {
-
-
 
 
     alert("作成する書類を1つ以上選択してください。");
 
 
-
-
     return;
-
-
-
 
   }
 
@@ -5283,11 +5261,20 @@ const googleCredential = sessionStorage.getItem(
   "RAKUBURE_GOOGLE_CREDENTIAL"
 );
 
+
 if (!googleCredential) {
-  throw new Error(
-    "Googleの認証情報がありません。ログイン画面から再ログインしてください。"
+  alert(
+    "楽ブレをご利用いただきありがとうございます。\n\n" +
+    "書類を生成するには、アカウント登録とログインが必要です。\n\n" +
+    "初めてご利用の方はアカウント登録をお願いいたします。\n" +
+    "登録済みの方は、ログイン画面から再度ログインしてください。"
   );
+
+  progress.classList.add("hidden");
+  generateBtn.disabled = false;
+  return;
 }
+
 
 const requestBody = {
   googleCredential: googleCredential,
