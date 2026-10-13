@@ -2372,42 +2372,7 @@
 
 
 
-
-<script>
-(() => {
-  const loginButton = document.getElementById("loginButton");
-  const logoutButton = document.getElementById("logoutButton");
-
-  if (!loginButton || !logoutButton) {
-    console.error("ログイン・ログアウトボタンが見つかりません。");
-    return;
-  }
-
-  const CREDENTIAL_KEY = "RAKUBURE_GOOGLE_CREDENTIAL";
-
-  function updateLoginDisplay() {
-    const credential =
-      sessionStorage.getItem(CREDENTIAL_KEY) || "";
-
-    const loggedIn = Boolean(credential);
-
-    loginButton.hidden = loggedIn;
-    logoutButton.hidden = !loggedIn;
-  }
-
-  logoutButton.addEventListener("click", () => {
-    sessionStorage.removeItem(CREDENTIAL_KEY);
-    sessionStorage.removeItem("RAKUBURE_USER_EMAIL");
-
-    window.location.href = "./login.html";
-  });
-
-  updateLoginDisplay();
-})();
-</script>
-
-
-
+  
 
 <body>
 
@@ -5870,5 +5835,40 @@ updateGenerateState();
 
 })();
 </script>
+
+  
+<script>
+(() => {
+  const loginButton = document.getElementById("loginButton");
+  const logoutButton = document.getElementById("logoutButton");
+
+  if (!loginButton || !logoutButton) {
+    console.error("ログイン・ログアウトボタンが見つかりません。");
+    return;
+  }
+
+  const CREDENTIAL_KEY = "RAKUBURE_GOOGLE_CREDENTIAL";
+
+  function updateLoginDisplay() {
+    const credential =
+      sessionStorage.getItem(CREDENTIAL_KEY) || "";
+
+    const loggedIn = Boolean(credential);
+
+    loginButton.hidden = loggedIn;
+    logoutButton.hidden = !loggedIn;
+  }
+
+  logoutButton.addEventListener("click", () => {
+    sessionStorage.removeItem(CREDENTIAL_KEY);
+    sessionStorage.removeItem("RAKUBURE_USER_EMAIL");
+
+    window.location.href = "./login.html";
+  });
+
+  updateLoginDisplay();
+})();
+</script>
+
 </body>
 </html>
