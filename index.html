@@ -3676,12 +3676,7 @@
 
 
 
-// GASのWebApi.gsに設定したAPIキーと同じ値を入力
-
-
-
-
-const API_TOKEN = "Rakubure_API_2026_AIzaSyDT9gpTxStu7fnK9GlIOnn79mVz9IxCstA";
+/* Google認証で認証するため、APIトークンをブラウザ側に保持しない */
 
 
 
@@ -5229,12 +5224,6 @@ generateBtn.addEventListener("click", async () => {
 
 
 
-    if (!API_TOKEN || API_TOKEN.trim() === "") {
-      throw new Error(
-        "API認証情報が設定されていません。GASのWebApi.gsと同じAPI_TOKENを設定してください。"
-      );
-    }
-
     const encodedFiles = [];
 
 
@@ -5285,7 +5274,6 @@ generateBtn.addEventListener("click", async () => {
       setProgress(next, progressMessages[idx]);
     }, 900);
 
-```javascript
 /*
  * GASへ書類生成リクエストを送信する。
  * Google認証情報を必ず付与し、複数PDFを files[] で送信する。
@@ -5311,8 +5299,7 @@ const requestBody = {
 let response;
 let apiResult;
 
-try {
-  response = await fetch(GAS_WEB_APP_URL, {
+response = await fetch(GAS_WEB_APP_URL, {
     method: "POST",
     mode: "cors",
     credentials: "omit",
@@ -5406,6 +5393,7 @@ try {
 } finally {
   updateGenerateState();
 }
+});
 
 
 /* PDFをBase64に変換する */
@@ -5733,4 +5721,8 @@ window.RakuBureApp = {
 };
 
 updateGenerateState();
-```
+
+})();
+</script>
+</body>
+</html>
