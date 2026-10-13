@@ -2195,6 +2195,28 @@
 
 
 
+/* 楽ブレの新しいロゴ */
+.logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.logo-image {
+  display: block;
+  width: 150px;
+  height: 64px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+@media (max-width: 600px) {
+  .logo-image {
+    width: 120px;
+    height: 56px;
+  }
+}
+
 
 
 
@@ -2234,57 +2256,14 @@
 
 
 
-<a class="logo" href="#" aria-label="楽ブレ">
 
-
-
-
-
-
-
-
-  <span class="logo-splash logo-splash-pink"></span>
-
-
-
-
-
-
-
-
-  <span class="logo-splash logo-splash-blue"></span>
-
-
-
-
-
-
-
-
-  <span class="logo-splash logo-splash-yellow"></span>
-
-
-
-
-
-
-
-
-  <span class="logo-word">楽ブレ</span>
-
-
-
-
-
-
-
-
+<a class="logo" href="./" aria-label="楽ブレ">
+  <img
+    src="./資産/楽ブレ履歴書の成長アイコン.png"
+    alt="楽ブレ"
+    class="logo-image"
+  >
 </a>
-
-
-
-
-
 
 
 
