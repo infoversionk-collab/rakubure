@@ -77,7 +77,7 @@ button{font:inherit;border:0;border-radius:9px;padding:10px 13px;font-weight:700
 <label class="plan-option"><input type="checkbox" name="planItem" value="resume">① 履歴書（1,500円）</label>
 <label class="plan-option"><input type="checkbox" name="planItem" value="career">② 職務経歴書（1,500円）</label>
 <label class="plan-option"><input type="checkbox" name="planItem" value="recommendation">③ 推薦状（1,500円）</label>
-<label class="plan-option"><input type="checkbox" name="planItem" value="skillsheet">④ スキルシート（1,500円）</label>
+<label class="plan-option"><input type="checkbox" name="planItem" value="skillsheet">④ BPOスキルシート（1,500円)</label>
 <label class="plan-option"><input type="checkbox" name="planItem" value="full">⑤ フルセット（5,000円）</label>
 </div></div>
 <div class="form-grid"><label class="form-field">月額料金（自動計算）<input id="monthlyPricePreview" readonly value="0円"></label>
@@ -139,7 +139,7 @@ function addThirtyDays(s){let d=parseDateOnly(s);if(!d)return "";d.setDate(d.get
 function fmtDate(s){let d=parseDateOnly(s);return d?`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}`:"—"}
 function membershipOf(u){let v=String(u.membershipStatus||"").toLowerCase();if(["paid","active","member"].includes(v))return "paid";if(["expired","trial_expired"].includes(v))return "expired";if(["cancelled","canceled"].includes(v))return "cancelled";if(v==="trial"||u.trialStartAt||u.trialEndAt){let d=trialDates(u),end=parseDateOnly(d.end),today=new Date();today.setHours(0,0,0,0);if(end&&today>end)return "expired";return "trial"}return "unconfigured"}
 function membershipLabel(u){return ({trial:"無料トライアル",paid:"有料会員",expired:"無料期間終了",cancelled:"解約済み",unconfigured:"未設定"})[membershipOf(u)]}
-const PLAN_ITEMS=[{id:"resume",label:"① 履歴書",price:1500},{id:"career",label:"② 職務経歴書",price:1500},{id:"recommendation",label:"③ 推薦状",price:1500},{id:"skillsheet",label:"④ スキルシート",price:1500}];
+const PLAN_ITEMS=[{id:"resume",label:"① 履歴書",price:1500},{id:"career",label:"② 職務経歴書",price:1500},{id:"recommendation",label:"③ 推薦状",price:1500},{id:"skillsheet",label:"④ BPOスキルシート",price:1500}];
 function selectedPlanIds(u){return Array.isArray(u.planIds)?u.planIds:(u.planId?[u.planId]:[])}
 function trialDates(u){const start=dateValue(u.createdAt)||dateValue(u.trialStartAt)||"";return {start,end:addThirtyDays(start)}}
 function planInfo(u){if(u.planType==="corporate"){let n=Number(u.seatCount||0),per=n>=30?3000:n>=20?3500:n>=10?4000:n>=3?4500:0;return {label:(u.companyName?u.companyName+"：":"")+"法人契約",amount:n*per,price:per?`${per.toLocaleString("ja-JP")}円/名（計 ${(n*per).toLocaleString("ja-JP")}円）`:"未設定"}}
@@ -156,7 +156,23 @@ async function saveContract(e){e.preventDefault();let uid=$("contractForm").data
 let data={membershipStatus,planType:type,trialStartAt:start||null,trialEndAt:end||null,companyName:type==="corporate"?$("companyName").value.trim():"",seatCount:type==="corporate"?Number($("seatCount").value||0):null,billingStatus:$("billingStatus").value,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
 if(type==="corporate"){if(data.seatCount<3){alert("法人契約は3名以上で入力してください。");return}let per=data.seatCount>=30?3000:data.seatCount>=20?3500:data.seatCount>=10?4000:4500;data.planId="corporate";data.planIds=[];data.monthlyPrice=per*data.seatCount;data.pricePerSeat=per}else{let ids=[...document.querySelectorAll('input[name="planItem"]:checked')].map(x=>x.value);if(ids.includes("full")&&ids.length>1){alert("フルセットと①〜④は同時選択できません。");return}data.planIds=ids;data.planId=ids.includes("full")?"full":ids.length===1?ids[0]:"custom";data.monthlyPrice=ids.includes("full")?5000:PLAN_ITEMS.filter(p=>ids.includes(p.id)).reduce((a,p)=>a+p.price,0);data.pricePerSeat=null}
 try{await db.collection("users").doc(uid).update(data);closeContractModal();msg($("message"),"契約情報を保存しました。","ok");await loadUsers()}catch(err){msg($("message"),"契約情報を保存できませんでした。Firestoreのセキュリティルールを確認してください。\n"+err.message,"error")}}
-document.querySelectorAll('input[name="planItem"]').forEach(x=>x.addEventListener("change",()=>{let all=[...document.querySelectorAll('input[name="planItem"]')],full=all.find(c=>c.value==="full");if(x.value==="full"&&x.checked)all.filter(c=>c.value!=="full").forEach(c=>c.checked=false);else if(x.value!=="full"&&x.checked)full.checked=false;updatePricePreview()}));
+document.querySelectorAll('input[name="planItem"]').forEach(x=>x.addEventListener("change",()=>{
+  const all=[...document.querySelectorAll('input[name="planItem"]')];
+  const full=all.find(c=>c.value==="full");
+  const individual=all.filter(c=>c.value!=="full");
+  if(x.value==="full"&&x.checked){
+    individual.forEach(c=>c.checked=false);
+  }else if(x.value!=="full"&&x.checked){
+    full.checked=false;
+    // ①〜④がすべて選択された場合は、自動的にフルセットへ切り替える
+    if(individual.length===4&&individual.every(c=>c.checked)){
+      individual.forEach(c=>c.checked=false);
+      full.checked=true;
+      msg($("message"),"①〜④をすべて選択したため、フルセット（月額5,000円）に自動切り替えました。","info");
+    }
+  }
+  updatePricePreview();
+}));
 $("planType").addEventListener("change",syncPlanFields);$("seatCount").addEventListener("input",updatePricePreview);$("cancelContractBtn").addEventListener("click",closeContractModal);$("contractModal").addEventListener("click",e=>{if(e.target===$("contractModal"))closeContractModal()});$("contractForm").addEventListener("submit",saveContract);
 function button(text,cls,fn){let b=el("button",cls,text);b.type="button";b.addEventListener("click",fn);return b}
 async function editUserName(uid){
