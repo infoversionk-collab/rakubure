@@ -65,7 +65,7 @@ button{font:inherit;border:0;border-radius:9px;padding:10px 13px;font-weight:700
 <div class="modal"><h2 id="contractModalTitle">契約情報を編集</h2><div id="contractModalUser" class="sub"></div>
 <form id="contractForm">
 <div class="form-grid">
-<label class="form-field">会員状態<select id="membershipStatus"><option value="trial">無料トライアル</option><option value="paid">有料会員</option><option value="non_member">非会員</option><option value="special">特別枠</option><option value="expired">無料期間終了</option><option value="cancelled">解約済み</option></select></label>
+<label class="form-field">会員状態<select id="membershipStatus"><option value="trial">無料トライアル</option><option value="paid">有料会員</option><option value="non_member">非会員</option><option value="special">特別枠</option><option value="owner">オーナー枠</option><option value="expired">無料期間終了</option><option value="cancelled">解約済み</option></select></label>
 <label class="form-field">契約種別<select id="planType"><option value="individual">個人契約</option><option value="corporate">法人契約</option></select></label>
 <label class="form-field">無料期間開始日<input id="trialStartAt" type="date" readonly></label>
 <label class="form-field">無料期間終了日<input id="trialEndAt" type="date" readonly></label>
@@ -137,8 +137,8 @@ function dateValue(v){if(!v)return "";let d=typeof v.toDate==="function"?v.toDat
 function parseDateOnly(s){if(!s)return null;let p=s.split("-").map(Number);if(p.length!==3||p.some(n=>!n))return null;return new Date(p[0],p[1]-1,p[2],12)}
 function addThirtyDays(s){let d=parseDateOnly(s);if(!d)return "";d.setDate(d.getDate()+30);return dateValue(d)}
 function fmtDate(s){let d=parseDateOnly(s);return d?`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}`:"—"}
-function membershipOf(u){let v=String(u.membershipStatus||"").toLowerCase();if(["non_member","non-member","guest"].includes(v))return "non_member";if(["special","special_slot","special_member"].includes(v))return "special";if(["paid","active","member"].includes(v))return "paid";if(["expired","trial_expired"].includes(v))return "expired";if(["cancelled","canceled"].includes(v))return "cancelled";if(v==="trial"||u.trialStartAt||u.trialEndAt){let d=trialDates(u),end=parseDateOnly(d.end),today=new Date();today.setHours(0,0,0,0);if(end&&today>end)return "expired";return "trial"}return "unconfigured"}
-function membershipLabel(u){return ({trial:"無料トライアル",paid:"有料会員",non_member:"非会員",special:"特別枠",expired:"無料期間終了",cancelled:"解約済み",unconfigured:"未設定"})[membershipOf(u)]}
+function membershipOf(u){let v=String(u.membershipStatus||"").toLowerCase();if(["non_member","non-member","guest"].includes(v))return "non_member";if(["special","special_slot","special_member"].includes(v))return "special";if(["owner","owner_slot","owner_member"].includes(v))return "owner";if(["paid","active","member"].includes(v))return "paid";if(["expired","trial_expired"].includes(v))return "expired";if(["cancelled","canceled"].includes(v))return "cancelled";if(v==="trial"||u.trialStartAt||u.trialEndAt){let d=trialDates(u),end=parseDateOnly(d.end),today=new Date();today.setHours(0,0,0,0);if(end&&today>end)return "expired";return "trial"}return "unconfigured"}
+function membershipLabel(u){return ({trial:"無料トライアル",paid:"有料会員",non_member:"非会員",special:"特別枠",owner:"オーナー枠",expired:"無料期間終了",cancelled:"解約済み",unconfigured:"未設定"})[membershipOf(u)]}
 const PLAN_ITEMS=[{id:"resume",label:"① 履歴書",price:1500},{id:"career",label:"② 職務経歴書",price:1500},{id:"recommendation",label:"③ 推薦状",price:1500},{id:"skillsheet",label:"④ BPOスキルシート",price:1500}];
 function selectedPlanIds(u){return Array.isArray(u.planIds)?u.planIds:(u.planId?[u.planId]:[])}
 function trialDates(u){const start=dateValue(u.createdAt)||dateValue(u.trialStartAt)||"";return {start,end:addThirtyDays(start)}}
