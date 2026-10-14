@@ -6,8 +6,12 @@
 <style>
 :root{--ink:#111827;--muted:#667085;--line:#e5e7eb;--bg:#f5f7fb;--blue:#2563eb}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif}
-header{background:#111827;color:white;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.brand{font-size:20px;font-weight:800}.brand small{display:block;color:#cbd5e1;font-size:12px;font-weight:500}
+header{background:#111827;color:white;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;min-height:78px;overflow:visible}
+.brand{display:block;flex:0 0 auto;min-width:max-content;font-size:20px;font-weight:800;line-height:1.4;padding:2px 0;overflow:visible;white-space:nowrap}
+.brand small{display:block;color:#cbd5e1;font-size:12px;font-weight:500;line-height:1.5;margin-top:2px}
+header>div:last-child{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;max-width:100%;flex-wrap:wrap}
+#currentUser{overflow-wrap:anywhere;font-size:13px}
+@media(max-width:480px){header{padding:14px 16px;gap:10px}.brand{font-size:19px}header>div:last-child{justify-content:flex-start;width:100%}}
 main{max-width:1200px;margin:28px auto;padding:0 18px 40px}.notice{padding:14px 16px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:12px;font-size:13px;line-height:1.7;margin-bottom:18px}
 h1{font-size:27px;margin:0 0 6px}.sub{font-size:13px;color:var(--muted)}
 .hero{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:20px}
@@ -26,6 +30,18 @@ button{font:inherit;border:0;border-radius:9px;padding:10px 13px;font-weight:700
 .login-card{max-width:480px;margin:65px auto;padding:32px;text-align:center}.logo{width:62px;height:62px;display:grid;place-items:center;border-radius:18px;background:#111827;color:white;font-size:31px;font-weight:900;margin:0 auto 18px}.login-card h1{font-size:24px}.login-card p{color:var(--muted);font-size:14px;line-height:1.8;margin:12px 0 22px}
 .hidden{display:none!important}footer{text-align:center;color:#98a2b3;font-size:12px;margin-top:20px}
 @media(max-width:700px){header{padding:16px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat-value{font-size:24px}input{min-width:0;width:100%}}
+
+.alert-panel,.pricing-panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin:0 0 18px}
+.alert-panel{border-color:#fed7aa;background:#fffaf5}.alert-title{font-size:16px;font-weight:800;margin:0 0 10px}
+.alert-list{display:grid;gap:8px}.alert-item{padding:10px 12px;border-radius:9px;background:#fff0df;color:#9a3412;font-size:13px;line-height:1.6}.alert-item.urgent{background:#fee2e2;color:#991b1b}
+.plan-chip{display:inline-block;padding:4px 8px;border-radius:999px;background:#eef2ff;color:#3730a3;font-size:11px;font-weight:800;white-space:nowrap}.price{font-weight:800;white-space:nowrap}
+.modal-backdrop{position:fixed;inset:0;background:#10182888;display:flex;align-items:center;justify-content:center;padding:18px;z-index:1000}
+.modal{width:min(600px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:16px;padding:22px}.modal h2{font-size:21px;margin:0 0 6px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}.form-field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}.form-field input,.form-field select{width:100%;min-width:0}
+.plan-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 18px}.plan-option{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:9px;padding:10px;font-size:13px}.plan-option input{min-width:0;width:auto}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}.pricing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.pricing-panel h2{font-size:17px;margin:0 0 12px}.pricing-panel table{min-width:0}.pricing-panel th,.pricing-panel td{padding:10px 12px}
+@media(max-width:700px){.form-grid,.plan-options,.pricing-grid{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -33,13 +49,42 @@ button{font:inherit;border:0;border-radius:9px;padding:10px 13px;font-weight:700
 <main>
 <section id="loginView" class="login-card"><div class="logo">楽</div><h1>管理者ログイン</h1><p>ユーザーの利用申請・承認・利用停止を管理します。<br>管理者として登録されたGoogleアカウントのみ利用できます。</p><button id="signInBtn" class="primary">Googleでログイン</button><div id="loginMessage" class="message" style="margin-top:16px;text-align:left"></div></section>
 <section id="adminView" class="hidden">
-<div class="notice"><b>管理者専用画面</b><br>管理者の許可リストに登録されたアカウントのみ利用できます。データ保護のため、Firestoreのセキュリティルールでも管理者以外の読み書きを制限してください。</div>
+<div class="notice"><b>管理者専用画面</b><br>管理者の許可リストに登録されたアカウントのみ利用できます。無料トライアルは登録日から30日間固定です。期限アラートはこの画面を開いた際、または一覧を更新した際に表示されます。データ保護のため、Firestoreのセキュリティルールでも管理者以外の読み書きを制限してください。</div>
 <div id="message" class="message"></div><div class="hero"><div><h1>ユーザー管理</h1><div class="sub">Firestore の <code>users/{UID}</code> を管理します。</div></div><button id="refreshBtn" class="secondary">一覧を更新</button></div>
 <div class="stats"><div class="stat"><div class="stat-label">全ユーザー</div><div class="stat-value" id="countAll">—</div></div><div class="stat"><div class="stat-label">承認待ち</div><div class="stat-value" id="countPending">—</div></div><div class="stat"><div class="stat-label">利用中</div><div class="stat-value" id="countApproved">—</div></div><div class="stat"><div class="stat-label">停止中</div><div class="stat-value" id="countSuspended">—</div></div></div>
+<div id="trialAlerts" class="alert-panel hidden" aria-live="polite"><div class="alert-title">無料トライアル期限アラート</div><div id="trialAlertList" class="alert-list"></div></div>
 <div class="panel"><div class="toolbar"><input id="searchInput" type="search" placeholder="ユーザー名・メールアドレス・UIDで検索"><select id="statusFilter"><option value="all">すべてのステータス</option><option value="pending">承認待ち</option><option value="approved">利用中</option><option value="suspended">停止中</option></select><span id="resultCount" class="sub"></span></div>
-<div class="table-wrap"><table><thead><tr><th>ユーザー名</th><th>メールアドレス</th><th>UID</th><th>ステータス</th><th>操作</th></tr></thead><tbody id="usersBody"><tr><td colspan="5" class="empty">読み込み待ちです。</td></tr></tbody></table></div></div><footer>楽ブレ 管理画面</footer>
+<div class="table-wrap"><table><thead><tr><th>ユーザー名</th><th>メールアドレス</th><th>UID</th><th>登録日</th><th>無料期間終了日</th><th>会員状態</th><th>契約プラン</th><th>月額料金</th><th>ステータス</th><th>操作</th></tr></thead><tbody id="usersBody"><tr><td colspan="10" class="empty">読み込み待ちです。</td></tr></tbody></table></div></div>
+<div class="pricing-grid" style="margin-top:18px">
+<section class="pricing-panel"><h2>個人プラン（月額）</h2><table><thead><tr><th>プラン</th><th>料金</th></tr></thead><tbody><tr><td>① 履歴書</td><td>1,500円</td></tr><tr><td>② 職務経歴書</td><td>1,500円</td></tr><tr><td>③ 推薦状</td><td>1,500円</td></tr><tr><td>④ スキルシート</td><td>1,500円</td></tr><tr><td>⑤ フルセット</td><td>5,000円</td></tr></tbody></table><p class="sub">①〜④は組み合わせ可能。フルセットとは併用できません。</p></section>
+<section class="pricing-panel"><h2>法人プラン（月額・1名あたり）</h2><table><thead><tr><th>契約人数</th><th>1名あたり</th></tr></thead><tbody><tr><td>1〜9名</td><td>4,500円</td></tr><tr><td>10〜19名</td><td>4,000円</td></tr><tr><td>20〜29名</td><td>3,500円</td></tr><tr><td>30名以上</td><td>3,000円</td></tr></tbody></table><p class="sub">法人契約は3名以上での契約を想定しています。</p></section></div><footer>楽ブレ 管理画面</footer>
 </section>
 </main>
+
+<div id="contractModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="contractModalTitle">
+<div class="modal"><h2 id="contractModalTitle">契約情報を編集</h2><div id="contractModalUser" class="sub"></div>
+<form id="contractForm">
+<div class="form-grid">
+<label class="form-field">会員状態<select id="membershipStatus"><option value="trial">無料トライアル</option><option value="paid">有料会員</option><option value="expired">無料期間終了</option><option value="cancelled">解約済み</option></select></label>
+<label class="form-field">契約種別<select id="planType"><option value="individual">個人契約</option><option value="corporate">法人契約</option></select></label>
+<label class="form-field">無料期間開始日<input id="trialStartAt" type="date" readonly></label>
+<label class="form-field">無料期間終了日<input id="trialEndAt" type="date" readonly></label>
+<div class="sub" style="grid-column:1/-1">無料トライアルは登録日から30日間固定です。期間の変更はできません。</div>
+<label class="form-field">法人名<input id="companyName" type="text" maxlength="120" placeholder="会社名"></label>
+<label class="form-field">法人契約人数<input id="seatCount" type="number" min="3" step="1" placeholder="3名以上"></label>
+</div>
+<div id="individualPlanFields"><b>個人プラン（①〜④は組み合わせ可能）</b><div class="plan-options">
+<label class="plan-option"><input type="checkbox" name="planItem" value="resume">① 履歴書（1,500円）</label>
+<label class="plan-option"><input type="checkbox" name="planItem" value="career">② 職務経歴書（1,500円）</label>
+<label class="plan-option"><input type="checkbox" name="planItem" value="recommendation">③ 推薦状（1,500円）</label>
+<label class="plan-option"><input type="checkbox" name="planItem" value="skillsheet">④ スキルシート（1,500円）</label>
+<label class="plan-option"><input type="checkbox" name="planItem" value="full">⑤ フルセット（5,000円）</label>
+</div></div>
+<div class="form-grid"><label class="form-field">月額料金（自動計算）<input id="monthlyPricePreview" readonly value="0円"></label>
+<label class="form-field">決済状態<select id="billingStatus"><option value="unconfirmed">未確認</option><option value="active">決済確認済み</option><option value="past_due">支払確認が必要</option><option value="none">決済なし</option></select></label></div>
+<div class="modal-actions"><button type="button" id="cancelContractBtn" class="secondary">キャンセル</button><button type="submit" class="primary">契約情報を保存</button></div>
+</form></div></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -85,37 +130,34 @@ async function login(){clearMsg($("loginMessage"));if(!configured()){msg($("logi
 function loginView(){ $("loginView").classList.remove("hidden");$("adminView").classList.add("hidden");$("signOutBtn").classList.add("hidden");$("currentUser").textContent=""}
 async function onSignedIn(user){if(!user){loginView();return}if(!ADMIN_UIDS.includes(user.uid)){await auth.signOut();loginView();msg($("loginMessage"),"このGoogleアカウントには管理者権限がありません。","error");return}
 $("currentUser").textContent=user.email||"";$("signOutBtn").classList.remove("hidden");$("loginView").classList.add("hidden");$("adminView").classList.remove("hidden");await loadUsers()}
-async function loadUsers(){clearMsg($("message"));$("usersBody").replaceChildren();let row=el("tr"),cell=el("td","empty","ユーザーを読み込んでいます…");cell.colSpan=5;row.append(cell);$("usersBody").append(row);
-try{let snap=await db.collection("users").get();users=snap.docs.map(d=>({uid:d.id,...d.data()}));stats();render()}catch(e){users=[];stats();$("usersBody").replaceChildren();msg($("message"),"取得できません。Firestoreのセキュリティルールと管理者UIDを確認してください。\n"+e.message,"error")}}
+async function loadUsers(){clearMsg($("message"));$("usersBody").replaceChildren();let row=el("tr"),cell=el("td","empty","ユーザーを読み込んでいます…");cell.colSpan=10;row.append(cell);$("usersBody").append(row);
+try{let snap=await db.collection("users").get();users=snap.docs.map(d=>({uid:d.id,...d.data()}));stats();render();renderTrialAlerts()}catch(e){users=[];stats();$("usersBody").replaceChildren();msg($("message"),"取得できません。Firestoreのセキュリティルールと管理者UIDを確認してください。\n"+e.message,"error")}}
 function stats(){let s=users.map(statusOf);$("countAll").textContent=users.length;$("countPending").textContent=s.filter(x=>x==="pending").length;$("countApproved").textContent=s.filter(x=>x==="approved").length;$("countSuspended").textContent=s.filter(x=>x==="suspended").length}
-function render(){let q=$("searchInput").value.trim().toLowerCase(),f=$("statusFilter").value;let list=users.filter(u=>(!q||(`${userNameOf(u)} ${u.email||""} ${u.uid}`).toLowerCase().includes(q))&&(f==="all"||statusOf(u)===f));list.sort((a,b)=>(({pending:0,approved:1,suspended:2})[statusOf(a)]-({pending:0,approved:1,suspended:2})[statusOf(b)])||userNameOf(a).localeCompare(userNameOf(b),"ja"));
-$("usersBody").replaceChildren();$("resultCount").textContent=list.length+" / "+users.length+" 件";if(!list.length){let r=el("tr"),c=el("td","empty","該当するユーザーはいません。");c.colSpan=5;r.append(c);$("usersBody").append(r);return}
-list.forEach(u=>{
-  let s=statusOf(u),r=el("tr"),nameCell=el("td","name-cell"),emailCell=el("td"),uidCell=el("td"),statusCell=el("td"),actionCell=el("td");
-  nameCell.append(el("div","name-value",userNameOf(u)));
-  emailCell.append(el("div","email",u.email||"メール未登録"));
-  uidCell.append(el("div","uid",u.uid));
-  statusCell.append(el("span","badge "+s,s==="approved"?"利用中":s==="suspended"?"停止中":"承認待ち"));
-
-  const select=el("select","action-select");
-  select.setAttribute("aria-label",userNameOf(u)+" の操作");
-  select.append(new Option("操作を選択",""));
-  select.append(new Option("ユーザー名を編集","editName"));
-  if(s==="pending") select.append(new Option("承認する","approve"));
-  if(s==="approved" || s==="pending") select.append(new Option("利用を停止する","suspend"));
-  if(s==="suspended") select.append(new Option("利用を再開する","resume"));
-  select.addEventListener("change",async()=>{
-    const action=select.value;
-    select.value="";
-    if(action==="editName") await editUserName(u.uid);
-    if(action==="approve") await setStatus(u.uid,true,"approved");
-    if(action==="suspend") await setStatus(u.uid,false,"suspended");
-    if(action==="resume") await setStatus(u.uid,true,"approved");
-  });
-  actionCell.append(select);
-  r.append(nameCell,emailCell,uidCell,statusCell,actionCell);
-  $("usersBody").append(r);
-})}
+function dateValue(v){if(!v)return "";let d=typeof v.toDate==="function"?v.toDate():v instanceof Date?v:new Date(v);if(isNaN(d.getTime()))return "";return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`}
+function parseDateOnly(s){if(!s)return null;let p=s.split("-").map(Number);if(p.length!==3||p.some(n=>!n))return null;return new Date(p[0],p[1]-1,p[2],12)}
+function addThirtyDays(s){let d=parseDateOnly(s);if(!d)return "";d.setDate(d.getDate()+30);return dateValue(d)}
+function fmtDate(s){let d=parseDateOnly(s);return d?`${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,"0")}/${String(d.getDate()).padStart(2,"0")}`:"—"}
+function membershipOf(u){let v=String(u.membershipStatus||"").toLowerCase();if(["paid","active","member"].includes(v))return "paid";if(["expired","trial_expired"].includes(v))return "expired";if(["cancelled","canceled"].includes(v))return "cancelled";if(v==="trial"||u.trialStartAt||u.trialEndAt){let d=trialDates(u),end=parseDateOnly(d.end),today=new Date();today.setHours(0,0,0,0);if(end&&today>end)return "expired";return "trial"}return "unconfigured"}
+function membershipLabel(u){return ({trial:"無料トライアル",paid:"有料会員",expired:"無料期間終了",cancelled:"解約済み",unconfigured:"未設定"})[membershipOf(u)]}
+const PLAN_ITEMS=[{id:"resume",label:"① 履歴書",price:1500},{id:"career",label:"② 職務経歴書",price:1500},{id:"recommendation",label:"③ 推薦状",price:1500},{id:"skillsheet",label:"④ スキルシート",price:1500}];
+function selectedPlanIds(u){return Array.isArray(u.planIds)?u.planIds:(u.planId?[u.planId]:[])}
+function trialDates(u){const start=dateValue(u.createdAt)||dateValue(u.trialStartAt)||"";return {start,end:addThirtyDays(start)}}
+function planInfo(u){if(u.planType==="corporate"){let n=Number(u.seatCount||0),per=n>=30?3000:n>=20?3500:n>=10?4000:n>=3?4500:0;return {label:(u.companyName?u.companyName+"：":"")+"法人契約",amount:n*per,price:per?`${per.toLocaleString("ja-JP")}円/名（計 ${(n*per).toLocaleString("ja-JP")}円）`:"未設定"}}
+let ids=selectedPlanIds(u);if(ids.includes("full"))return {label:"⑤ フルセット",amount:5000,price:"5,000円"};let selected=PLAN_ITEMS.filter(p=>ids.includes(p.id));let amount=selected.reduce((a,p)=>a+p.price,0);return {label:selected.length?selected.map(p=>p.label).join("＋"):"未設定",amount,price:amount?amount.toLocaleString("ja-JP")+"円":"未設定"}}
+function renderTrialAlerts(){let today=new Date();today.setHours(0,0,0,0);let targets=users.map(u=>{let dates=trialDates(u),end=parseDateOnly(dates.end);if(String(u.membershipStatus||"").toLowerCase()!=="trial"||!end)return null;let diff=Math.round((end-today)/86400000);return diff<=7?{u,dates,diff}:null}).filter(Boolean).sort((a,b)=>a.diff-b.diff);let panel=$("trialAlerts"),list=$("trialAlertList");list.replaceChildren();if(!targets.length){panel.classList.add("hidden");return}panel.classList.remove("hidden");targets.forEach(t=>{let text=t.diff<0?`期限超過 ${Math.abs(t.diff)}日：${userNameOf(t.u)}（終了日 ${fmtDate(t.dates.end)}）`:t.diff===0?`本日終了：${userNameOf(t.u)}（${fmtDate(t.dates.end)}）`:`残り${t.diff}日：${userNameOf(t.u)}（終了日 ${fmtDate(t.dates.end)}）`;list.append(el("div","alert-item"+(t.diff<=0?" urgent":""),text))})}
+function render(){let q=$("searchInput").value.trim().toLowerCase(),f=$("statusFilter").value;let list=users.filter(u=>(!q||(`${userNameOf(u)} ${u.email||""} ${u.uid}`).toLowerCase().includes(q))&&(f==="all"||statusOf(u)===f));list.sort((a,b)=>(({pending:0,approved:1,suspended:2})[statusOf(a)]-({pending:0,approved:1,suspended:2})[statusOf(b)])||userNameOf(a).localeCompare(userNameOf(b),"ja"));$("usersBody").replaceChildren();$("resultCount").textContent=list.length+" / "+users.length+" 件";if(!list.length){let r=el("tr"),c=el("td","empty","該当するユーザーはいません。");c.colSpan=10;r.append(c);$("usersBody").append(r);return}
+list.forEach(u=>{let s=statusOf(u),r=el("tr"),cells=Array.from({length:10},()=>el("td"));cells[0].append(el("div","name-value",userNameOf(u)));cells[1].append(el("div","email",u.email||"メール未登録"));cells[2].append(el("div","uid",u.uid));cells[3].textContent=fmtDate(dateValue(u.createdAt));let td=trialDates(u);cells[4].textContent=fmtDate(td.end);cells[5].append(el("span","plan-chip",membershipLabel(u)));let pi=planInfo(u);cells[6].textContent=pi.label;cells[7].append(el("span","price",pi.price));cells[8].append(el("span","badge "+s,s==="approved"?"利用中":s==="suspended"?"停止中":"承認待ち"));
+let sel=el("select","action-select");sel.setAttribute("aria-label",userNameOf(u)+" の操作");sel.append(new Option("操作を選択",""),new Option("ユーザー名を編集","editName"),new Option("契約情報を編集","editContract"));if(s==="pending")sel.append(new Option("承認する","approve"));if(s==="pending"||s==="approved")sel.append(new Option("利用を停止する","suspend"));if(s==="suspended")sel.append(new Option("利用を再開する","resume"));sel.addEventListener("change",async()=>{let a=sel.value;sel.value="";if(a==="editName")await editUserName(u.uid);if(a==="editContract")openContractModal(u);if(a==="approve")await setStatus(u.uid,true,"approved");if(a==="suspend")await setStatus(u.uid,false,"suspended");if(a==="resume")await setStatus(u.uid,true,"approved")});cells[9].append(sel);r.append(...cells);$("usersBody").append(r)})}
+function openContractModal(u){$("contractForm").dataset.uid=u.uid;$("contractModalUser").textContent=`${userNameOf(u)} / ${u.email||u.uid}`;$("membershipStatus").value=membershipOf(u)==="unconfigured"?"trial":membershipOf(u);$("planType").value=u.planType==="corporate"?"corporate":"individual";let dates=trialDates(u);$("trialStartAt").value=dates.start;$("trialEndAt").value=dates.end;$("companyName").value=u.companyName||"";$("seatCount").value=u.seatCount||"";$("billingStatus").value=u.billingStatus||"unconfirmed";let ids=selectedPlanIds(u);document.querySelectorAll('input[name="planItem"]').forEach(x=>x.checked=ids.includes(x.value));syncPlanFields();$("contractModal").classList.remove("hidden")}
+function syncPlanFields(){$("individualPlanFields").classList.toggle("hidden",$("planType").value==="corporate");$("companyName").disabled=$("planType").value!=="corporate";$("seatCount").disabled=$("planType").value!=="corporate";updatePricePreview()}
+function updatePricePreview(){let amount=0;if($("planType").value==="corporate"){let n=Number($("seatCount").value||0),p=n>=30?3000:n>=20?3500:n>=10?4000:n>=3?4500:0;amount=n*p;$("monthlyPricePreview").value=p?`${amount.toLocaleString("ja-JP")}円（${p.toLocaleString("ja-JP")}円/名）`:"3名以上で料金計算"}else{let ids=[...document.querySelectorAll('input[name="planItem"]:checked')].map(x=>x.value);amount=ids.includes("full")?5000:PLAN_ITEMS.filter(p=>ids.includes(p.id)).reduce((a,p)=>a+p.price,0);$("monthlyPricePreview").value=amount?amount.toLocaleString("ja-JP")+"円/月":"未選択"}}
+function closeContractModal(){$("contractModal").classList.add("hidden");$("contractForm").dataset.uid=""}
+async function saveContract(e){e.preventDefault();let uid=$("contractForm").dataset.uid;if(!uid)return;let type=$("planType").value;const currentUser=users.find(u=>u.uid===uid);const dates=currentUser?trialDates(currentUser):{start:"",end:""};const start=dates.start,end=dates.end;const membershipStatus=$("membershipStatus").value;if(membershipStatus==="trial"&&!start){alert("登録日（createdAt）が確認できないため、無料期間を設定できません。Firestoreのユーザーデータを確認してください。");return}
+let data={membershipStatus,planType:type,trialStartAt:start||null,trialEndAt:end||null,companyName:type==="corporate"?$("companyName").value.trim():"",seatCount:type==="corporate"?Number($("seatCount").value||0):null,billingStatus:$("billingStatus").value,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+if(type==="corporate"){if(data.seatCount<3){alert("法人契約は3名以上で入力してください。");return}let per=data.seatCount>=30?3000:data.seatCount>=20?3500:data.seatCount>=10?4000:4500;data.planId="corporate";data.planIds=[];data.monthlyPrice=per*data.seatCount;data.pricePerSeat=per}else{let ids=[...document.querySelectorAll('input[name="planItem"]:checked')].map(x=>x.value);if(ids.includes("full")&&ids.length>1){alert("フルセットと①〜④は同時選択できません。");return}data.planIds=ids;data.planId=ids.includes("full")?"full":ids.length===1?ids[0]:"custom";data.monthlyPrice=ids.includes("full")?5000:PLAN_ITEMS.filter(p=>ids.includes(p.id)).reduce((a,p)=>a+p.price,0);data.pricePerSeat=null}
+try{await db.collection("users").doc(uid).update(data);closeContractModal();msg($("message"),"契約情報を保存しました。","ok");await loadUsers()}catch(err){msg($("message"),"契約情報を保存できませんでした。Firestoreのセキュリティルールを確認してください。\n"+err.message,"error")}}
+document.querySelectorAll('input[name="planItem"]').forEach(x=>x.addEventListener("change",()=>{let all=[...document.querySelectorAll('input[name="planItem"]')],full=all.find(c=>c.value==="full");if(x.value==="full"&&x.checked)all.filter(c=>c.value!=="full").forEach(c=>c.checked=false);else if(x.value!=="full"&&x.checked)full.checked=false;updatePricePreview()}));
+$("planType").addEventListener("change",syncPlanFields);$("seatCount").addEventListener("input",updatePricePreview);$("cancelContractBtn").addEventListener("click",closeContractModal);$("contractModal").addEventListener("click",e=>{if(e.target===$("contractModal"))closeContractModal()});$("contractForm").addEventListener("submit",saveContract);
 function button(text,cls,fn){let b=el("button",cls,text);b.type="button";b.addEventListener("click",fn);return b}
 async function editUserName(uid){
   const user=users.find(u=>u.uid===uid);
