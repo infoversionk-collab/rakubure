@@ -15,6 +15,8 @@ h1{font-size:27px;margin:0 0 6px}.sub{font-size:13px;color:var(--muted)}
 .stat{padding:16px}.stat-label{font-size:12px;color:var(--muted)}.stat-value{font-size:28px;font-weight:800;margin-top:7px}
 .toolbar{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 input,select{font:inherit;border:1px solid #d0d5dd;border-radius:9px;padding:10px 12px;background:white}input{min-width:240px}
+.action-select{min-width:150px;width:100%;padding:9px 10px;font-size:12px}
+.name-cell{min-width:150px}.name-value{font-weight:700;overflow-wrap:anywhere}
 button{font:inherit;border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer}.primary{background:var(--blue);color:white}.secondary{background:#eef2f6;color:#344054}.approve{background:#dcfce7;color:#166534}.suspend{background:#fee2e2;color:#991b1b}
 .table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}th{font-size:12px;color:#475467;background:#fafafa}
 .email{font-weight:700;overflow-wrap:anywhere}.uid{font:11px ui-monospace,monospace;color:var(--muted);overflow-wrap:anywhere;max-width:220px}
@@ -34,8 +36,8 @@ button{font:inherit;border:0;border-radius:9px;padding:10px 13px;font-weight:700
 <div class="notice"><b>管理者専用画面</b><br>管理者の許可リストに登録されたアカウントのみ利用できます。データ保護のため、Firestoreのセキュリティルールでも管理者以外の読み書きを制限してください。</div>
 <div id="message" class="message"></div><div class="hero"><div><h1>ユーザー管理</h1><div class="sub">Firestore の <code>users/{UID}</code> を管理します。</div></div><button id="refreshBtn" class="secondary">一覧を更新</button></div>
 <div class="stats"><div class="stat"><div class="stat-label">全ユーザー</div><div class="stat-value" id="countAll">—</div></div><div class="stat"><div class="stat-label">承認待ち</div><div class="stat-value" id="countPending">—</div></div><div class="stat"><div class="stat-label">利用中</div><div class="stat-value" id="countApproved">—</div></div><div class="stat"><div class="stat-label">停止中</div><div class="stat-value" id="countSuspended">—</div></div></div>
-<div class="panel"><div class="toolbar"><input id="searchInput" type="search" placeholder="メールアドレス・UIDで検索"><select id="statusFilter"><option value="all">すべてのステータス</option><option value="pending">承認待ち</option><option value="approved">利用中</option><option value="suspended">停止中</option></select><span id="resultCount" class="sub"></span></div>
-<div class="table-wrap"><table><thead><tr><th>ユーザー</th><th>UID</th><th>ステータス</th><th>登録日時</th><th>操作</th></tr></thead><tbody id="usersBody"><tr><td colspan="5" class="empty">読み込み待ちです。</td></tr></tbody></table></div></div><footer>楽ブレ 管理画面</footer>
+<div class="panel"><div class="toolbar"><input id="searchInput" type="search" placeholder="ユーザー名・メールアドレス・UIDで検索"><select id="statusFilter"><option value="all">すべてのステータス</option><option value="pending">承認待ち</option><option value="approved">利用中</option><option value="suspended">停止中</option></select><span id="resultCount" class="sub"></span></div>
+<div class="table-wrap"><table><thead><tr><th>ユーザー名</th><th>メールアドレス</th><th>UID</th><th>ステータス</th><th>操作</th></tr></thead><tbody id="usersBody"><tr><td colspan="5" class="empty">読み込み待ちです。</td></tr></tbody></table></div></div><footer>楽ブレ 管理画面</footer>
 </section>
 </main>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -71,6 +73,12 @@ function configured() {
   return configComplete && adminListComplete;
 }
 function statusOf(u){if(u.status==="suspended"||u.status==="SUSPENDED")return "suspended";if(u.approved===true&&u.status==="approved")return "approved";return "pending"}
+function userNameOf(u){
+  const savedName = String(u.displayName || u.userName || u.name || "").trim();
+  if(savedName) return savedName;
+  const email = String(u.email || "").trim();
+  return email ? email.split("@")[0] : "未設定";
+}
 function dateOf(v){if(!v)return "—";let d=typeof v.toDate==="function"?v.toDate():new Date(v);return isNaN(d.getTime())?"—":d.toLocaleString("ja-JP")}
 function el(tag,cls,text){let e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
 async function login(){clearMsg($("loginMessage"));if(!configured()){msg($("loginMessage"),"初期設定が未完了です。firebaseConfig と ADMIN_UIDS を設定してください。","error");return}try{let p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:"select_account"});await auth.signInWithPopup(p)}catch(e){msg($("loginMessage"),"ログインできませんでした: "+e.message,"error")}}
@@ -80,12 +88,56 @@ $("currentUser").textContent=user.email||"";$("signOutBtn").classList.remove("hi
 async function loadUsers(){clearMsg($("message"));$("usersBody").replaceChildren();let row=el("tr"),cell=el("td","empty","ユーザーを読み込んでいます…");cell.colSpan=5;row.append(cell);$("usersBody").append(row);
 try{let snap=await db.collection("users").get();users=snap.docs.map(d=>({uid:d.id,...d.data()}));stats();render()}catch(e){users=[];stats();$("usersBody").replaceChildren();msg($("message"),"取得できません。Firestoreのセキュリティルールと管理者UIDを確認してください。\n"+e.message,"error")}}
 function stats(){let s=users.map(statusOf);$("countAll").textContent=users.length;$("countPending").textContent=s.filter(x=>x==="pending").length;$("countApproved").textContent=s.filter(x=>x==="approved").length;$("countSuspended").textContent=s.filter(x=>x==="suspended").length}
-function render(){let q=$("searchInput").value.trim().toLowerCase(),f=$("statusFilter").value;let list=users.filter(u=>(!q||(`${u.email||""} ${u.uid}`).toLowerCase().includes(q))&&(f==="all"||statusOf(u)===f));list.sort((a,b)=>(({pending:0,approved:1,suspended:2})[statusOf(a)]-({pending:0,approved:1,suspended:2})[statusOf(b)])||String(a.email||"").localeCompare(String(b.email||"")));
+function render(){let q=$("searchInput").value.trim().toLowerCase(),f=$("statusFilter").value;let list=users.filter(u=>(!q||(`${userNameOf(u)} ${u.email||""} ${u.uid}`).toLowerCase().includes(q))&&(f==="all"||statusOf(u)===f));list.sort((a,b)=>(({pending:0,approved:1,suspended:2})[statusOf(a)]-({pending:0,approved:1,suspended:2})[statusOf(b)])||userNameOf(a).localeCompare(userNameOf(b),"ja"));
 $("usersBody").replaceChildren();$("resultCount").textContent=list.length+" / "+users.length+" 件";if(!list.length){let r=el("tr"),c=el("td","empty","該当するユーザーはいません。");c.colSpan=5;r.append(c);$("usersBody").append(r);return}
-list.forEach(u=>{let s=statusOf(u),r=el("tr"),uc=el("td"),uid=el("td"),sc=el("td"),dc=el("td","",dateOf(u.createdAt)),ac=el("td"),actions=el("div","actions");uc.append(el("div","email",u.email||"メール未登録"));uid.append(el("div","uid",u.uid));sc.append(el("span","badge "+s,s==="approved"?"利用中":s==="suspended"?"停止中":"承認待ち"));
-if(s==="pending"){actions.append(button("承認","approve",()=>setStatus(u.uid,true,"approved")));actions.append(button("停止","suspend",()=>setStatus(u.uid,false,"suspended")))}else if(s==="approved"){actions.append(button("利用停止","suspend",()=>setStatus(u.uid,false,"suspended")))}else{actions.append(button("利用再開","approve",()=>setStatus(u.uid,true,"approved")))}
-ac.append(actions);r.append(uc,uid,sc,dc,ac);$("usersBody").append(r)})}
+list.forEach(u=>{
+  let s=statusOf(u),r=el("tr"),nameCell=el("td","name-cell"),emailCell=el("td"),uidCell=el("td"),statusCell=el("td"),actionCell=el("td");
+  nameCell.append(el("div","name-value",userNameOf(u)));
+  emailCell.append(el("div","email",u.email||"メール未登録"));
+  uidCell.append(el("div","uid",u.uid));
+  statusCell.append(el("span","badge "+s,s==="approved"?"利用中":s==="suspended"?"停止中":"承認待ち"));
+
+  const select=el("select","action-select");
+  select.setAttribute("aria-label",userNameOf(u)+" の操作");
+  select.append(new Option("操作を選択",""));
+  select.append(new Option("ユーザー名を編集","editName"));
+  if(s==="pending") select.append(new Option("承認する","approve"));
+  if(s==="approved" || s==="pending") select.append(new Option("利用を停止する","suspend"));
+  if(s==="suspended") select.append(new Option("利用を再開する","resume"));
+  select.addEventListener("change",async()=>{
+    const action=select.value;
+    select.value="";
+    if(action==="editName") await editUserName(u.uid);
+    if(action==="approve") await setStatus(u.uid,true,"approved");
+    if(action==="suspend") await setStatus(u.uid,false,"suspended");
+    if(action==="resume") await setStatus(u.uid,true,"approved");
+  });
+  actionCell.append(select);
+  r.append(nameCell,emailCell,uidCell,statusCell,actionCell);
+  $("usersBody").append(r);
+})}
 function button(text,cls,fn){let b=el("button",cls,text);b.type="button";b.addEventListener("click",fn);return b}
+async function editUserName(uid){
+  const user=users.find(u=>u.uid===uid);
+  if(!user) return;
+  const currentName=String(user.displayName || user.userName || user.name || "");
+  const entered=prompt("新しいユーザー名を入力してください。",currentName);
+  if(entered===null) return;
+  const newName=entered.trim();
+  if(!newName){alert("ユーザー名を入力してください。");return;}
+  if(newName.length>80){alert("ユーザー名は80文字以内で入力してください。");return;}
+  if(newName===currentName.trim()) return;
+  try{
+    await db.collection("users").doc(uid).update({
+      displayName:newName,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    msg($("message"),"ユーザー名を更新しました。","ok");
+    await loadUsers();
+  }catch(e){
+    msg($("message"),"ユーザー名を更新できませんでした。Firestoreのセキュリティルールと対象ユーザーを確認してください。\\n"+e.message,"error");
+  }
+}
 async function setStatus(uid, approved, status) {
   if (!confirm(uid + " の利用状態を「" + (status === "approved" ? "承認" : "停止") + "」に変更しますか？")) return;
   try {
