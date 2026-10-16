@@ -3,14 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="楽ブレ - Googleアカウントでログイン">
+  <meta name="description" content="楽ブレ - Googleログイン・無料トライアル申請">
   <title>ログイン｜楽ブレ</title>
 
   <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     :root {
       --primary: #111827;
@@ -21,6 +23,8 @@
       --card: #ffffff;
       --success: #15803d;
       --error: #dc2626;
+      --blue: #2563eb;
+      --blue-hover: #1d4ed8;
     }
 
     body {
@@ -34,8 +38,15 @@
         radial-gradient(circle at 50% 0%, #eef2ff 0%, transparent 38%),
         var(--background);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-        "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Yu Gothic", Meiryo, sans-serif;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Hiragino Kaku Gothic ProN",
+        "Hiragino Sans",
+        "Yu Gothic",
+        Meiryo,
+        sans-serif;
     }
 
     .login-card {
@@ -50,14 +61,14 @@
     }
 
     .logo {
-  display: block;
-  width: 180px;
-  max-width: 70%;
-  height: auto;
-  margin: 0 auto 24px;
-  object-fit: contain;
-}
-    
+      display: block;
+      width: 180px;
+      max-width: 70%;
+      height: auto;
+      margin: 0 auto 24px;
+      object-fit: contain;
+    }
+
     h1 {
       margin: 0;
       font-size: 30px;
@@ -89,8 +100,13 @@
       white-space: pre-wrap;
     }
 
-    .status.error { color: var(--error); }
-    .status.success { color: var(--success); }
+    .status.error {
+      color: var(--error);
+    }
+
+    .status.success {
+      color: var(--success);
+    }
 
     .loading {
       display: none;
@@ -99,7 +115,9 @@
       font-size: 13px;
     }
 
-    .loading.show { display: block; }
+    .loading.show {
+      display: block;
+    }
 
     .divider {
       display: flex;
@@ -125,6 +143,64 @@
       line-height: 1.9;
     }
 
+    /* 新規登録・お問い合わせボタン */
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      max-width: 360px;
+      margin: 28px auto 0;
+    }
+
+    .action-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 14px 18px;
+      border-radius: 9px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.6;
+      text-decoration: none;
+      transition:
+        background-color 0.2s,
+        opacity 0.2s;
+    }
+
+    .register-button {
+      color: #ffffff;
+      background: var(--blue);
+      border: 1px solid var(--blue);
+    }
+
+    .register-button:hover {
+      background: var(--blue-hover);
+    }
+
+    .contact-button {
+      color: var(--blue);
+      background: #ffffff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .contact-button:hover {
+      background: #eff6ff;
+    }
+
+    .action-button:focus-visible {
+      outline: 3px solid #93c5fd;
+      outline-offset: 3px;
+    }
+
+    .action-note {
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
     .footer {
       margin-top: 30px;
       padding-top: 20px;
@@ -135,24 +211,35 @@
     }
 
     @media (max-width: 480px) {
-      body { padding: 14px; }
+      body {
+        padding: 14px;
+      }
+
       .login-card {
         padding: 34px 20px 26px;
         border-radius: 20px;
       }
-      h1 { font-size: 25px; }
-      .lead { font-size: 14px; }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      .lead {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 
 <body>
   <main class="login-card">
+
+    <!-- ロゴ -->
     <img
-  src="./assets/rakubure-logo.png"
-  alt="楽ブレ"
-  class="logo"
->
+      src="./assets/rakubure-logo.png"
+      alt="楽ブレ"
+      class="logo"
+    >
 
     <h1>楽ブレへようこそ</h1>
 
@@ -169,6 +256,7 @@
       data-auto_prompt="false">
     </div>
 
+    <!-- Googleログイン -->
     <div class="google-login">
       <div
         class="g_id_signin"
@@ -182,17 +270,56 @@
       </div>
     </div>
 
-    <div id="loading" class="loading">Google認証を確認しています…</div>
-    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <div id="loading" class="loading">
+      Google認証を確認しています…
+    </div>
+
+    <div
+      id="status"
+      class="status"
+      role="status"
+      aria-live="polite">
+    </div>
+
+    <div class="divider">初めてご利用の方</div>
+
+    <!-- 新規登録・お問い合わせ -->
+    <div class="action-buttons">
+
+      <a
+        id="registerButton"
+        class="action-button register-button"
+        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E7%84%A1%E6%96%99%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%E3%81%AE%E4%BB%B6"
+      >
+        新規登録・無料トライアル申請
+      </a>
+
+      <a
+        id="contactButton"
+        class="action-button contact-button"
+        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B"
+      >
+        お問い合わせ
+      </a>
+
+    </div>
+
+    <p class="action-note">
+      無料トライアルは、管理者による確認・承認後にご利用いただけます。
+    </p>
 
     <div class="divider">ご利用について</div>
 
     <p class="notice">
       ログインにはGoogleアカウントを使用します。<br>
-      認証が確認された場合のみ、楽ブレ本体ページへ移動します。
+      認証・利用権限が確認された場合のみ、<br>
+      楽ブレ本体ページへ移動します。
     </p>
 
-    <div class="footer">© 2026 Version-K / 楽ブレ</div>
+    <div class="footer">
+      © 2026 Version-K / 楽ブレ
+    </div>
+
   </main>
 
   <script>
@@ -209,12 +336,9 @@
     };
 
     /**
-     * Google Identity ServicesからIDトークンを受け取り、
-     * GAS側で認証確認を行います。
-     *
-     * GASの doPost(e) には action === "auth" の分岐が必要です。
-     * ブラウザからGASへのfetchはCORS等で失敗する可能性があります。
-     * 認証に失敗した場合は本体へ移動しません。
+     * Googleログイン
+     * GAS側でGoogle IDトークンを検証し、
+     * 認証と利用権限を確認します。
      */
     async function handleGoogleCredential(response) {
       if (!response || !response.credential) {
@@ -269,11 +393,12 @@
           );
         }
 
-        // 本体側でもGASがIDトークンを再検証することが必須
+        // 本体側でもIDトークンの再検証と利用権限確認が必須
         sessionStorage.setItem(
           "RAKUBURE_GOOGLE_CREDENTIAL",
           response.credential
         );
+
         sessionStorage.setItem(
           "RAKUBURE_GOOGLE_EMAIL",
           String(result.email || "")
@@ -285,7 +410,9 @@
         );
 
         window.setTimeout(() => {
-          window.location.replace(RAKUBURE_LOGIN_CONFIG.APP_URL);
+          window.location.replace(
+            RAKUBURE_LOGIN_CONFIG.APP_URL
+          );
         }, 400);
 
       } catch (error) {
@@ -311,6 +438,7 @@
           "ログインを完了できませんでした。\n" + detail,
           "error"
         );
+
       } finally {
         setLoading(false);
       }
@@ -318,9 +446,13 @@
 
     function showStatus(message, type = "") {
       const status = document.getElementById("status");
+
       status.textContent = message;
       status.className = "status";
-      if (type) status.classList.add(type);
+
+      if (type) {
+        status.classList.add(type);
+      }
     }
 
     function setLoading(isLoading) {
@@ -330,7 +462,10 @@
 
     window.addEventListener("load", () => {
       if (!RAKUBURE_LOGIN_CONFIG.GOOGLE_CLIENT_ID) {
-        showStatus("Google Client IDが設定されていません。", "error");
+        showStatus(
+          "Google Client IDが設定されていません。",
+          "error"
+        );
       }
 
       if (!window.google || !window.google.accounts) {
