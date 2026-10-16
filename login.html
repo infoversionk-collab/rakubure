@@ -5,525 +5,179 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="楽ブレ - Googleログイン・無料トライアル申請">
   <title>ログイン｜楽ブレ</title>
-
-  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --primary: #111827;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --background: #f8fafc;
-      --card: #ffffff;
-      --success: #15803d;
-      --error: #dc2626;
-      --blue: #2563eb;
-      --blue-hover: #1d4ed8;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background:
-        radial-gradient(circle at 50% 0%, #eef2ff 0%, transparent 38%),
-        var(--background);
-      color: var(--text);
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        "Hiragino Kaku Gothic ProN",
-        "Hiragino Sans",
-        "Yu Gothic",
-        Meiryo,
-        sans-serif;
-    }
-
-    .login-card {
-      width: 100%;
-      max-width: 560px;
-      padding: 42px 32px 32px;
-      text-align: center;
-      background: var(--card);
-      border: 1px solid rgba(229, 231, 235, 0.9);
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
-    }
-
-    .logo {
-      display: block;
-      width: 180px;
-      max-width: 70%;
-      height: auto;
-      margin: 0 auto 24px;
-      object-fit: contain;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 30px;
-      line-height: 1.4;
-      letter-spacing: -0.5px;
-    }
-
-    .lead {
-      margin: 18px 0 32px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.9;
-    }
-
-    .google-login {
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .status {
-      min-height: 24px;
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.8;
-      overflow-wrap: anywhere;
-      white-space: pre-wrap;
-    }
-
-    .status.error {
-      color: var(--error);
-    }
-
-    .status.success {
-      color: var(--success);
-    }
-
-    .loading {
-      display: none;
-      margin-top: 12px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .loading.show {
-      display: block;
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 34px 0 20px;
-      color: #9ca3af;
-      font-size: 13px;
-    }
-
-    .divider::before,
-    .divider::after {
-      content: "";
-      height: 1px;
-      flex: 1;
-      background: var(--border);
-    }
-
-    .notice {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.9;
-    }
-
-    /* 各種ボタン */
-    .action-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-      max-width: 360px;
-      margin: 28px auto 0;
-    }
-
-    .action-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 50px;
-      padding: 14px 18px;
-      border-radius: 9px;
-      font-size: 14px;
-      font-weight: 700;
-      line-height: 1.6;
-      text-decoration: none;
-      transition:
-        background-color 0.2s,
-        opacity 0.2s;
-    }
-
-    /* 無料トライアル申請 */
-    .register-button {
-      color: #ffffff;
-      background: var(--blue);
-      border: 1px solid var(--blue);
-    }
-
-    .register-button:hover {
-      background: var(--blue-hover);
-    }
-
-    /* お問い合わせ */
-    .contact-button {
-      color: var(--blue);
-      background: #ffffff;
-      border: 1px solid #bfdbfe;
-    }
-
-    .contact-button:hover {
-      background: #eff6ff;
-    }
-
-    /* 公式サイト */
-    .official-button {
-      color: #374151;
-      background: #f9fafb;
-      border: 1px solid #d1d5db;
-    }
-
-    .official-button:hover {
-      background: #f3f4f6;
-    }
-
-    .action-button:focus-visible {
-      outline: 3px solid #93c5fd;
-      outline-offset: 3px;
-    }
-
-    .action-note {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.8;
-    }
-
-    .footer {
-      margin-top: 30px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      color: #9ca3af;
-      font-size: 12px;
-      line-height: 1.7;
-    }
-
-    @media (max-width: 480px) {
-      body {
-        padding: 14px;
-      }
-
-      .login-card {
-        padding: 34px 20px 26px;
-        border-radius: 20px;
-      }
-
-      h1 {
-        font-size: 25px;
-      }
-
-      .lead {
-        font-size: 14px;
-      }
-    }
+    *{box-sizing:border-box}
+    :root{--primary:#111827;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--background:#f8fafc;--card:#fff;--success:#15803d;--error:#dc2626;--blue:#2563eb;--blue-hover:#1d4ed8}
+    body{margin:0;min-height:100vh;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 0%,#eef2ff 0%,transparent 38%),var(--background);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+    .login-card{width:100%;max-width:560px;padding:42px 32px 32px;text-align:center;background:var(--card);border:1px solid rgba(229,231,235,.9);border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,.08)}
+    .logo{display:block;width:180px;max-width:70%;height:auto;margin:0 auto 24px;object-fit:contain}
+    h1{margin:0;font-size:30px;line-height:1.4;letter-spacing:-.5px}
+    .lead{margin:18px 0 32px;color:var(--muted);font-size:15px;line-height:1.9}
+    .google-login{min-height:48px;display:flex;align-items:center;justify-content:center}
+    .status{min-height:24px;margin-top:18px;color:var(--muted);font-size:14px;line-height:1.8;overflow-wrap:anywhere;white-space:pre-wrap}
+    .status.error{color:var(--error)}.status.success{color:var(--success)}
+    .loading{display:none;margin-top:12px;color:var(--muted);font-size:13px}.loading.show{display:block}
+    .divider{display:flex;align-items:center;gap:12px;margin:34px 0 20px;color:#9ca3af;font-size:13px}
+    .divider::before,.divider::after{content:"";height:1px;flex:1;background:var(--border)}
+    .notice{margin:0;color:var(--muted);font-size:13px;line-height:1.9}
+    .action-buttons{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;margin:28px auto 0}
+    .action-button{display:flex;align-items:center;justify-content:center;min-height:50px;padding:14px 18px;border-radius:9px;font-size:14px;font-weight:700;line-height:1.6;text-decoration:none;transition:background-color .2s,opacity .2s}
+    .register-button{color:#fff;background:var(--blue);border:1px solid var(--blue)}.register-button:hover{background:var(--blue-hover)}
+    .contact-button{color:var(--blue);background:#fff;border:1px solid #bfdbfe}.contact-button:hover{background:#eff6ff}
+    .official-button{color:#374151;background:#f9fafb;border:1px solid #d1d5db}.official-button:hover{background:#f3f4f6}
+    .action-button:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
+    .action-note{margin:12px 0 0;color:var(--muted);font-size:12px;line-height:1.8}
+    .card-footer{margin-top:30px;padding-top:20px;border-top:1px solid var(--border);color:#9ca3af;font-size:12px;line-height:1.7}
+    /* ページ最下部中央の法務リンク */
+    .site-footer{width:100%;max-width:900px;margin:24px auto 0;padding:18px 10px 4px;text-align:center}
+    .legal-links{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 14px;color:#6b7280;font-size:12px;line-height:1.8}
+    .legal-links a{color:#6b7280;text-decoration:none}
+    .legal-links a:hover{color:var(--blue);text-decoration:underline}
+    .legal-separator{color:#cbd5e1}
+    @media(max-width:480px){body{padding:14px}.login-card{padding:34px 20px 26px;border-radius:20px}h1{font-size:25px}.lead{font-size:14px}.site-footer{margin-top:16px;padding-top:12px}.legal-links{gap:6px 10px;font-size:11px}}
   </style>
 </head>
-  
 <body>
   <main class="login-card">
-
-    <!-- ロゴ -->
-    <img
-      src="./assets/rakubure-logo.png"
-      alt="楽ブレ"
-      class="logo"
-    >
-
+    <img src="./assets/rakubure-logo.png" alt="楽ブレ" class="logo">
     <h1>楽ブレへようこそ</h1>
-
-    <p class="lead">
-      Googleアカウントでログインして、<br>
-      履歴書・職務経歴書などの作成をはじめましょう。
-    </p>
-
-    <!-- Google OAuth Client ID -->
-    <div
-      id="g_id_onload"
+    <p class="lead">Googleアカウントでログインして、<br>履歴書・職務経歴書などの作成をはじめましょう。</p>
+ 
+    <div id="g_id_onload"
       data-client_id="490441638610-hb6vqjd0o1a608n8glubko8kta5el407.apps.googleusercontent.com"
       data-callback="handleGoogleCredential"
-      data-auto_prompt="false">
-    </div>
-
-    <!-- Googleログイン -->
+      data-auto_prompt="false"></div>
+ 
     <div class="google-login">
-      <div
-        class="g_id_signin"
-        data-type="standard"
-        data-size="large"
-        data-theme="outline"
-        data-text="signin_with"
-        data-shape="rectangular"
-        data-logo_alignment="left"
-        data-width="320">
-      </div>
+      <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+        data-text="signin_with" data-shape="rectangular" data-logo_alignment="left" data-width="320"></div>
     </div>
-
-    <div id="loading" class="loading">
-      Google認証を確認しています…
-    </div>
-
-    <div
-      id="status"
-      class="status"
-      role="status"
-      aria-live="polite">
-    </div>
-
+ 
+    <div id="loading" class="loading">Google認証を確認しています…</div>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+ 
     <div class="divider">初めてご利用の方</div>
-
-    <!-- 新規登録・お問い合わせ・公式サイト -->
     <div class="action-buttons">
-
-      <!-- 無料トライアル申請 -->
-      <a
-        id="registerButton"
-        class="action-button register-button"
-        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E7%84%A1%E6%96%99%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%E3%81%AE%E4%BB%B6&amp;body=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%E3%80%82%0D%0A%0D%0A%E4%BB%A5%E4%B8%8B%E3%82%92%E3%81%94%E8%A8%98%E8%BC%89%E3%81%AE%E4%B8%8A%E3%80%81%E9%80%81%E4%BF%A1%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%E7%A8%AE%E5%88%A5%EF%BC%9A%E7%84%A1%E6%96%99%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%0D%0A%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%9A%0D%0A%E3%83%95%E3%83%AA%E3%82%AC%E3%83%8A%EF%BC%9A%0D%0A%E4%BC%9A%E7%A4%BE%E5%90%8D%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E9%80%A3%E7%B5%A1%E5%85%88%0D%0A%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%EF%BC%9A%0D%0A%E9%80%A3%E7%B5%A1%E3%81%8C%E3%81%A4%E3%81%8F%E9%9B%BB%E8%A9%B1%E7%95%AA%E5%8F%B7%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%0D%0A%E5%86%85%E5%AE%B9%E3%82%92%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E6%8B%85%E5%BD%93%E8%80%85%E3%82%88%E3%82%8A%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%AB%E3%81%A6%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%99%E3%80%82"
-      >
+      <a id="registerButton" class="action-button register-button"
+        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E7%84%A1%E6%96%99%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%E3%81%AE%E4%BB%B6&amp;body=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%E3%80%82%0D%0A%0D%0A%E4%BB%A5%E4%B8%8B%E3%82%92%E3%81%94%E8%A8%98%E8%BC%89%E3%81%AE%E4%B8%8A%E3%80%81%E9%80%81%E4%BF%A1%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%E7%A8%AE%E5%88%A5%EF%BC%9A%E7%84%A1%E6%96%99%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%0D%0A%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%9A%0D%0A%E3%83%95%E3%83%AA%E3%82%AC%E3%83%8A%EF%BC%9A%0D%0A%E4%BC%9A%E7%A4%BE%E5%90%8D%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E9%80%A3%E7%B5%A1%E5%85%88%0D%0A%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%EF%BC%9A%0D%0A%E9%80%A3%E7%B5%A1%E3%81%8C%E3%81%A4%E3%81%8F%E9%9B%BB%E8%A9%B1%E7%95%AA%E5%8F%B7%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%0D%0A%E5%86%85%E5%AE%B9%E3%82%92%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E6%8B%85%E5%BD%93%E8%80%85%E3%82%88%E3%82%8A%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%AB%E3%81%A6%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%99%E3%80%82">
         新規登録・無料トライアル申請
       </a>
-
-      <!-- お問い合わせ -->
-      <a
-        id="contactButton"
-        class="action-button contact-button"
-        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%AE%E4%BB%B6&amp;body=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%E3%80%82%0D%0A%0D%0A%E4%BB%A5%E4%B8%8B%E3%82%92%E3%81%94%E8%A8%98%E8%BC%89%E3%81%AE%E4%B8%8A%E3%80%81%E9%80%81%E4%BF%A1%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%E7%A8%AE%E5%88%A5%EF%BC%9A%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%9A%0D%0A%E3%83%95%E3%83%AA%E3%82%AC%E3%83%8A%EF%BC%9A%0D%0A%E4%BC%9A%E7%A4%BE%E5%90%8D%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E9%80%A3%E7%B5%A1%E5%85%88%0D%0A%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%EF%BC%9A%0D%0A%E9%80%A3%E7%B5%A1%E3%81%8C%E3%81%A4%E3%81%8F%E9%9B%BB%E8%A9%B1%E7%95%AA%E5%8F%B7%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%0D%0A%E5%86%85%E5%AE%B9%E3%82%92%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E6%8B%85%E5%BD%93%E8%80%85%E3%82%88%E3%82%8A%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%AB%E3%81%A6%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%99%E3%80%82"
-      >
+ 
+      <a id="contactButton" class="action-button contact-button"
+        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%AE%E4%BB%B6&amp;body=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%E3%80%82%0D%0A%0D%0A%E4%BB%A5%E4%B8%8B%E3%82%92%E3%81%94%E8%A8%98%E8%BC%89%E3%81%AE%E4%B8%8A%E3%80%81%E9%80%81%E4%BF%A1%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%E7%A8%AE%E5%88%A5%EF%BC%9A%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%81%9B%0D%0A%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%9A%0D%0A%E3%83%95%E3%83%AA%E3%82%AC%E3%83%8A%EF%BC%9A%0D%0A%E4%BC%9A%E7%A4%BE%E5%90%8D%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E9%80%A3%E7%B5%A1%E5%85%88%0D%0A%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%EF%BC%9A%0D%0A%E9%80%A3%E7%B5%A1%E3%81%8C%E3%81%A4%E3%81%8F%E9%9B%BB%E8%A9%B1%E7%95%AA%E5%8F%B7%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%0D%0A%E5%86%85%E5%AE%B9%E3%82%92%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E6%8B%85%E5%BD%93%E8%80%85%E3%82%88%E3%82%8A%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%AB%E3%81%A6%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%99%E3%80%82">
         お問い合わせ
       </a>
-
-      <!-- 楽ブレ公式サイト -->
-<a
-  id="officialButton"
-  class="action-button official-button"
-  href="https://infoversionk-collab.github.io/rakubure-hp/"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  楽ブレ公式サイト
-</a>
-
+ 
+      <a id="officialButton" class="action-button official-button"
+        href="https://infoversionk-collab.github.io/rakubure-hp/"
+        target="_blank" rel="noopener noreferrer">楽ブレ公式サイト</a>
     </div>
-
-    <p class="action-note">
-      無料トライアルは、管理者による確認・承認後にご利用いただけます。
-    </p>
-
+ 
+    <p class="action-note">無料トライアルは、管理者による確認・承認後にご利用いただけます。</p>
     <div class="divider">ご利用について</div>
-
-    <p class="notice">
-      ログインにはGoogleアカウントを使用します。<br>
-      認証・利用権限が確認された場合のみ、<br>
-      楽ブレ本体ページへ移動します。
-    </p>
-
-    <div class="footer">
-      © 2026 Version-K / 楽ブレ
-    </div>
-
+    <p class="notice">ログインにはGoogleアカウントを使用します。<br>認証・利用権限が確認された場合のみ、<br>楽ブレ本体ページへ移動します。</p>
+    <div class="card-footer">© 2026 Version-K / 楽ブレ</div>
   </main>
-
+ 
+  <!-- ページの最下部中央に表示する法務リンク -->
+  <footer class="site-footer">
+    <nav class="legal-links" aria-label="法務・運営情報">
+      <a href="https://infoversionk-collab.github.io/rakubure-hp/about.html" target="_blank" rel="noopener noreferrer">運営者情報・利用規約</a>
+      <span class="legal-separator" aria-hidden="true">|</span>
+      <a href="https://infoversionk-collab.github.io/rakubure-hp/tokutei.html" target="_blank" rel="noopener noreferrer">特定商取引法に基づく表記</a>
+      <span class="legal-separator" aria-hidden="true">|</span>
+      <a href="https://infoversionk-collab.github.io/rakubure-hp/privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+    </nav>
+  </footer>
+ 
   <script>
     "use strict";
-
+ 
     const RAKUBURE_LOGIN_CONFIG = {
       GOOGLE_CLIENT_ID:
         "490441638610-hb6vqjd0o1a608n8glubko8kta5el407.apps.googleusercontent.com",
-
       GAS_WEB_APP_URL:
         "https://script.google.com/macros/s/AKfycbybptovZ67BMtkDaC7tRBLHFoQS9DXbr43oeEiSBmOfsXBTK3bwA800baKvpOMOo0yn/exec",
-
       APP_URL: "./index.html"
     };
-
-    /**
-     * Googleログイン
-     * GAS側でGoogle IDトークンを検証し、
-     * 認証と利用権限を確認します。
-     */
+ 
     async function handleGoogleCredential(response) {
       if (!response || !response.credential) {
-        showStatus(
-          "Googleログイン情報を取得できませんでした。もう一度お試しください。",
-          "error"
-        );
+        showStatus("Googleログイン情報を取得できませんでした。もう一度お試しください。", "error");
         return;
       }
-
+ 
       setLoading(true);
       showStatus("Googleアカウントを確認しています…");
-
       sessionStorage.removeItem("RAKUBURE_GOOGLE_CREDENTIAL");
       sessionStorage.removeItem("RAKUBURE_GOOGLE_EMAIL");
-
+ 
       try {
-        const gasResponse = await fetch(
-          RAKUBURE_LOGIN_CONFIG.GAS_WEB_APP_URL,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "text/plain;charset=UTF-8"
-            },
-            body: JSON.stringify({
-              action: "auth",
-              googleCredential: response.credential
-            }),
-            redirect: "follow",
-            cache: "no-store"
-          }
-        );
-
+        const gasResponse = await fetch(RAKUBURE_LOGIN_CONFIG.GAS_WEB_APP_URL, {
+          method: "POST",
+          headers: {"Content-Type": "text/plain;charset=UTF-8"},
+          body: JSON.stringify({
+            action: "auth",
+            googleCredential: response.credential
+          }),
+          redirect: "follow",
+          cache: "no-store"
+        });
+ 
         if (!gasResponse.ok) {
-          throw new Error(
-            "GASからHTTP " + gasResponse.status +
-            " が返されました。デプロイ設定を確認してください。"
-          );
+          throw new Error("GASからHTTP " + gasResponse.status + " が返されました。デプロイ設定を確認してください。");
         }
-
+ 
         const result = await gasResponse.json();
-
-        if (
-          !result ||
-          result.success !== true ||
-          result.authenticated !== true
-        ) {
-          throw new Error(
-            result && (result.message || result.error)
-              ? (result.message || result.error)
-              : "このGoogleアカウントは利用できないか、認証に失敗しました。"
-          );
+ 
+        if (!result || result.success !== true || result.authenticated !== true) {
+          throw new Error(result && (result.message || result.error)
+            ? (result.message || result.error)
+            : "このGoogleアカウントは利用できないか、認証に失敗しました。");
         }
-
-        // 本体側でもIDトークンの再検証と利用権限確認が必須
-        sessionStorage.setItem(
-          "RAKUBURE_GOOGLE_CREDENTIAL",
-          response.credential
-        );
-
-        sessionStorage.setItem(
-          "RAKUBURE_GOOGLE_EMAIL",
-          String(result.email || "")
-        );
-
-        showStatus(
-          "認証に成功しました。楽ブレを起動します。",
-          "success"
-        );
-
+ 
+        sessionStorage.setItem("RAKUBURE_GOOGLE_CREDENTIAL", response.credential);
+        sessionStorage.setItem("RAKUBURE_GOOGLE_EMAIL", String(result.email || ""));
+        showStatus("認証に成功しました。楽ブレを起動します。", "success");
+ 
         window.setTimeout(() => {
-          window.location.replace(
-            RAKUBURE_LOGIN_CONFIG.APP_URL
-          );
+          window.location.replace(RAKUBURE_LOGIN_CONFIG.APP_URL);
         }, 400);
-
       } catch (error) {
         console.error("Rakubure login error:", error);
-
         sessionStorage.removeItem("RAKUBURE_GOOGLE_CREDENTIAL");
         sessionStorage.removeItem("RAKUBURE_GOOGLE_EMAIL");
-
-        let detail = error && error.message
-          ? error.message
-          : "不明なエラー";
-
-        if (
-          error instanceof TypeError ||
-          /Failed to fetch|Load failed/i.test(detail)
-        ) {
-          detail =
-            "GASとの通信に失敗しました。Webアプリのデプロイ設定、" +
-            "URL、ブラウザの通信制限を確認してください。";
+ 
+        let detail = error && error.message ? error.message : "不明なエラー";
+        if (error instanceof TypeError || /Failed to fetch|Load failed/i.test(detail)) {
+          detail = "GASとの通信に失敗しました。Webアプリのデプロイ設定、URL、ブラウザの通信制限を確認してください。";
         }
-
-        showStatus(
-          "ログインを完了できませんでした。\n" + detail,
-          "error"
-        );
-
+        showStatus("ログインを完了できませんでした。\n" + detail, "error");
       } finally {
         setLoading(false);
       }
     }
-
+ 
     function showStatus(message, type = "") {
       const status = document.getElementById("status");
-
       status.textContent = message;
       status.className = "status";
-
-      if (type) {
-        status.classList.add(type);
-      }
+      if (type) status.classList.add(type);
     }
-
+ 
     function setLoading(isLoading) {
-      document.getElementById("loading")
-        .classList.toggle("show", isLoading);
+      document.getElementById("loading").classList.toggle("show", isLoading);
     }
-
+ 
     window.addEventListener("load", () => {
       if (!RAKUBURE_LOGIN_CONFIG.GOOGLE_CLIENT_ID) {
-        showStatus(
-          "Google Client IDが設定されていません。",
-          "error"
-        );
+        showStatus("Google Client IDが設定されていません。", "error");
       }
-
       if (!window.google || !window.google.accounts) {
-        showStatus(
-          "Googleログインを読み込めませんでした。ネットワークを確認して再読み込みしてください。",
-          "error"
-        );
+        showStatus("Googleログインを読み込めませんでした。ネットワークを確認して再読み込みしてください。", "error");
       }
     });
-  </script>  
-
-<footer>
-  <div class="legal-links">
-    <a
-      href="https://infoversionk-collab.github.io/rakubure-hp/tokutei.html"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      特定商取引法に基づく表記
-    </a>
-
-    <span class="legal-separator">|</span>
-
-    <a
-      href="https://infoversionk-collab.github.io/rakubure-hp/privacy.html"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      プライバシーポリシー
-    </a>
-  </div>
-</footer>
-  
+  </script>
 </body>
 </html>
