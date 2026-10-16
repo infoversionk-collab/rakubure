@@ -6,94 +6,492 @@
 <title>楽ブレ｜書類自動生成システム</title>
 <meta name="description" content="候補者情報PDFから必要な書類をスムーズに作成できる書類自動生成システム">
 <style>
-:root{--blue:#1261d8;--blue2:#2d8cff;--navy:#102a56;--pink:#f2268f;--yellow:#ffd21c;--green:#19a957;--line:#dbe5f3;--muted:#71819a;--bg:#f5f9ff;--shadow:0 18px 50px rgba(21,70,130,.10)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;color:var(--navy);background:radial-gradient(circle at 12% 10%,#278eff1a,transparent 28%),radial-gradient(circle at 90% 15%,#f2268f14,transparent 25%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",Meiryo,sans-serif;line-height:1.6}
-button,input{font:inherit}button{cursor:pointer}a{color:var(--blue)}
-.header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:20px;min-height:84px;padding:10px 4vw;background:#ffffffef;backdrop-filter:blur(14px);border-bottom:1px solid #1261d81a}
-.logo{display:flex;align-items:center;flex:0 0 120px;text-decoration:none}.logo-image{width:120px;height:66px;object-fit:contain;object-position:left center}
-.header-title{flex:1;min-width:0}.header-title strong,.header-title span{display:block}.header-title strong{font-size:17px}.header-title span{font-size:12px;color:var(--muted)}
-.header-actions{display:flex;align-items:center;gap:9px;margin-left:auto}.login-button,.logout-button,.guide{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border:1px solid var(--blue);border-radius:999px;font-size:13px;font-weight:800;white-space:nowrap;text-decoration:none}.login-button{background:var(--blue);color:#fff}.logout-button,.guide{background:#fff;color:var(--blue)}[hidden],.hidden{display:none!important}
-main{max-width:1120px;margin:auto;padding:30px 20px 55px}
-.hero{display:grid;grid-template-columns:1fr 330px;gap:20px;align-items:center;min-height:290px;padding:28px;border-radius:28px;background:linear-gradient(135deg,#fff,#f4f9ff 65%,#fff);box-shadow:var(--shadow);overflow:hidden}
-.tag{display:inline-block;padding:6px 12px;border-radius:999px;background:#e8f2ff;color:var(--blue);font-size:11px;font-weight:900;letter-spacing:.1em}
-h1{font-size:clamp(35px,5vw,56px);line-height:1.15;margin:16px 0;letter-spacing:-.04em}h1 em{font-style:normal;color:var(--blue)}.hero-copy p{color:#4d6280}
-.hero-art{height:210px;position:relative}.blob{position:absolute;border-radius:50%;opacity:.9}.pink{width:145px;height:125px;left:20px;top:40px;background:var(--pink)}.blue{width:165px;height:145px;left:100px;top:12px;background:#0799e7}.yellow{width:120px;height:105px;left:190px;top:54px;background:var(--yellow)}
-.paper{position:absolute;background:#fff;border:3px solid #153d8c;border-radius:7px;box-shadow:0 12px 25px #0002;padding:12px;width:130px;height:155px;left:35px;top:45px;transform:rotate(-8deg)}.paper.second{left:160px;top:28px;transform:rotate(9deg)}.paper b{display:block;margin-bottom:12px}.paper i{display:block;height:6px;background:#d8e7fb;margin:8px 0;border-radius:5px}.paper i.short{width:60%}
-.flow{margin-top:24px}.step{background:#fff;border:1px solid #1261d81f;border-radius:22px;box-shadow:var(--shadow);padding:24px}.step-head{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:1px solid #edf1f7}.step-number{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,#0e61df,#268fff);color:#fff;font-weight:1000;flex:none}.step-head small{display:block;color:var(--blue);font-size:11px;font-weight:1000;letter-spacing:.1em}.step-head h2{margin:2px 0 0;font-size:21px}.step-head>b{margin-left:auto;color:var(--muted);font-size:12px}.connector{text-align:center;color:var(--blue);font-size:26px;font-weight:900;padding:7px}
-.upload-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding-top:20px}.dropzone{min-height:210px;border:2px dashed #7eb1ff;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#fbfdff;text-align:center;padding:18px}.dropzone.dragover{background:#edf6ff;border-color:var(--blue)}.dropzone input{display:none}.cloud{font-size:44px;color:var(--blue)}.file-select{border:1.5px solid var(--blue);border-radius:10px;padding:8px 24px;color:var(--blue);font-weight:900}.dropzone small{color:#8290a5;font-size:12px}
-.file-panel{border:1px solid var(--line);border-radius:18px;padding:16px;min-height:210px;background:#fbfdff}.empty{min-height:170px;display:grid;place-items:center;color:#8a98aa}.file-list{display:grid;gap:9px}.file-item{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #dce5f2;border-radius:12px;padding:12px}.file-meta{flex:1;min-width:0}.file-name{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-size{font-size:11px;color:var(--muted)}.remove-file{border:0;background:none;color:#7c8899;font-size:22px}
-.doc-options{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding-top:20px}.doc-option{position:relative;border:2px solid #e0e7f0;border-radius:16px;padding:20px 12px;text-align:center;cursor:pointer;background:#fff}.doc-option.active{border-color:var(--blue);box-shadow:0 8px 20px #1261d81a}.doc-option input{position:absolute;opacity:0;width:1px;height:1px}.box{position:absolute;left:12px;top:12px;width:22px;height:22px;border:2px solid #aab7c9;border-radius:5px;color:transparent}.doc-option.active .box{background:var(--blue);border-color:var(--blue);color:#fff}.doc-icon{margin:0 auto 10px;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#eaf3ff;color:var(--blue);font-size:22px;font-weight:900}.doc-icon.yellow{background:#fff6db;color:#e4a900}.doc-option strong,.doc-option small{display:block}.doc-option small{color:var(--muted);margin-top:5px;font-size:11px}
-.privacy-card{margin-top:18px;border:1px solid var(--line);border-radius:16px;padding:18px;background:#fbfdff;display:grid;grid-template-columns:auto 1fr;gap:12px}.privacy-icon{width:42px;height:42px;border-radius:50%;background:#eaf3ff;color:var(--blue);display:grid;place-items:center;font-size:21px}.privacy-card h3{margin:0 0 4px}.privacy-card p{margin:0;color:#667991;font-size:13px}.privacy-card a{display:inline-block;margin-top:7px;font-size:12px;font-weight:800}.consent{grid-column:1/-1;display:flex;align-items:center;gap:9px;padding-top:13px;border-top:1px solid #e7edf5;font-weight:800;font-size:13px}.consent input{width:20px;height:20px;accent-color:var(--blue)}
-.generate{width:100%;border:0;border-radius:14px;padding:16px;margin-top:20px;background:linear-gradient(100deg,#1976ef,#1749d2);color:#fff;font-size:20px;font-weight:1000}.generate:disabled{opacity:.45;cursor:not-allowed}.disabled-note{text-align:center;color:#8290a5;font-size:12px;margin:9px 0 0}
-.progress{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:16px;background:#fbfdff}.progress-title{display:flex;align-items:center;gap:10px}.progress-title b{margin-left:auto;color:var(--blue)}.spinner{width:18px;height:18px;border:3px solid #dbe7f8;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.progress-track{height:8px;background:#e9eef5;border-radius:99px;overflow:hidden;margin:13px 0}.progress-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,#1476ef,#8b3ff1);transition:width .3s}
-.complete-box{margin-top:18px;border:1px solid #bde6cd;border-radius:16px;padding:18px;background:#fbfffc}.complete-title{display:flex;gap:12px;align-items:center;padding-bottom:14px;border-bottom:1px solid #dcefe3}.complete-mark{width:44px;height:44px;border-radius:13px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:24px}.complete-title h3{margin:0;color:#158b4b}.complete-title p{margin:3px 0 0;color:#6f8190;font-size:12px}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.result-card{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff;min-width:0}.result-type{font-weight:1000}.result-size{color:#7a8aa0;font-size:12px;margin:4px 0 12px;overflow-wrap:anywhere}.result-card button{width:100%;padding:10px;border:1.5px solid #8ab6ff;background:#fff;color:var(--blue);border-radius:9px;font-weight:800;margin-top:7px}
-.benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:24px;border-radius:18px;overflow:hidden;background:#dfe7f1;box-shadow:var(--shadow)}.benefits>div{background:#fff;padding:20px 12px;text-align:center}.benefits b{display:block;color:var(--blue);font-size:12px}.benefits strong,.benefits span{display:block}.benefits span{color:var(--muted);font-size:11px;margin-top:4px}
-.main-footer{padding:24px 16px;text-align:center;color:#728198;font-size:12px}.main-footer a{margin:0 10px;text-decoration:none}.main-footer span{display:block;margin-top:9px}
-.legal-footer{padding:22px 16px;background:#fff;border-top:1px solid var(--line);text-align:center}.legal-footer-links{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px 30px;max-width:1120px;margin:auto}.legal-footer-links a{font-size:12px;font-weight:800;text-decoration:none}.legal-footer-links a:hover,.main-footer a:hover{text-decoration:underline}
-.modal{position:fixed;inset:0;z-index:50;background:#0c1c378c;display:grid;place-items:center;padding:18px}.modal-card{width:min(820px,100%);max-height:88vh;overflow:auto;background:#fff;border-radius:20px;padding:26px;position:relative}.modal-close{float:right;border:0;background:#fff;font-size:27px;color:#64748b}.modal-card h2{margin-top:0}.modal-card h3{margin:22px 0 6px;font-size:16px}.modal-card p,.modal-card li{font-size:13px;color:#334155}.contact-box{padding:14px;border-radius:12px;background:#eef6ff;border:1px solid #d7e9ff}
-@media(max-width:820px){.header{gap:12px}.header-title{display:none}main{padding:18px 12px 38px}.hero{grid-template-columns:1fr;padding:22px}.hero-art{max-width:340px;width:100%;margin:auto}.upload-grid,.doc-options,.result-grid{grid-template-columns:1fr}.benefits{grid-template-columns:1fr 1fr}.step{padding:17px}.step-head>b{display:none}}
-@media(max-width:600px){.header{min-height:70px;padding:8px 12px}.logo{flex-basis:76px}.logo-image{width:76px;height:50px}.header-actions{gap:5px}.login-button,.logout-button,.guide{min-height:36px;padding:0 9px;font-size:11px}h1{font-size:37px}.benefits{grid-template-columns:1fr}.legal-footer-links{flex-direction:column;gap:10px}.modal-card{padding:20px}}
+:root{--blue:#1261d8;--blue2:#2d8cff;--navy:#102a56;--pink:#f2268f;--yellow:#ffd21c;--green:#19a957;--line:#dbe5f3;--muted:#71819a;--bg:#f5f9ff;--white:#fff;--shadow:0 18px 50px rgba(21,70,130,.10)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--navy);background:radial-gradient(circle at 12% 10%,rgba(39,142,255,.10),transparent 28%),radial-gradient(circle at 90% 15%,rgba(242,38,143,.08),transparent 25%),var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",Meiryo,sans-serif;line-height:1.6}
+button,input{font:inherit}button{cursor:pointer}
+.header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:24px;min-height:96px;padding:12px 32px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(18,97,216,.10);width:100%}
+.logo{display:flex;align-items:center;flex:0 0 120px;width:120px;min-width:0;text-decoration:none}
+.logo-image{display:block;width:120px;height:72px;object-fit:contain;object-position:left center}
+.header-title{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.header-title strong{font-size:17px;line-height:1.5}.header-title span{margin-top:3px;font-size:12px;color:var(--muted);line-height:1.5}
+.header-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-shrink:0;margin-left:auto}
+.login-button,.logout-button,.guide{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border:1px solid var(--blue);border-radius:999px;font-size:15px;font-weight:700;white-space:nowrap;text-decoration:none}
+.login-button{color:#fff;background:#1769ff}.login-button:hover{background:#0757df}.logout-button,.guide{color:var(--blue);background:#fff}.logout-button:hover,.guide:hover{background:#edf4ff}
+.login-button[hidden],.logout-button[hidden]{display:none}
+main{max-width:1120px;margin:0 auto;padding:32px 20px 60px;width:100%}
+.hero{min-height:310px;display:grid;grid-template-columns:1fr 390px;gap:20px;align-items:center;padding:20px 28px 28px;overflow:hidden;border-radius:30px;background:linear-gradient(135deg,#fff 0%,#f4f9ff 62%,#fff 100%);box-shadow:var(--shadow);position:relative}
+.hero:after{content:"";position:absolute;right:-100px;top:-120px;width:430px;height:430px;background:conic-gradient(from 20deg,var(--blue),#1bb7f0,var(--pink),var(--yellow),var(--blue));filter:blur(55px);opacity:.15;border-radius:50%}
+.tag{display:inline-block;padding:6px 12px;border-radius:999px;background:#e8f2ff;color:var(--blue);font-weight:900;font-size:11px;letter-spacing:.12em}
+h1{font-size:clamp(36px,5vw,58px);line-height:1.15;margin:16px 0 14px;letter-spacing:-.04em}h1 em{font-style:normal;color:var(--blue)}.hero-copy p{font-size:16px;color:#4d6280}
+.hero-illustration{height:250px;position:relative}.splash{position:absolute;border-radius:50%;filter:saturate(1.3);opacity:.92}.splash.pink{width:180px;height:150px;background:#f2268f;left:20px;top:25px;transform:rotate(-18deg)}.splash.blue{width:210px;height:165px;background:#0799e7;left:85px;top:5px;transform:rotate(8deg)}.splash.yellow{width:160px;height:140px;background:#ffd21c;left:175px;top:42px;transform:rotate(18deg)}
+.paper{position:absolute;background:#fff;border:3px solid #153d8c;border-radius:7px;box-shadow:0 12px 25px rgba(0,0,0,.14);padding:13px;color:#153d8c}.paper b{display:block;font-size:16px;margin-bottom:12px}.paper i{display:block;height:6px;background:#d8e7fb;margin:8px 0;border-radius:5px}.paper i.short{width:60%}.paper-a{width:150px;height:190px;left:10px;top:48px;transform:rotate(-9deg)}.paper-b{width:160px;height:195px;left:145px;top:28px;transform:rotate(10deg)}.folder{position:absolute;right:0;bottom:10px;width:110px;height:80px;background:#ffc400;border:4px solid #173b84;border-radius:8px 8px 14px 14px;transform:rotate(-4deg);z-index:5}.folder span{position:absolute;left:12px;top:-18px;width:58px;height:22px;background:#ffc400;border:4px solid #173b84;border-bottom:0;border-radius:8px 8px 0 0}.folder b{position:absolute;left:25px;top:22px;color:#173b84}.pencil{position:absolute;right:55px;bottom:2px;width:100px;height:14px;border-radius:8px;background:linear-gradient(90deg,#fff 75%,#f2268f 76%);border:3px solid #173b84;transform:rotate(-23deg);z-index:6}.spark{position:absolute;right:12px;top:12px;font-size:46px;color:#f2268f;z-index:8}
+.flow{margin-top:24px}.step{background:#fff;border:1px solid rgba(18,97,216,.12);border-radius:24px;box-shadow:var(--shadow);padding:26px}.step-head{display:flex;align-items:center;gap:16px;padding-bottom:18px;border-bottom:1px solid #edf1f7}.step-head>span{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#0e61df,#268fff);color:#fff;font-size:18px;font-weight:1000;flex:none}.step-head small{display:block;color:var(--blue);font-weight:1000;letter-spacing:.12em;font-size:11px}.step-head h2{margin:2px 0 0;font-size:23px;letter-spacing:-.03em}.step-head>b{margin-left:auto;color:#6c7d96;font-size:12px}.connector{text-align:center;color:var(--blue);font-size:28px;font-weight:900;padding:8px}
+.upload-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;padding-top:20px}.dropzone{min-height:220px;border:2px dashed #7eb1ff;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#fbfdff;color:#21385e;transition:.2s}.dropzone.dragover{background:#edf6ff;border-color:var(--blue);transform:scale(1.01)}.dropzone input{display:none}.cloud{font-size:50px;color:var(--blue);line-height:1}.dropzone span{border:1.5px solid var(--blue);border-radius:10px;padding:9px 30px;color:var(--blue);font-weight:900}.dropzone small{color:#8290a5}
+.file-panel{border:1px solid var(--line);border-radius:18px;padding:18px;min-height:220px;background:#fbfdff}.empty{height:100%;display:grid;place-items:center;color:#8a98aa}.file-item{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #dce5f2;border-radius:14px;padding:12px}.pdf-icon{color:#ef3434;font-size:18px;font-weight:1000}.file-meta{flex:1;min-width:0}.file-name{font-weight:900;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.file-size{font-size:12px;color:#71819a}.remove-file{border:0;background:none;color:#7c8899;font-size:24px}
+.doc-options{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;padding-top:20px}.doc-option{position:relative;border:2px solid #e0e7f0;border-radius:18px;padding:22px 16px;text-align:center;cursor:pointer;transition:.2s;background:#fff}.doc-option.active{border-color:var(--blue);box-shadow:0 8px 20px rgba(18,97,216,.10)}.doc-option:focus-visible{outline:3px solid rgba(18,97,216,.25);outline-offset:3px}.doc-option input{position:absolute;opacity:0}.box{position:absolute;left:14px;top:14px;width:24px;height:24px;border:2px solid #aab7c9;border-radius:5px;color:transparent}.doc-option.active .box{background:var(--blue);border-color:var(--blue);color:#fff}.doc-icon{margin:0 auto 10px;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#eaf3ff;color:var(--blue);font-size:24px;font-weight:900}.doc-icon.yellow{background:#fff6db;color:#e4a900}.doc-option strong,.doc-option small{display:block}.doc-option strong{font-size:18px}.doc-option small{color:#71819a;margin-top:5px;font-size:12px}
+.privacy-card{margin-top:20px;border:1px solid #dbe5f3;border-radius:18px;padding:20px;background:#fbfdff;display:grid;grid-template-columns:auto 1fr;gap:14px}.privacy-icon{width:44px;height:44px;border-radius:50%;background:#eaf3ff;color:var(--blue);display:grid;place-items:center;font-size:22px}.privacy-card h3{margin:0 0 4px}.privacy-card p{margin:0;color:#667991;font-size:13px}.privacy-card a{display:inline-block;margin-top:7px;color:var(--blue);font-size:12px;font-weight:800}.consent{grid-column:1/-1;display:flex;align-items:center;gap:9px;padding-top:13px;border-top:1px solid #e7edf5;font-weight:800}.consent input{width:20px;height:20px;accent-color:var(--blue)}
+.generate{width:100%;border:0;border-radius:16px;padding:17px 20px;margin-top:20px;background:linear-gradient(100deg,#1976ef,#1749d2);color:#fff;font-size:22px;font-weight:1000;box-shadow:0 12px 26px rgba(18,97,216,.25)}.generate:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}.disabled-note{text-align:center;color:#8290a5;font-size:12px;margin:9px 0 0}.progress{margin-top:18px;padding:18px;border:1px solid #dbe5f3;border-radius:16px;background:#fbfdff}.progress-title{display:flex;align-items:center;gap:10px}.progress-title b{margin-left:auto;color:var(--blue);font-size:20px;font-weight:1000}.spinner{width:18px;height:18px;border:3px solid #dbe7f8;border-top-color:var(--blue);border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.progress-track{height:8px;background:#e9eef5;border-radius:99px;overflow:hidden;margin:13px 0}.progress-track span{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#1476ef,#8b3ff1);transition:width .35s ease}.hidden{display:none!important}
+.complete-box{margin-top:20px;border:1px solid #bde6cd;border-radius:18px;padding:20px;background:#fbfffc}.complete-title{display:flex;gap:14px;align-items:center;padding-bottom:15px;border-bottom:1px solid #dcefe3}.complete-title>span{width:48px;height:48px;border-radius:14px;background:var(--green);color:#fff;display:grid;place-items:center;font-size:26px;font-weight:1000}.complete-title h3{margin:0;color:#158b4b}.complete-title p{margin:3px 0 0;color:#6f8190;font-size:12px}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}.result-card{border:1px solid #dbe5f3;border-radius:16px;padding:18px;background:#fff}.result-type{font-weight:1000;font-size:18px}.result-size{color:#7a8aa0;font-size:12px;margin:4px 0 13px}.result-card button{width:100%;padding:11px;border:1.5px solid #8ab6ff;background:#fff;color:var(--blue);border-radius:10px;font-weight:900;margin-top:8px}.result-source-note{font-size:11px;color:#71819a;margin-top:5px}.benefits{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:25px;border-radius:20px;overflow:hidden;background:#dfe7f1;box-shadow:var(--shadow)}.benefits>div{background:#fff;padding:22px;text-align:center}.benefits b{display:block;color:var(--blue);font-size:12px}.benefits strong{display:block;margin-top:3px}.benefits span{display:block;color:#71819a;font-size:12px;margin-top:4px}
+.site-footer{width:100%;margin:0;padding:28px 20px 24px;text-align:center;color:#728198;font-size:12px;background:rgba(255,255,255,.9);border-top:1px solid #dbe5f3}.legal-links{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 12px;width:100%;max-width:1000px;margin:0 auto}.legal-links a,.footer-contact{color:var(--blue);text-decoration:none;font-weight:700;line-height:1.8}.legal-links a:hover,.footer-contact:hover{text-decoration:underline}.legal-separator{color:#b5c0d0}.footer-contact{display:inline-block;margin-top:14px;font-weight:400}.footer-copyright{display:block;margin-top:10px;color:#8290a5}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(12,28,55,.48);display:grid;place-items:center;padding:20px}.modal-card{width:min(520px,100%);background:#fff;border-radius:22px;padding:28px;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.25)}.modal-card button{position:absolute;right:14px;top:10px;border:0;background:none;font-size:28px;color:#64748b}.privacy-modal-card{width:min(820px,100%);max-height:min(86vh,900px);overflow:hidden;background:#fff;border-radius:22px;position:relative;box-shadow:0 30px 70px rgba(0,0,0,.25);display:flex;flex-direction:column}.privacy-modal-head{padding:24px 28px 16px;border-bottom:1px solid #e7edf5;flex:0 0 auto}.privacy-modal-head h2{margin:0 42px 6px 0}.privacy-modal-head p{margin:0;color:#667991;font-size:12px}.privacy-modal-body{overflow:auto;padding:22px 28px 28px;color:#334155;line-height:1.75;font-size:13px}.privacy-modal-body h3{margin:24px 0 8px;font-size:16px;color:#17233d}.privacy-modal-body h3:first-child{margin-top:0}.privacy-modal-body p{margin:8px 0}.privacy-modal-body ul,.privacy-modal-body ol{padding-left:22px;margin:8px 0}.privacy-modal-body li{margin:4px 0}.privacy-note,.privacy-contact{padding:12px 14px;border-radius:12px;background:#f5f8fc;border:1px solid #e5ebf3}.privacy-contact{background:#eef6ff;border-color:#d7e9ff}.privacy-modal-close{position:absolute;right:14px;top:10px;border:0;background:none;font-size:28px;color:#64748b;cursor:pointer;z-index:2}
+@media(max-width:820px){.header{padding:12px 18px}.header-title{display:none}main{padding:18px 12px 40px}.hero{grid-template-columns:1fr;min-height:0;padding:24px}.hero-illustration{height:220px}.upload-grid,.doc-options,.result-grid{grid-template-columns:1fr}.benefits{grid-template-columns:1fr 1fr}.step{padding:18px}.step-head{align-items:flex-start}.step-head>b{display:none}.privacy-card{grid-template-columns:auto 1fr}}
+@media(max-width:600px){.header{gap:12px;min-height:76px;padding:8px 14px}.logo{flex:0 0 76px;width:76px}.logo-image{width:76px;height:52px}.header-actions{gap:6px}.login-button,.logout-button,.guide{min-height:38px;padding:0 10px;font-size:12px}.site-footer{padding:24px 14px 20px}.legal-links{flex-direction:column;gap:6px}.legal-separator{display:none}.legal-links a{font-size:12px}.privacy-modal-card{max-height:90vh;border-radius:16px}.privacy-modal-head{padding:20px 20px 14px}.privacy-modal-body{padding:18px 20px 24px;font-size:12px}}
+@media(max-width:480px){h1{font-size:38px}.benefits{grid-template-columns:1fr}.hero-illustration{transform:scale(.88);transform-origin:center}}
 </style>
 </head>
 <body>
 <header class="header">
-  <a class="logo" href="./index.html" aria-label="楽ブレ トップ"><img src="./assets/rakubure-logo.png" alt="楽ブレ" class="logo-image"></a>
+  <a class="logo" href="./index.html" aria-label="楽ブレ"><img src="./assets/rakubure-logo.png" alt="楽ブレ" class="logo-image"></a>
   <div class="header-title"><strong>書類自動生成システム</strong><span>候補者情報から必要な書類を、もっとカンタンに。</span></div>
-  <div class="header-actions"><a class="login-button" id="loginButton" href="./login.html" hidden>ログイン</a><button class="logout-button" id="logoutButton" type="button" hidden>ログアウト</button><button class="guide" id="guideBtn" type="button">？ 使い方</button></div>
+  <div class="header-actions">
+    <a class="login-button" id="loginButton" href="./login.html" hidden>ログイン</a>
+    <button class="logout-button" id="logoutButton" type="button" hidden>ログアウト</button>
+    <button class="guide" id="guideBtn" type="button">？ 使い方</button>
+  </div>
 </header>
 <main>
-<section class="hero"><div class="hero-copy"><span class="tag">DOCUMENT GENERATION</span><h1>書類作成を、<br><em>もっとラクに。</em></h1><p>PDFをアップロードして、必要な書類を選ぶだけ。<br>シンプルな操作で書類作成をサポートします。</p></div><div class="hero-art" aria-hidden="true"><div class="blob pink"></div><div class="blob blue"></div><div class="blob yellow"></div><div class="paper"><b>履歴書</b><i></i><i></i><i class="short"></i><i></i></div><div class="paper second"><b>職務経歴書</b><i></i><i class="short"></i><i></i><i></i></div></div></section>
-<section class="flow">
-<article class="step"><div class="step-head"><span class="step-number">01</span><div><small>STEP 01</small><h2>候補者情報PDFをアップロード</h2></div><b>最大10件・合計50MB</b></div><div class="upload-grid"><label class="dropzone" id="dropzone"><input id="fileInput" type="file" accept="application/pdf,.pdf" multiple><div class="cloud">↑</div><strong>PDFをドラッグ＆ドロップ</strong><small>または</small><span class="file-select">ファイルを選択</span><small>PDFのみ・1ファイル最大10MB・最大10件・合計50MB</small></label><div class="file-panel" id="filePanel"><div class="empty">まだファイルが選択されていません</div></div></div></article>
-<div class="connector">↓</div>
-<article class="step"><div class="step-head"><span class="step-number">02</span><div><small>STEP 02</small><h2>作成する書類を選択</h2></div><b>複数選択できます</b></div><p style="font-size:12px;color:var(--muted)">※ BPO向けスキルシートを作成する場合は「BPOスキルシート」を選択してください。</p><div class="doc-options">
-<label class="doc-option active" tabindex="0"><input type="checkbox" value="履歴書" checked><span class="box">✓</span><div class="doc-icon">▤</div><strong>履歴書</strong><small>基本情報・学歴・職歴</small></label>
-<label class="doc-option active" tabindex="0"><input type="checkbox" value="職務経歴書" checked><span class="box">✓</span><div class="doc-icon">▥</div><strong>職務経歴書</strong><small>職歴・スキル・実績</small></label>
-<label class="doc-option" tabindex="0"><input type="checkbox" value="推薦状"><span class="box">✓</span><div class="doc-icon yellow">♡</div><strong>推薦状</strong><small>候補者の推薦文</small></label>
-<label class="doc-option" tabindex="0"><input type="checkbox" value="スキルシート_BPO"><span class="box">✓</span><div class="doc-icon">BPO</div><strong>BPOスキルシート</strong><small>BPO向けスキル・職歴</small></label>
-</div></article>
-<div class="connector">↓</div>
-<article class="step"><div class="step-head"><span class="step-number">03</span><div><small>STEP 03</small><h2>個人情報の取り扱いを確認</h2></div></div><div class="privacy-card"><div class="privacy-icon">♢</div><div><h3>個人情報の取り扱いについて</h3><p>アップロードされた情報は、OCR・AIによる分析および書類生成に必要な範囲で取り扱います。</p><a href="#" id="privacyLink">個人情報の取り扱いについて確認する</a></div><label class="consent"><input type="checkbox" id="consent"><span>個人情報の取り扱いについて確認しました</span></label></div></article>
-<div class="connector">↓</div>
-<article class="step"><div class="step-head"><span class="step-number">04</span><div><small>STEP 04</small><h2>データを生成する</h2></div><b>Googleドキュメント等で編集可能</b></div><button class="generate" id="generateBtn" disabled>✦ データを生成する　›</button><p class="disabled-note" id="generateNote">PDF・作成書類・個人情報の確認が必要です</p><div class="progress hidden" id="progress"><div class="progress-title"><span class="spinner"></span><strong id="progressTitle">AIでデータを生成しています...</strong><b id="progressPercent">0%</b></div><div class="progress-track"><span id="progressBar"></span></div><small id="progressText">処理を開始しています...</small></div></article>
-<div class="connector">↓</div>
-<article class="step hidden" id="result"><div class="step-head"><span class="step-number">05</span><div><small>STEP 05</small><h2>生成されたデータを確認・保存</h2></div></div><div class="complete-box"><div class="complete-title"><span class="complete-mark">✓</span><div><h3>書類の生成が完了しました</h3><p>生成データを開き、内容を確認してください。</p></div></div><div class="result-grid" id="resultGrid"></div></div></article>
+<section class="hero">
+  <div class="hero-copy"><span class="tag">DOCUMENT GENERATION</span><h1>書類作成を、<br><em>もっとラクに。</em></h1><p>PDFをアップロードして、必要な書類を選ぶだけ。<br>シンプルな操作で書類作成をサポートします。</p></div>
+  <div class="hero-illustration" aria-hidden="true">
+    <div class="splash pink"></div><div class="splash blue"></div><div class="splash yellow"></div>
+    <div class="paper paper-a"><b>履歴書</b><i></i><i></i><i class="short"></i><i></i></div>
+    <div class="paper paper-b"><b>職務経歴書</b><i></i><i class="short"></i><i></i><i></i></div>
+    <div class="folder"><span></span><b>書類</b></div><div class="pencil"></div><div class="spark">✦</div>
+  </div>
 </section>
-<section class="benefits"><div><b>01</b><strong>かんたん操作</strong><span>アップロードして選ぶだけ</span></div><div><b>02</b><strong>書類作成を効率化</strong><span>手作業の負担を軽減</span></div><div><b>03</b><strong>必要な書類だけ</strong><span>自由に組み合わせ可能</span></div><div><b>04</b><strong>データ生成</strong><span>作成業務をスムーズに</span></div></section>
+<section class="flow">
+  <article class="step" id="step1">
+    <div class="step-head"><span>01</span><div><small>STEP 01</small><h2>候補者情報PDFをアップロード</h2></div><b>PDFのみ・最大10MB／最大10件</b></div>
+    <div class="upload-grid">
+      <label class="dropzone" id="dropzone"><input id="fileInput" type="file" accept="application/pdf,.pdf" multiple><div class="cloud">↑</div><strong>PDFを複数ドラッグ＆ドロップ</strong><small>または</small><span>ファイルを選択</span><small>PDFのみ対応（1ファイル最大10MB・最大10件・合計50MB）</small></label>
+      <div class="file-panel" id="filePanel"><div class="empty">まだファイルが選択されていません</div></div>
+    </div>
+  </article>
+  <div class="connector">↓</div>
+  <article class="step" id="step2">
+    <div class="step-head"><span>02</span><div><small>STEP 02</small><h2>作成する書類を選択</h2></div><b>複数選択できます</b></div>
+    <p style="margin:18px 0 0;color:#71819a;font-size:12px">※ スキルシートを選択すると、BPO向けスキルシートも自動生成します。</p>
+    <div class="doc-options">
+      <label class="doc-option active" tabindex="0"><input type="checkbox" value="履歴書" checked><span class="box">✓</span><div class="doc-icon">▤</div><strong>履歴書</strong><small>基本情報・学歴・職歴など</small></label>
+      <label class="doc-option active" tabindex="0"><input type="checkbox" value="職務経歴書" checked><span class="box">✓</span><div class="doc-icon">▥</div><strong>職務経歴書</strong><small>職歴・スキル・実績など</small></label>
+      <label class="doc-option" tabindex="0"><input type="checkbox" value="推薦状"><span class="box">✓</span><div class="doc-icon yellow">♡</div><strong>推薦状</strong><small>候補者の強みをまとめた推薦文</small></label>
+      <label class="doc-option" tabindex="0"><input type="checkbox" value="スキルシート_BPO"><span class="box">✓</span><div class="doc-icon">BPO</div><strong>BPOスキルシート</strong><small>BPO向けスキル・職務経歴など</small></label>
+    </div>
+  </article>
+  <div class="connector">↓</div>
+  <article class="step privacy-step" id="step3">
+    <div class="step-head"><span>03</span><div><small>STEP 03</small><h2>個人情報の取り扱いを確認</h2></div></div>
+    <div class="privacy-card">
+      <div class="privacy-icon">♢</div><div><h3>個人情報の取り扱いについて</h3><p>アップロードされた個人情報は、OCR・AIによる分析および書類生成に必要な範囲で取り扱います。<br>個人情報の取扱いをご確認のうえ、同意してから生成を開始してください。</p><a href="https://infoversionk-collab.github.io/rakubure-hp/privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシーを確認する</a></div>
+      <label class="consent"><input type="checkbox" id="consent"><span>個人情報の取り扱いについて確認しました</span></label>
+    </div>
+  </article>
+  <div class="connector">↓</div>
+  <article class="step generate-step" id="step4">
+    <div class="step-head"><span>04</span><div><small>STEP 04</small><h2>データを生成する</h2></div><b>データのみ</b></div>
+    <button class="generate" id="generateBtn" disabled type="button">✦ データを生成する ›</button>
+    <p class="disabled-note" id="generateNote">PDF・作成書類・個人情報の確認が必要です</p>
+    <div class="progress hidden" id="progress"><div class="progress-title"><span class="spinner"></span><strong id="progressTitle">AIでデータを生成しています...</strong><b id="progressPercent">0%</b></div><div class="progress-track"><span id="progressBar"></span></div><small id="progressText">処理を開始しています...</small></div>
+  </article>
+  <div class="connector">↓</div>
+  <article class="step result hidden" id="result">
+    <div class="step-head"><span>05</span><div><small>STEP 05</small><h2>生成されたデータを確認・保存</h2></div></div>
+    <div class="complete-box"><div class="complete-title"><span>✓</span><div><h3>書類の生成が完了しました！</h3><p>生成されたデータは、必要に応じてGoogleスプレッドシート・Googleドキュメントで編集できます。</p></div></div><div class="result-grid" id="resultGrid"></div></div>
+  </article>
+</section>
+<section class="benefits">
+  <div><b>01</b><strong>かんたん操作</strong><span>アップロードして選ぶだけ</span></div><div><b>02</b><strong>書類作成を効率化</strong><span>手作業の負担を軽減</span></div><div><b>03</b><strong>必要な書類だけ</strong><span>自由に組み合わせ可能</span></div><div><b>04</b><strong>データ生成</strong><span>編集できるデータを取得</span></div>
+</section>
 </main>
-<footer class="main-footer"><div><a href="#" id="footerTermsLink">利用規約</a><a href="#" id="footerPrivacyLink">プライバシーポリシー</a><a href="mailto:info.versionk@gmail.com">お問い合わせ</a></div><span>© 2026 楽ブレ｜書類自動生成システム</span></footer>
-<footer class="legal-footer"><nav class="legal-footer-links" aria-label="運営情報・法定表示"><a href="https://infoversionk-collab.github.io/rakubure-hp/about.html" target="_blank" rel="noopener noreferrer">運営者情報・利用規約</a><a href="https://infoversionk-collab.github.io/rakubure-hp/tokutei.html" target="_blank" rel="noopener noreferrer">特定商取引法に基づく表記</a><a href="https://infoversionk-collab.github.io/rakubure-hp/privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a></nav></footer>
-<div class="modal hidden" id="termsModal" aria-hidden="true"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="termsTitle"><button class="modal-close" id="closeTermsModal" aria-label="閉じる">×</button><h2 id="termsTitle">楽ブレ 利用規約</h2><p>本規約は、Version-Kが提供する楽ブレの利用条件を定めるものです。</p><h3>サービスの内容</h3><p>本サービスは、利用者がアップロードした書類をもとに、OCR・AI等を用いて履歴書、職務経歴書、推薦状、BPOスキルシート等の作成を支援します。特定の採用結果を保証しません。</p><h3>利用者の責任</h3><p>利用者は、アップロードする情報を適法に利用する権限を有していることを確認し、生成物を第三者へ提出する前に内容を確認・修正するものとします。</p><h3>禁止事項・免責</h3><p>法令違反、権利侵害、不正アクセス、虚偽情報の入力、権限のない第三者情報のアップロード等を禁止します。AI生成物には誤りが含まれる場合があり、利用は利用者自身の責任で行うものとします。</p><p class="contact-box">運営者：Version-K<br>代表者：山﨑 健勝<br>お問い合わせ：<a href="mailto:info.versionk@gmail.com">info.versionk@gmail.com</a><br><br>正式な規約全文は公開中の運営者情報・利用規約ページをご確認ください。</p></div></div>
-<div class="modal hidden" id="privacyModal" aria-hidden="true"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="privacyTitle"><button class="modal-close" id="closePrivacyModal" aria-label="閉じる">×</button><h2 id="privacyTitle">楽ブレ 個人情報の取扱いについて</h2><p>Version-Kは、楽ブレの提供にあたり、個人情報保護関連法令を遵守し、取得した情報を適切に取り扱います。</p><h3>取得情報と利用目的</h3><p>アップロード書類に含まれる氏名、連絡先、学歴、職歴、資格、スキル等、およびサービスの利用情報を、書類の読み取り・整理・生成、サービス提供・改善、お問い合わせ対応、不正利用防止等のために利用します。</p><h3>AI・外部サービス</h3><p>サービス提供に必要な範囲で、Google等の外部サービスやAI技術を利用して情報を処理する場合があります。</p><h3>保存・削除・お問い合わせ</h3><p>サービス提供に必要な範囲でアップロードファイルや生成データを保存する場合があります。削除、開示、訂正等の依頼はお問い合わせ窓口へご連絡ください。</p><p class="contact-box">運営者：Version-K<br>代表者：山﨑 健勝<br>お問い合わせ：<a href="mailto:info.versionk@gmail.com">info.versionk@gmail.com</a><br><br>正式なプライバシーポリシーは公開ページをご確認ください。</p></div></div>
-<div class="modal hidden" id="guideModal" aria-hidden="true"><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="guideTitle"><button class="modal-close" id="closeGuideModal" aria-label="閉じる">×</button><h2 id="guideTitle">使い方</h2><ol><li>候補者情報PDFをアップロードします。</li><li>作成したい書類を選択します。</li><li>個人情報の取り扱いを確認し、チェックを入れます。</li><li>「データを生成する」を押します。</li><li>生成結果を開いて内容を確認します。</li></ol></div></div>
+ 
+<footer class="site-footer">
+  <nav class="legal-links" aria-label="運営情報・各種ポリシー">
+    <a href="https://infoversionk-collab.github.io/rakubure-hp/about.html" target="_blank" rel="noopener noreferrer">運営者情報・利用規約</a>
+    <span class="legal-separator" aria-hidden="true">｜</span>
+    <a href="https://infoversionk-collab.github.io/rakubure-hp/tokutei.html" target="_blank" rel="noopener noreferrer">特定商取引法に基づく表記</a>
+    <span class="legal-separator" aria-hidden="true">｜</span>
+    <a href="https://infoversionk-collab.github.io/rakubure-hp/privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+  </nav>
+  <a class="footer-contact" href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6&amp;body=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%E3%80%82%0D%0A%0D%0A%E4%BB%A5%E4%B8%8B%E3%82%92%E3%81%94%E8%A8%98%E8%BC%89%E3%81%AE%E4%B8%8A%E9%80%81%E4%BF%A1%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%0D%0A%0D%0A%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%0D%0A%E7%A8%AE%E5%88%A5%EF%BC%9A%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%9A%0D%0A%E3%83%95%E3%83%AA%E3%82%AC%E3%83%8A%EF%BC%9A%0D%0A%E4%BC%9A%E7%A4%BE%E5%90%8D%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0D%0A%E2%96%A0%E9%80%A3%E7%B5%A1%E5%85%88%0D%0A%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%EF%BC%9A%0D%0A%E9%80%A3%E7%B5%A1%E3%81%8C%E3%81%A4%E3%81%8F%E9%9B%BB%E8%A9%B1%E7%95%AA%E5%8F%B7%EF%BC%9A%0D%0A%E2%96%A0%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E5%86%85%E5%AE%B9%0D%0A%0D%0A%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%0D%0A%0D%0A%E5%86%85%E5%AE%B9%E3%82%92%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E6%8B%85%E5%BD%93%E8%80%85%E3%82%88%E3%82%8A%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%AB%E3%81%A6%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%99">お問い合わせ</a>
+  <span class="footer-copyright">© 2026 楽ブレ｜書類自動生成システム</span>
+</footer>
+ 
+<div class="modal hidden" id="guideModal" aria-hidden="true">
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="guideTitle"><button id="closeModal" type="button" aria-label="閉じる">×</button><h2 id="guideTitle">使い方</h2><ol><li>候補者情報PDFを複数アップロード（履歴書・職務経歴書・面談シートなど）</li><li>作成する書類を選択</li><li>個人情報の取り扱いを確認</li><li>書類データを生成</li><li>生成されたデータを確認・保存</li></ol></div>
+</div>
+ 
 <script>
 (() => {
 "use strict";
+const state = { files: [] };
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const fileInput=$("#fileInput"),dropzone=$("#dropzone"),filePanel=$("#filePanel"),consent=$("#consent"),generateBtn=$("#generateBtn"),generateNote=$("#generateNote"),progress=$("#progress"),progressBar=$("#progressBar"),progressText=$("#progressText"),progressPercent=$("#progressPercent"),result=$("#result"),resultGrid=$("#resultGrid");
 const GAS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbybptovZ67BMtkDaC7tRBLHFoQS9DXbr43oeEiSBmOfsXBTK3bwA800baKvpOMOo0yn/exec";
-const CREDENTIAL_KEY="RAKUBURE_GOOGLE_CREDENTIAL",state={files:[]},$=id=>document.getElementById(id),$$=s=>Array.from(document.querySelectorAll(s));
-const fileInput=$("fileInput"),dropzone=$("dropzone"),filePanel=$("filePanel"),consent=$("consent"),generateBtn=$("generateBtn"),generateNote=$("generateNote"),progress=$("progress"),progressBar=$("progressBar"),progressText=$("progressText"),progressPercent=$("progressPercent"),result=$("result"),resultGrid=$("resultGrid");
 const MAX_FILES=10,MAX_FILE_SIZE=10*1024*1024,MAX_TOTAL_SIZE=50*1024*1024;
-function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
-function selectedDocuments(){return $$(".doc-option input").filter(x=>x.checked).map(x=>x.value);}
-function updateState(){const missing=[];if(!state.files.length)missing.push("PDF");if(!selectedDocuments().length)missing.push("作成書類");if(!consent.checked)missing.push("個人情報の確認");generateBtn.disabled=!!missing.length;generateNote.textContent=missing.length?"未選択："+missing.join("・"):"準備ができました。生成を開始できます。";}
-function renderFiles(){if(!state.files.length){filePanel.innerHTML='<div class="empty">まだファイルが選択されていません</div>';return;}const total=state.files.reduce((s,f)=>s+f.size,0);filePanel.innerHTML=`<p><strong>${state.files.length}件のPDF</strong> <small>合計 ${(total/1048576).toFixed(1)}MB / 50MB</small></p><div class="file-list">${state.files.map((f,i)=>`<div class="file-item"><b style="color:#ef3434">PDF</b><div class="file-meta"><div class="file-name">${esc(f.name)}</div><div class="file-size">${(f.size/1048576).toFixed(1)}MB</div></div><button class="remove-file" type="button" data-remove="${i}" aria-label="削除">×</button></div>`).join("")}</div>`;filePanel.querySelectorAll("[data-remove]").forEach(b=>b.addEventListener("click",()=>{state.files.splice(+b.dataset.remove,1);renderFiles();updateState();}));}
-function addFiles(list){const errors=[];for(const f of Array.from(list||[])){if(f.type!=="application/pdf"&&!/\.pdf$/i.test(f.name)){errors.push(f.name+": PDFではありません");continue;}if(f.size>MAX_FILE_SIZE){errors.push(f.name+": 10MBを超えています");continue;}if(!state.files.some(x=>x.name===f.name&&x.size===f.size&&x.lastModified===f.lastModified))state.files.push(f);}if(state.files.length>MAX_FILES){state.files=state.files.slice(0,MAX_FILES);errors.push("PDFは最大10件です");}if(state.files.reduce((s,f)=>s+f.size,0)>MAX_TOTAL_SIZE){state.files=[];errors.push("PDFの合計サイズは50MB以下にしてください");}renderFiles();updateState();if(errors.length)alert(errors.join("\\n"));}
-fileInput.addEventListener("change",e=>{addFiles(e.target.files);fileInput.value="";});
+function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));}
+function getSelectedDocuments(){return $$(".doc-option input:checked").map(input=>input.value);}
+function updateGenerateState(){const missing=[];if(!state.files.length)missing.push("PDF");if(!getSelectedDocuments().length)missing.push("作成書類");if(!consent.checked)missing.push("個人情報の確認");generateBtn.disabled=missing.length>0;generateNote.textContent=missing.length?"未選択："+missing.join("・"):"準備ができました。生成を開始できます。";}
+function renderFileList(){
+ if(!state.files.length){filePanel.innerHTML='<div class="empty">まだファイルが選択されていません</div>';return;}
+ const total=(state.files.reduce((s,f)=>s+f.size,0)/(1024*1024)).toFixed(1);
+ filePanel.innerHTML=`<div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:12px"><strong>${state.files.length}件のPDFを選択中</strong><small>合計 ${total}MB / 50MB</small></div><div style="display:grid;gap:10px">${state.files.map((f,i)=>`<div class="file-item"><div class="pdf-icon">PDF</div><div class="file-meta"><div class="file-name">${escapeHtml(f.name)}</div><div class="file-size">${(f.size/1048576).toFixed(1)}MB</div></div><button class="remove-file" data-index="${i}" type="button" aria-label="ファイルを削除">×</button></div>`).join("")}</div>`;
+ filePanel.querySelectorAll("[data-index]").forEach(b=>b.addEventListener("click",()=>{state.files.splice(Number(b.dataset.index),1);renderFileList();updateGenerateState();}));
+}
+function showFiles(list){
+ const errors=[],incoming=Array.from(list||[]),merged=[...state.files];
+ for(const f of incoming){if(f.type!=="application/pdf"&&!/\.pdf$/i.test(f.name)){errors.push(`${f.name}: PDFファイルではありません`);continue;}if(f.size>MAX_FILE_SIZE){errors.push(`${f.name}: 1ファイル10MBを超えています`);continue;}if(!merged.some(x=>x.name===f.name&&x.size===f.size&&x.lastModified===f.lastModified))merged.push(f);}
+ if(merged.length>MAX_FILES){errors.push(`添付できるPDFは最大${MAX_FILES}件です`);merged.splice(MAX_FILES);}
+ if(merged.reduce((s,f)=>s+f.size,0)>MAX_TOTAL_SIZE){alert("PDFの合計サイズは50MB以下にしてください");return;}
+ state.files=merged;renderFileList();updateGenerateState();if(errors.length)alert(errors.join("\n"));
+}
+fileInput.addEventListener("change",e=>{showFiles(e.target.files);fileInput.value="";});
 ["dragenter","dragover"].forEach(t=>dropzone.addEventListener(t,e=>{e.preventDefault();dropzone.classList.add("dragover");}));
 ["dragleave","drop"].forEach(t=>dropzone.addEventListener(t,e=>{e.preventDefault();dropzone.classList.remove("dragover");}));
-dropzone.addEventListener("drop",e=>addFiles(e.dataTransfer.files));
-$$(".doc-option").forEach(o=>{const c=o.querySelector("input"),sync=()=>{o.classList.toggle("active",c.checked);o.setAttribute("aria-pressed",String(c.checked));};sync();c.addEventListener("change",()=>{sync();updateState();});o.addEventListener("click",e=>{if(e.target===c)return;e.preventDefault();c.checked=!c.checked;sync();updateState();});o.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.checked=!c.checked;sync();updateState();}});});
-consent.addEventListener("change",updateState);
-function setProgress(n,msg){n=Math.max(0,Math.min(100,+n||0));progressBar.style.width=n+"%";progressPercent.textContent=Math.round(n)+"%";progressText.textContent=msg||"";}
-function toBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const s=String(r.result||""),i=s.indexOf(",");i<0?reject(Error("PDFの読み込みに失敗しました")):resolve(s.slice(i+1));};r.onerror=()=>reject(Error("PDFファイルを読み込めませんでした"));r.readAsDataURL(file);});}
-function downloadUrl(f){const id=f?.sourceFileId?String(f.sourceFileId):"";if(!id)return f?.downloadUrl||"";if(String(f.sourceType||"").includes("スプレッドシート")||f.spreadsheetUrl)return "https://docs.google.com/spreadsheets/d/"+encodeURIComponent(id)+"/export?format=xlsx";if(String(f.sourceType||"").includes("ドキュメント")||f.documentUrl)return "https://docs.google.com/document/d/"+encodeURIComponent(id)+"/export?format=docx";return f.downloadUrl||"";}
-function renderResult(data){const files=Array.isArray(data.files)?data.files:Array.isArray(data.results)?data.results:[];if(!files.length){resultGrid.innerHTML='<p>生成結果がありません。GASのレスポンスを確認してください。</p>';return;}resultGrid.innerHTML=files.map(f=>{const source=f.spreadsheetUrl||f.documentUrl||f.sourceUrl||f.editUrl||"",dl=downloadUrl(f);return `<div class="result-card"><div class="result-type">${esc(f.type||"生成データ")}</div><div class="result-size">${esc(f.name||"")}</div>${source?`<button type="button" data-url="${esc(source)}">${f.spreadsheetUrl?"Googleスプレッドシートで編集 ↗":f.documentUrl?"Googleドキュメントで編集 ↗":"生成データを開く ↗"}</button>`:""}${dl?`<button type="button" data-url="${esc(dl)}">データをダウンロード ↗</button>`:""}</div>`;}).join("");resultGrid.querySelectorAll("[data-url]").forEach(b=>b.addEventListener("click",()=>{const u=b.getAttribute("data-url");if(u)window.open(u,"_blank","noopener,noreferrer");}));}
-generateBtn.addEventListener("click",async()=>{if(generateBtn.disabled)return;if(!consent.checked)return alert("個人情報の取り扱いへの確認が必要です。");const credential=sessionStorage.getItem(CREDENTIAL_KEY);if(!credential){if(confirm("書類生成にはログインが必要です。ログイン画面へ移動しますか？"))location.href="./login.html";return;}generateBtn.disabled=true;progress.classList.remove("hidden");result.classList.add("hidden");let timer=null;try{const files=[];for(let i=0;i<state.files.length;i++){setProgress(10+Math.round(i/state.files.length*20),`${i+1}/${state.files.length}件目のPDFを読み込んでいます...`);files.push({fileName:state.files[i].name,mimeType:state.files[i].type||"application/pdf",fileBase64:await toBase64(state.files[i])});}setProgress(35,"PDFをAI分析しています...");timer=setInterval(()=>setProgress(Math.min(90,(+progressPercent.textContent.replace("%","")||35)+1),"AIが候補者情報と書類データを整理しています..."),900);const res=await fetch(GAS_WEB_APP_URL,{method:"POST",mode:"cors",credentials:"omit",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=UTF-8","Accept":"application/json"},body:JSON.stringify({googleCredential:credential,files,documents:selectedDocuments(),consent:consent.checked})});if(timer)clearInterval(timer);setProgress(94,"GASから生成結果を受け取っています...");const raw=await res.text();if(!res.ok)throw Error(`GAS APIへの通信に失敗しました（HTTP ${res.status}）。\\n${raw.slice(0,250)}`);let data;try{data=JSON.parse(raw);}catch{throw Error("GAS APIからJSONではないレスポンスが返りました。\\n"+raw.slice(0,250));}if(!data||data.success!==true)throw Error(data?.error||data?.message||"書類生成に失敗しました。");renderResult(data);setProgress(100,"生成が完了しました。");result.classList.remove("hidden");result.scrollIntoView({behavior:"smooth",block:"start"});}catch(err){if(timer)clearInterval(timer);console.error(err);let m=err?.message||String(err);if(/Load failed|Failed to fetch|NetworkError/i.test(m))m="GAS Web APIとの通信に失敗しました。デプロイURL、アクセス権、GASの実行ログを確認してください。";setProgress(0,"生成に失敗しました。");alert("書類の生成に失敗しました。\\n\\n"+m);}finally{updateState();}});
-function open(id){$(id).classList.remove("hidden");$(id).setAttribute("aria-hidden","false");}function close(id){$(id).classList.add("hidden");$(id).setAttribute("aria-hidden","true");}
-$("guideBtn").addEventListener("click",()=>open("guideModal"));$("closeGuideModal").addEventListener("click",()=>close("guideModal"));$("privacyLink").addEventListener("click",e=>{e.preventDefault();open("privacyModal");});$("footerPrivacyLink").addEventListener("click",e=>{e.preventDefault();open("privacyModal");});$("closePrivacyModal").addEventListener("click",()=>close("privacyModal"));$("footerTermsLink").addEventListener("click",e=>{e.preventDefault();open("termsModal");});$("closeTermsModal").addEventListener("click",()=>close("termsModal"));["guideModal","privacyModal","termsModal"].forEach(id=>$(id).addEventListener("click",e=>{if(e.target.id===id)close(id);}));document.addEventListener("keydown",e=>{if(e.key==="Escape")["guideModal","privacyModal","termsModal"].forEach(close);});
-const loginButton=$("loginButton"),logoutButton=$("logoutButton");function updateLogin(){const logged=!!sessionStorage.getItem(CREDENTIAL_KEY);loginButton.hidden=logged;logoutButton.hidden=!logged;}logoutButton.addEventListener("click",()=>{sessionStorage.removeItem(CREDENTIAL_KEY);sessionStorage.removeItem("RAKUBURE_USER_EMAIL");location.href="./login.html";});updateLogin();updateState();
+dropzone.addEventListener("drop",e=>showFiles(e.dataTransfer.files));
+$$(".doc-option").forEach(option=>{
+ const cb=option.querySelector("input");
+ const sync=()=>{option.classList.toggle("active",cb.checked);option.setAttribute("aria-pressed",String(cb.checked));};
+ sync();
+ cb.addEventListener("change",()=>{sync();updateGenerateState();});
+ option.addEventListener("click",e=>{if(e.target===cb)return;e.preventDefault();cb.checked=!cb.checked;sync();updateGenerateState();});
+ option.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();cb.checked=!cb.checked;sync();updateGenerateState();}});
+});
+consent.addEventListener("change",updateGenerateState);
+function setProgress(p,msg){const v=Math.max(0,Math.min(100,Number(p)||0));progressBar.style.width=v+"%";progressPercent.textContent=Math.round(v)+"%";progressText.textContent=msg||"";}
+function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const s=String(r.result||""),i=s.indexOf(",");if(i<0)return reject(new Error("PDFデータの読み込みに失敗しました。"));resolve(s.slice(i+1));};r.onerror=()=>reject(new Error("PDFファイルを読み込めませんでした。"));r.readAsDataURL(file);});}
+function getDownloadUrl(file){
+ const id=file&&file.sourceFileId?String(file.sourceFileId):"";
+ if(!id)return file?.downloadUrl||"";
+ if(String(file.sourceType||"").includes("スプレッドシート")||file.spreadsheetUrl)return "https://docs.google.com/spreadsheets/d/"+encodeURIComponent(id)+"/export?format=xlsx";
+ if(String(file.sourceType||"").includes("ドキュメント")||file.documentUrl)return "https://docs.google.com/document/d/"+encodeURIComponent(id)+"/export?format=docx";
+ return file.downloadUrl||"";
+}
+function renderApiResult(api){
+ const files=Array.isArray(api.files)?api.files:(Array.isArray(api.results)?api.results:[]);
+ if(!files.length){resultGrid.innerHTML='<div class="result-card" style="grid-column:1/-1">生成データが見つかりません。GASのレスポンスを確認してください。</div>';return;}
+ resultGrid.innerHTML=files.map(f=>{
+  const source=f.spreadsheetUrl||f.documentUrl||f.sourceUrl||f.editUrl||"",download=getDownloadUrl(f);
+  const label=f.spreadsheetUrl?"Googleスプレッドシートで編集 ↗":f.documentUrl?"Googleドキュメントで編集 ↗":"生成データを開く ↗";
+  return `<div class="result-card"><div class="result-type">${escapeHtml(f.type||"生成データ")}</div><div class="result-size">${escapeHtml(f.name||"")}</div><div class="result-source-note">${f.spreadsheetUrl?"Googleスプレッドシート":f.documentUrl?"Googleドキュメント":"生成データ"}</div>${source?`<button type="button" data-source="${escapeHtml(source)}">${label}</button>`:""}${download?`<button type="button" data-download="${escapeHtml(download)}">データをダウンロード ↗</button>`:""}</div>`;
+ }).join("");
+ resultGrid.querySelectorAll("[data-source]").forEach(b=>b.addEventListener("click",()=>window.open(b.dataset.source,"_blank","noopener,noreferrer")));
+ resultGrid.querySelectorAll("[data-download]").forEach(b=>b.addEventListener("click",()=>window.open(b.dataset.download,"_blank","noopener,noreferrer")));
+}
+generateBtn.addEventListener("click",async()=>{
+ if(generateBtn.disabled)return;
+ if(!consent.checked){alert("個人情報の取り扱いへの確認が必要です。");return;}
+ const credential=sessionStorage.getItem("RAKUBURE_GOOGLE_CREDENTIAL");
+ if(!credential){const go=confirm("書類を生成するには、アカウント登録とログインが必要です。\n\nOKを押すとログイン画面へ移動します。");if(go)location.href="./login.html";return;}
+ generateBtn.disabled=true;progress.classList.remove("hidden");result.classList.add("hidden");setProgress(5,"PDFを読み込んでいます...");
+ let timer=null;
+ try{
+  const encodedFiles=[];
+  for(let i=0;i<state.files.length;i++){setProgress(8+Math.round(i/state.files.length*22),`${i+1}/${state.files.length}件目のPDFを読み込んでいます...`);encodedFiles.push({fileName:state.files[i].name,mimeType:state.files[i].type||"application/pdf",fileBase64:await fileToBase64(state.files[i])});}
+  setProgress(35,"AIが候補者情報を解析しています...");
+  const messages=["AIが候補者情報を解析しています...","職歴・スキル情報を整理しています...","書類データを生成しています..."];let mi=0;
+  timer=setInterval(()=>{const n=Math.min(92,(Number(progressPercent.textContent.replace("%",""))||35)+1);if(n>60)mi=1;if(n>82)mi=2;setProgress(n,messages[mi]);},900);
+  const response=await fetch(GAS_WEB_APP_URL,{method:"POST",mode:"cors",credentials:"omit",redirect:"follow",cache:"no-store",headers:{"Content-Type":"text/plain;charset=UTF-8","Accept":"application/json"},body:JSON.stringify({googleCredential:credential,files:encodedFiles,documents:getSelectedDocuments(),consent:consent.checked})});
+  const raw=await response.text();if(timer)clearInterval(timer);
+  if(!response.ok)throw new Error(`GAS APIへの通信に失敗しました（HTTP ${response.status}）。${String(raw).replace(/\s+/g," ").slice(0,250)}`);
+  let api;try{api=JSON.parse(raw);}catch{throw new Error("GAS APIからJSONではないレスポンスが返りました。GASの実行ログを確認してください。");}
+  if(!api||api.success!==true)throw new Error(api?.error||api?.message||"書類生成に失敗しました。GASの実行ログを確認してください。");
+  setProgress(100,"生成が完了しました。");renderApiResult(api);result.classList.remove("hidden");result.scrollIntoView({behavior:"smooth",block:"start"});
+ }catch(err){if(timer)clearInterval(timer);console.error("楽ブレ生成エラー:",err);setProgress(0,"生成に失敗しました。");let msg=err?.message||String(err);if(/Load failed|Failed to fetch|NetworkError/i.test(msg))msg="GAS Web APIとの通信に失敗しました。GASのデプロイURL、アクセス権、実行ログを確認してください。";alert("書類の生成に失敗しました。\n\n"+msg);
+ }finally{updateGenerateState();}
+});
+$("#guideBtn").addEventListener("click",()=>{const m=$("#guideModal");m.classList.remove("hidden");m.setAttribute("aria-hidden","false");});
+$("#closeModal").addEventListener("click",()=>{const m=$("#guideModal");m.classList.add("hidden");m.setAttribute("aria-hidden","true");});
+$("#guideModal").addEventListener("click",e=>{if(e.target.id==="guideModal"){e.currentTarget.classList.add("hidden");e.currentTarget.setAttribute("aria-hidden","true");}});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){const m=$("#guideModal");m.classList.add("hidden");m.setAttribute("aria-hidden","true");}});
+updateGenerateState();
+})();
+</script>
+<script>
+(() => {
+ const loginButton=document.getElementById("loginButton"),logoutButton=document.getElementById("logoutButton");
+ if(!loginButton||!logoutButton)return;
+ const KEY="RAKUBURE_GOOGLE_CREDENTIAL";
+ function update(){const loggedIn=Boolean(sessionStorage.getItem(KEY));loginButton.hidden=loggedIn;logoutButton.hidden=!loggedIn;}
+ logoutButton.addEventListener("click",()=>{sessionStorage.removeItem(KEY);sessionStorage.removeItem("RAKUBURE_USER_EMAIL");location.href="./login.html";});
+ update();
 })();
 </script>
 </body>
 </html>
+
+2. 楽ブレ公式HP
+保存先ファイル名：rakubure-hp/index.html
+以下のHTMLコードを先頭から末尾までコピーして使用してください。
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="楽ブレは、履歴書・職務経歴書・推薦状・BPOスキルシートの作成を効率化する書類作成サポートサービスです。">
+<title>楽ブレ｜書類作成を、もっと簡単に。</title>
+<style>
+:root{--blue:#086cf0;--cyan:#11c9e8;--navy:#071f59;--ink:#132342;--muted:#63718a;--line:#e3eaf5;--pale:#f4f8ff;--shadow:0 24px 70px rgba(12,55,120,.10)}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:88px}body{margin:0;color:var(--ink);font-family:Inter,-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;line-height:1.75;background:#fff;letter-spacing:.01em}a{color:inherit;text-decoration:none}.wrap{width:min(1160px,calc(100% - 48px));margin:auto}
+.nav{height:84px;display:flex;align-items:center;justify-content:space-between;gap:24px}.brand{display:flex;align-items:center;flex:0 0 auto;min-width:0;padding:4px 0}.brand img{display:block;width:138px;height:62px;max-width:100%;object-fit:contain;object-position:left center;background:#fff}.navlinks{display:flex;align-items:center;gap:22px;font-size:13px;font-weight:750}.navlinks>a:not(.btn):hover{color:var(--blue)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 24px;border-radius:999px;background:linear-gradient(110deg,#096cf0,#12bce9);color:#fff!important;font-weight:800;font-size:14px;box-shadow:0 10px 24px #086cf038;border:0;cursor:pointer;transition:transform .2s,box-shadow .2s}.btn:hover{transform:translateY(-2px)}.btn.secondary{background:#fff;color:var(--blue)!important;border:1px solid #d6e5fa;box-shadow:none}
+.hero{position:relative;overflow:hidden;background:linear-gradient(125deg,#f3f8ff,#fff 54%,#eafaff);padding:78px 0 92px}.hero:before{content:"";position:absolute;width:540px;height:540px;border-radius:50%;background:radial-gradient(circle,#c8efff99,transparent 68%);right:-160px;top:-180px;pointer-events:none}.hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.08fr .92fr;align-items:center;gap:52px}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#075fcf;font-weight:850;letter-spacing:.08em;background:#e5f2ff;border:1px solid #d3e8ff;padding:8px 14px;border-radius:999px;font-size:12px}.eyebrow:before{content:"";width:7px;height:7px;border-radius:50%;background:#12bce9}.hero h1{font-size:clamp(38px,5.2vw,62px);line-height:1.22;letter-spacing:-.055em;margin:22px 0 20px;font-weight:900}.hero h1 span{background:linear-gradient(100deg,#075be8,#13bfe7);-webkit-background-clip:text;background-clip:text;color:transparent}.lead{font-size:17px;color:#52627b;max-width:550px;line-height:1.9}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin:30px 0 16px}.small,.fine{font-size:12px;color:var(--muted)}.hero-logo{display:flex;justify-content:center;align-items:center;position:relative}.hero-logo:before{content:"";position:absolute;width:78%;aspect-ratio:1;border-radius:50%;background:linear-gradient(135deg,#d8efff,#fff 60%,#e3fbff)}.hero-logo img{position:relative;width:min(100%,440px);height:auto;object-fit:contain;filter:drop-shadow(0 22px 26px #0a37801f);border-radius:20px;mix-blend-mode:multiply}
+section{padding:88px 0}.section-head{text-align:center;max-width:730px;margin:0 auto 44px}.kicker{font-size:11px;color:var(--blue);font-weight:900;letter-spacing:.2em}.section-head h2{font-size:clamp(28px,3.4vw,42px);line-height:1.35;letter-spacing:-.035em;margin:12px 0 14px;font-weight:900}.section-head p{color:var(--muted);margin:0;font-size:15px}
+.pain-grid,.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.pain,.feature,.price-card{border:1px solid var(--line);border-radius:22px;padding:27px;background:#fff;box-shadow:0 8px 28px #0c377009;transition:transform .2s,box-shadow .2s}.pain:hover,.feature:hover{transform:translateY(-4px);box-shadow:var(--shadow)}.pain .num{font-size:10px;font-weight:900;color:var(--blue);letter-spacing:.15em}.pain h3,.feature h3{margin:10px 0 8px;font-size:18px}.pain p,.feature p{color:var(--muted);font-size:13px;margin:0;line-height:1.85}.features{background:linear-gradient(180deg,#f4f8ff,#f9fbff)}.feature{border-color:#e6edf7}.feature .icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(135deg,#e2f1ff,#e6fbff);color:var(--blue);font-size:21px;font-weight:900}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}.step{padding:25px 20px;border-radius:20px;background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px #0c377009}.step b{color:var(--blue);font-size:10px;letter-spacing:.16em}.step h3{font-size:16px;margin:9px 0 7px}.step p{font-size:12px;color:var(--muted);margin:0;line-height:1.8}
+.sample-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}.sample-card{border:1px solid #e2eaf5;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 12px 32px #0c37700e}.sample-preview{height:280px;background:#eef3fa;padding:12px;display:flex;justify-content:center;align-items:flex-start;overflow:hidden}.sample-preview img{width:100%;height:100%;object-fit:contain;object-position:top}.sample-card-body{padding:16px}.sample-type{font-size:9px;letter-spacing:.17em;font-weight:900;color:#0875e8}.sample-card h3{margin:7px 0;font-size:16px}.sample-card p{font-size:12px;color:var(--muted)}.sample-open{border:0;background:#edf6ff;color:var(--blue);font-weight:800;border-radius:10px;padding:10px;cursor:pointer}.sample-modal{display:none;position:fixed;inset:0;z-index:30;align-items:center;justify-content:center;padding:20px}.sample-modal.open{display:flex}.sample-modal-backdrop{position:absolute;inset:0;background:#06142bd9}.sample-modal-panel{position:relative;z-index:1;width:min(1100px,100%);max-height:94vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;text-align:center}.sample-modal-panel img{display:block;max-width:100%;max-height:82vh;width:auto;height:auto;object-fit:contain;margin:auto}.sample-modal-close{position:absolute;right:10px;top:8px;border:0;border-radius:50%;width:36px;height:36px;font-size:24px;cursor:pointer}
+.pricing{background:linear-gradient(180deg,#f3f8ff,#fff)}.pricing-grid{display:grid;grid-template-columns:1fr 1.08fr;gap:22px;align-items:stretch;max-width:980px;margin:auto}.price-card{padding:32px;border-radius:24px}.price-card h3{margin:0 0 5px;font-size:23px}.price-card .sub{color:var(--muted);font-size:12px}.price{font-size:39px;font-weight:900;letter-spacing:-.055em;margin:17px 0}.price small{font-size:13px;font-weight:650;color:var(--muted);letter-spacing:0}.unit-list{list-style:none;padding:0;margin:21px 0}.unit-list li{padding:12px 0;border-bottom:1px solid #edf1f7;display:flex;justify-content:space-between;gap:12px;font-size:14px}.unit-list li:last-child{border:0}.popular{border:2px solid var(--blue);box-shadow:0 20px 55px #086cf01f;position:relative}.ribbon{position:absolute;top:-14px;right:25px;background:linear-gradient(100deg,#086cf0,#11bfe7);color:#fff;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:850}.discount{display:inline-block;color:#087a39;background:#e6f9ee;border:1px solid #c9f0d8;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:850}.corp-table{width:100%;border-collapse:collapse;margin:20px 0}.corp-table th,.corp-table td{text-align:left;padding:13px 9px;border-bottom:1px solid #e9eef7;font-size:13px}.corp-table th{color:var(--muted);font-size:11px}.simulator{margin:30px auto 0;max-width:980px;background:#fff;border:1px solid #dfe9f7;border-radius:25px;padding:30px;box-shadow:var(--shadow)}.sim-top{display:flex;justify-content:space-between;align-items:center;gap:15px}.sim-top h3{margin:0;font-size:20px}.count{font-size:30px;font-weight:900;color:var(--blue)}.simulator .sub{color:var(--muted);font-size:13px}.simulator input[type=range]{width:100%;accent-color:var(--blue);margin:20px 0}.quick{display:flex;flex-wrap:wrap;gap:8px}.quick button{border:1px solid #d8e6f8;background:#fff;border-radius:999px;padding:8px 15px;cursor:pointer;color:var(--blue);font-size:12px;font-weight:800}.results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}.result{padding:18px;border-radius:16px;background:#f5f8fd;border:1px solid #edf1f7}.result span{display:block;font-size:11px;color:var(--muted)}.result strong{font-size:22px;display:block;margin-top:5px}.result.emphasis{background:linear-gradient(135deg,#e9f3ff,#effcff);border-color:#d7eaff}
+.faq{max-width:820px;margin:auto}.faq details{padding:20px 2px;border-bottom:1px solid var(--line)}.faq summary{cursor:pointer;font-weight:800;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:20px}.faq summary::-webkit-details-marker{display:none}.faq summary:after{content:"+";font-size:22px;color:var(--blue);font-weight:500}.faq details[open] summary:after{content:"−"}.faq details p{color:var(--muted);font-size:13px;margin:14px 0 0}
+.cta{padding:78px 0;background:radial-gradient(circle at 15% 10%,#48b5ff55,transparent 32%),linear-gradient(115deg,#0755d9,#0789ef 55%,#10bde0);color:#fff;text-align:center}.cta h2{font-size:clamp(29px,4vw,44px);line-height:1.35;margin:0 0 14px}.cta p{color:#e4f6ff;margin:0 0 27px;font-size:14px}.cta .btn{background:#fff;color:#0867e6!important;box-shadow:0 10px 25px #003e8b30}
+.footer{padding:30px 0;background:#071b49;color:#dce8ff;font-size:12px}.footer-row{display:flex;align-items:center;justify-content:space-between;gap:40px}.footer-brand{flex:0 0 auto}.footer-brand img{display:block;width:100px;height:auto;background:#fff;border-radius:10px}.footer-brand p{margin:8px 0 0;color:#b8c8e8}.footer-info{flex:1;text-align:right}.footer-copyright{margin:0 0 12px;color:#dce8ff;font-size:12px}.footer-links{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:10px 20px}.footer-links a{color:#dce8ff;font-size:12px}.footer-links a:hover{color:#fff;text-decoration:underline}.mobile-cta{display:none}
+.trial-banner{position:relative;z-index:2;background:linear-gradient(105deg,#063fba,#087cf0 52%,#13c5e8);color:#fff;padding:20px 0;box-shadow:0 10px 26px #086cf02e}.trial-banner-inner{width:min(1160px,calc(100% - 48px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:24px}.trial-banner-copy{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:14px;row-gap:2px}.trial-pill{grid-row:1 / span 2;display:inline-flex;align-items:center;border:1px solid #ffffff70;background:#ffffff20;padding:7px 11px;border-radius:999px;font-size:11px;font-weight:850;white-space:nowrap}.trial-banner-title{margin:0;font-size:clamp(20px,2.5vw,29px);line-height:1.25}.trial-banner-title em{font-style:normal;color:#ffed79;font-size:1.18em}.trial-banner-desc{margin:3px 0 0;font-size:12px;color:#e9f8ff}.trial-banner-btn{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:16px;padding:14px 20px;border-radius:999px;background:#fff;color:#075fd5;font-size:13px;font-weight:900;box-shadow:0 8px 20px #003d8a35}
+.login-nav-btn{white-space:nowrap;background:#071f59!important;color:#fff!important;box-shadow:0 8px 18px #071f592e!important}
+@media(max-width:980px){.sample-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:780px){.wrap{width:min(100% - 30px,600px)}.nav{height:70px;gap:12px}.brand img{width:118px;height:58px}.navlinks{gap:8px}.navlinks>a:not(.btn){display:none}.navlinks .btn{padding:10px 12px;font-size:11px}.hero{padding:48px 0 58px}.hero-grid{grid-template-columns:1fr;gap:22px}.hero-logo img{width:min(78%,310px)}.hero h1{font-size:39px}.lead{font-size:15px}.hero-actions{gap:9px}.hero-actions .btn{padding:13px 17px;font-size:12px}section{padding:58px 0}.section-head{margin-bottom:30px}.section-head p{font-size:13px}.pain-grid,.feature-grid{grid-template-columns:1fr}.pain,.feature{padding:23px}.steps{grid-template-columns:repeat(2,1fr);gap:10px}.step{padding:19px 15px}.pricing-grid{grid-template-columns:1fr;gap:18px}.price-card{padding:26px 22px}.simulator{padding:20px 16px}.sim-top h3{font-size:16px}.count{font-size:25px}.results{grid-template-columns:1fr;gap:8px}.result{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:13px 15px}.result strong{font-size:19px;margin:0}.corp-table th,.corp-table td{font-size:11px;padding:10px 4px}.footer-row{align-items:flex-start;flex-direction:column;gap:24px}.footer-info{width:100%;text-align:left}.footer-links{justify-content:flex-start;flex-direction:column;align-items:flex-start;gap:12px}.mobile-cta{display:block;position:fixed;bottom:0;left:0;right:0;padding:10px 14px;background:#ffffffed;backdrop-filter:blur(10px);border-top:1px solid var(--line);z-index:5}.mobile-cta .btn{width:100%;padding:12px}.footer{padding-bottom:82px}.trial-banner{padding:17px 0}.trial-banner-inner{width:calc(100% - 30px);display:block}.trial-banner-copy{grid-template-columns:1fr;gap:5px}.trial-pill{grid-row:auto;justify-self:start;font-size:10px;padding:5px 9px}.trial-banner-title{font-size:23px;margin-top:4px}.trial-banner-desc{font-size:11px}.trial-banner-btn{width:100%;margin-top:13px;padding:12px 16px;font-size:12px}.sample-preview{height:220px}.sample-modal{padding:10px}.sample-modal-panel{padding:18px 10px}.sample-modal-panel img{max-height:82vh}}
+@media(max-width:560px){.sample-grid{gap:10px}.sample-preview{height:180px;padding:7px}.sample-card-body{padding:10px}.sample-card h3{font-size:13px}.sample-card p{font-size:10px}.sample-open{font-size:10px;padding:8px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important}}
+</style>
+</head>
+<body>
+<header class="wrap nav">
+  <a class="brand" href="#top" aria-label="楽ブレ トップ"><img alt="楽ブレ ロゴ" src="assets/image-01.png"></a>
+  <nav class="navlinks" aria-label="メインナビゲーション">
+    <a href="#features">特徴</a><a href="#samples">作成サンプル</a><a href="#pricing">料金プラン</a><a href="#faq">よくある質問</a>
+    <a class="btn login-nav-btn" href="https://infoversionk-collab.github.io/rakubure/login.html">楽ブレにログイン →</a><a class="btn" href="#pricing">無料で試す</a>
+  </nav>
+</header>
+<section class="trial-banner" aria-label="1ヶ月無料体験"><div class="trial-banner-inner"><div class="trial-banner-copy"><span class="trial-pill">まずは気軽に</span><p class="trial-banner-title"><strong>まずは <em>1ヶ月無料</em> で体験。</strong></p><p class="trial-banner-desc">楽ブレの書類作成サポートを、費用をかけずにお試しいただけます。</p></div><a class="trial-banner-btn" href="#pricing">無料体験のプランを見る →</a></div></section>
+<main id="top">
+<section class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">書類作成を、もっと簡単に。</span><h1>書類づくりの時間を、<br><span>あなたの強みに。</span></h1><p class="lead">履歴書・職務経歴書・推薦状・BPOスキルシート。転職支援や採用業務で必要な書類作成を、もっとスムーズに。</p><div class="hero-actions"><a class="btn" href="#pricing">1ヶ月無料で体験する →</a><a class="btn secondary" href="#features">楽ブレについて</a></div><p class="small">まずは1ヶ月無料。自分に合うプランから始められます。</p><div style="display:flex;flex-wrap:wrap;gap:9px;margin-top:22px;color:#51647d;font-size:12px;font-weight:700"><span style="padding:7px 11px;background:#ffffffc9;border:1px solid #e1ebf8;border-radius:999px">✓ 4種類の書類に対応</span><span style="padding:7px 11px;background:#ffffffc9;border:1px solid #e1ebf8;border-radius:999px">✓ 個人・法人向け</span></div></div><div class="hero-logo"><img alt="楽ブレ ロゴ" src="assets/image-01.png"></div></div></section>
+<section><div class="wrap"><div class="section-head"><div class="kicker">WHY RAKUBURE</div><h2>書類作成に、こんなお悩みありませんか？</h2><p>手間のかかる書類作成を効率化し、候補者やお客様と向き合う時間を増やします。</p></div><div class="pain-grid"><article class="pain"><div class="num">CHALLENGE 01</div><h3>書類作成に時間がかかる</h3><p>一つひとつ手作業で作成・修正する負担を減らしたい。</p></article><article class="pain"><div class="num">CHALLENGE 02</div><h3>書類ごとに情報を整理するのが大変</h3><p>履歴書や職務経歴書など、必要な情報をまとめて扱いたい。</p></article><article class="pain"><div class="num">CHALLENGE 03</div><h3>チームでの作成業務を効率化したい</h3><p>人材紹介会社や採用支援チームの作業を、もっとスムーズに。</p></article></div></div></section>
+<section class="features" id="features"><div class="wrap"><div class="section-head"><div class="kicker">FEATURES</div><h2>必要な書類作成を、ひとつのプランで。</h2><p>履歴書・職務経歴書・推薦状・BPOスキルシートをまとめて利用できます。</p></div><div class="feature-grid"><article class="feature"><div class="icon">履</div><h3>履歴書</h3><p>基本情報や経歴を整理し、応募に必要な履歴書づくりをサポート。</p></article><article class="feature"><div class="icon">職</div><h3>職務経歴書</h3><p>これまでの経験や担当業務を整理し、伝わりやすい経歴書づくりを支援。</p></article><article class="feature"><div class="icon">推</div><h3>推薦状</h3><p>候補者の経験や強みを整理し、推薦に必要な書類作成をサポート。</p></article><article class="feature"><div class="icon">ス</div><h3>BPOスキルシート</h3><p>スキルや業務経験をまとめ、提出用の資料づくりを効率化。</p></article><article class="feature"><div class="icon">✓</div><h3>全機能を利用</h3><p>ひとつの月額プランで4種類の書類作成を利用できます。</p></article><article class="feature"><div class="icon">法</div><h3>法人向け料金</h3><p>利用人数に応じた料金設定。チームでの利用を検討する企業にも。</p></article></div></div></section>
+<section><div class="wrap"><div class="section-head"><div class="kicker">HOW IT WORKS</div><h2>始め方はシンプル</h2><p>必要な書類を選び、作成業務をスムーズに進めましょう。</p></div><div class="steps"><div class="step"><b>STEP 01</b><h3>プランを選ぶ</h3><p>利用条件を確認してプランを選択。</p></div><div class="step"><b>STEP 02</b><h3>情報を準備する</h3><p>書類作成に必要な情報を整理します。</p></div><div class="step"><b>STEP 03</b><h3>書類を作成する</h3><p>楽ブレを使って書類作成を進めます。</p></div><div class="step"><b>STEP 04</b><h3>内容を確認する</h3><p>完成した内容を確認し、必要に応じて修正。</p></div></div></div></section>
+<section class="samples" id="samples"><div class="wrap"><div class="section-head"><div class="kicker">DOCUMENT SAMPLES</div><h2>作成できる書類のサンプル</h2><p>サンプルで仕上がりのイメージを事前に確認できます。</p></div><div class="sample-grid">
+<article class="sample-card"><div class="sample-preview"><img src="assets/image-02.jpg" alt="履歴書の作成サンプル" loading="lazy"></div><div class="sample-card-body"><span class="sample-type">OUTPUT SAMPLE</span><h3>履歴書</h3><p>実際のサンプルを高画質で確認できます。</p><button class="sample-open" type="button" data-image="assets/image-02.jpg" data-title="履歴書">高画質で拡大 ↗</button></div></article>
+<article class="sample-card"><div class="sample-preview"><img src="assets/image-03.jpg" alt="職務経歴書の作成サンプル" loading="lazy"></div><div class="sample-card-body"><span class="sample-type">OUTPUT SAMPLE</span><h3>職務経歴書</h3><p>実際のサンプルを高画質で確認できます。</p><button class="sample-open" type="button" data-image="assets/image-03.jpg" data-title="職務経歴書">高画質で拡大 ↗</button></div></article>
+<article class="sample-card"><div class="sample-preview"><img src="assets/image-04.jpg" alt="推薦状の作成サンプル" loading="lazy"></div><div class="sample-card-body"><span class="sample-type">OUTPUT SAMPLE</span><h3>推薦状</h3><p>実際のサンプルを高画質で確認できます。</p><button class="sample-open" type="button" data-image="assets/image-04.jpg" data-title="推薦状">高画質で拡大 ↗</button></div></article>
+<article class="sample-card"><div class="sample-preview"><img src="assets/image-05.jpg" alt="BPOスキルシートの作成サンプル" loading="lazy"></div><div class="sample-card-body"><span class="sample-type">OUTPUT SAMPLE</span><h3>BPOスキルシート</h3><p>実際のサンプルを高画質で確認できます。</p><button class="sample-open" type="button" data-image="assets/image-05.jpg" data-title="BPOスキルシート">高画質で拡大 ↗</button></div></article>
+</div><p class="fine" style="text-align:center;margin-top:18px">※サンプルは例示です。実際の出力内容は入力情報・設定により異なります。</p></div></section>
+<div class="sample-modal" id="sampleModal" aria-hidden="true"><div class="sample-modal-backdrop" data-close="1"></div><div class="sample-modal-panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="sample-modal-close" type="button" aria-label="閉じる" data-close="1">×</button><h3 id="modalTitle">サンプル</h3><img id="modalImage" alt="書類サンプル高画質拡大画像"></div></div>
+<section class="pricing" id="pricing"><div class="wrap"><div class="section-head"><div class="kicker">PRICING</div><h2>まずは1ヶ月無料でお試し</h2><p>個人は月額3,300円。法人は利用人数に応じた料金設定です。</p></div>
+<div class="pricing-grid"><article class="price-card popular"><span class="ribbon">個人向け</span><h3>個人プラン</h3><div class="sub">履歴書・職務経歴書・推薦状・BPOスキルシートをすべて利用</div><div class="price">3,300円 <small>／月（税込）</small></div><ul class="unit-list"><li><span>利用できる機能</span><b>全4種類</b></li><li><span>無料トライアル</span><b>登録日から30日間</b></li><li><span>支払い方法</span><b>Squareサブスクリプション</b></li><li><span>請求書払い</span><b>不可</b></li></ul><a class="btn" style="width:100%" href="https://infoversionk-collab.github.io/rakubure/login.html">無料体験を始める →</a></article>
+<article class="price-card"><h3>法人プラン</h3><div class="sub">チームの利用人数に応じた1名あたりの月額料金</div><table class="corp-table"><thead><tr><th>利用人数</th><th>1名あたり月額（税込）</th><th>割引率</th></tr></thead><tbody><tr><td>3〜9名</td><td><b>3,000円</b></td><td><span class="discount">約9.1%OFF</span></td></tr><tr><td>10〜19名</td><td><b>2,900円</b></td><td><span class="discount">約12.1%OFF</span></td></tr><tr><td>20名以上</td><td><b>2,800円</b></td><td><span class="discount">約15.2%OFF</span></td></tr></tbody></table><ul class="unit-list"><li><span>無料トライアル</span><b>登録日から30日間</b></li><li><span>支払い方法</span><b>Square等・個別案内</b></li><li><span>請求書払い</span><b>要相談</b></li></ul><a class="btn secondary" style="width:100%" href="mailto:info.versionk@gmail.com?subject=楽ブレ法人プランについて">法人プランを相談する</a></article></div>
+<div class="simulator"><div class="sim-top"><h3>法人プラン料金シミュレーション</h3><div class="count"><span id="countLabel">10</span>名</div></div><p class="sub">利用人数を選ぶと、月額合計・個人料金3,300円／名を基準にした割引率・削減額を計算します。</p><input id="people" aria-label="導入人数" type="range" min="3" max="100" value="10"><div class="quick"><button type="button" data-count="3">3名</button><button type="button" data-count="5">5名</button><button type="button" data-count="10">10名</button><button type="button" data-count="20">20名</button><button type="button" data-count="30">30名</button><button type="button" data-count="50">50名</button><button type="button" data-count="100">100名</button></div><table class="corp-table"><thead><tr><th>利用人数</th><th>1名あたり月額（税込）</th><th>割引率</th></tr></thead><tbody><tr><td id="tier">10〜19名</td><td id="unit">2,900円</td><td><span class="discount" id="discountRate">約12.1%OFF</span></td></tr></tbody></table><div class="results"><div class="result emphasis"><span>月額合計（税込）</span><strong id="monthly">29,000円</strong></div><div class="result"><span>月間の削減額</span><strong id="monthlySave">4,000円</strong></div><div class="result"><span>年間の削減額</span><strong id="annualSave">48,000円</strong></div></div><p class="fine">割引率・削減額は個人プラン月額3,300円／名を基準にした試算です。年間削減額は12ヶ月利用時の試算で、無料期間は含みません。</p><p class="fine">※法人プランは3名以上です。請求書払いの可否・条件はお問い合わせください。</p></div></div></section>
+<section id="faq"><div class="wrap"><div class="section-head"><div class="kicker">FAQ</div><h2>よくある質問</h2></div><div class="faq"><details><summary>無料トライアルはありますか？</summary><p>登録日から30日間、無料で利用できます。無料期間終了後の継続利用には、画面上で案内する有料プランの申込み等が必要です。申込時に課金開始時期をご確認ください。</p></details><details><summary>書類ごとの単品契約はできますか？</summary><p>現在の個人プランは月額3,300円（税込）で4種類の書類作成機能を利用できます。最新のプラン内容は申込画面でご確認ください。</p></details><details><summary>個人の支払い方法を教えてください。</summary><p>Squareのサブスクリプション購入によるお支払いです。個人プランの請求書払いには対応していません。</p></details><details><summary>法人プランの料金と支払い方法は？</summary><p>3〜9名は1名あたり月額3,000円、10〜19名は2,900円、20名以上は2,800円（いずれも税込）です。支払い方法や請求書払いの条件はお問い合わせください。</p></details><details><summary>作成した書類は必ずそのまま提出できますか？</summary><p>いいえ。生成・作成された書類は、記載内容に誤りがないか必ず確認し、応募先や提出先の指定に合わせて調整してください。</p></details></div></div></section>
+<section class="cta" id="trial"><div class="wrap"><h2>書類作成を、もっとスムーズに。</h2><p>登録日から30日間無料。継続利用の条件は、お申し込み時にご確認ください。</p><a class="btn" href="mailto:info.versionk@gmail.com?subject=楽ブレ無料体験・法人プランについて">無料体験・法人プランについて問い合わせる</a></div></section>
+</main>
+<footer class="footer"><div class="wrap footer-row"><div class="footer-brand"><a href="#top" aria-label="楽ブレ トップへ戻る"><img alt="楽ブレ ロゴ" src="assets/image-01.png"></a><p>書類作成を、もっと簡単に。</p></div><div class="footer-info"><p class="footer-copyright">&copy; Version-K / 楽ブレ All Rights Reserved.</p><nav class="footer-links" aria-label="関連情報"><a href="./about.html">運営者情報・利用規約</a><a href="./tokutei.html">特定商取引法に基づく表記</a><a href="./privacy.html">プライバシーポリシー</a></nav></div></div></footer>
+<div class="mobile-cta"><a class="btn" href="#pricing">料金プランを見る</a></div>
+<script>
+(function(){const slider=document.getElementById('people');if(!slider)return;const fmt=n=>Math.round(n).toLocaleString('ja-JP')+'円';function update(value){const n=Math.max(3,Math.min(100,Number(value)||3));slider.value=n;document.getElementById('countLabel').textContent=n;let unit,tier;if(n>=20){unit=2800;tier='20名以上'}else if(n>=10){unit=2900;tier='10〜19名'}else{unit=3000;tier='3〜9名'}const monthly=n*unit;const save=n*3300-monthly;const discount=(3300-unit)/3300*100;document.getElementById('tier').textContent=tier;document.getElementById('unit').textContent=fmt(unit);document.getElementById('discountRate').textContent='約'+discount.toFixed(1)+'%OFF';document.getElementById('monthly').textContent=fmt(monthly);document.getElementById('monthlySave').textContent=fmt(save);document.getElementById('annualSave').textContent=fmt(save*12)}slider.addEventListener('input',e=>update(e.target.value));document.querySelectorAll('[data-count]').forEach(b=>b.addEventListener('click',()=>update(b.dataset.count)));update(10)})();
+</script>
+<script>
+(function(){const modal=document.getElementById('sampleModal');if(!modal)return;document.querySelectorAll('.sample-open').forEach(b=>b.addEventListener('click',()=>{document.getElementById('modalTitle').textContent=b.dataset.title+'｜作成サンプル';document.getElementById('modalImage').src=b.dataset.image;modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}));function closeModal(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow=''}document.querySelectorAll('[data-close="1"]').forEach(e=>e.addEventListener('click',closeModal));document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()})})();
+</script>
+</body>
+</html>
+
+3. ログインページ
+保存先ファイル名：rakubure/login.html
+以下のHTMLコードを先頭から末尾までコピーして使用してください。
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="楽ブレ - Googleログイン・無料トライアル申請">
+  <title>ログイン｜楽ブレ</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    *{box-sizing:border-box}
+    :root{--primary:#111827;--text:#111827;--muted:#6b7280;--border:#e5e7eb;--background:#f8fafc;--card:#fff;--success:#15803d;--error:#dc2626;--blue:#2563eb;--blue-hover:#1d4ed8}
+    body{margin:0;min-height:100vh;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 0%,#eef2ff 0%,transparent 38%),var(--background);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
+    .login-card{width:100%;max-width:560px;padding:42px 32px 32px;text-align:center;background:var(--card);border:1px solid rgba(229,231,235,.9);border-radius:24px;box-shadow:0 20px 50px rgba(15,23,42,.08)}
+    .logo{display:block;width:180px;max-width:70%;height:auto;margin:0 auto 24px;object-fit:contain}
+    h1{margin:0;font-size:30px;line-height:1.4;letter-spacing:-.5px}
+    .lead{margin:18px 0 32px;color:var(--muted);font-size:15px;line-height:1.9}
+    .google-login{min-height:48px;display:flex;align-items:center;justify-content:center}
+    .status{min-height:24px;margin-top:18px;color:var(--muted);font-size:14px;line-height:1.8;overflow-wrap:anywhere;white-space:pre-wrap}
+    .status.error{color:var(--error)}.status.success{color:var(--success)}
+    .loading{display:none;margin-top:12px;color:var(--muted);font-size:13px}.loading.show{display:block}
+    .divider{display:flex;align-items:center;gap:12px;margin:34px 0 20px;color:#9ca3af;font-size:13px}
+    .divider::before,.divider::after{content:"";height:1px;flex:1;background:var(--border)}
+    .notice{margin:0;color:var(--muted);font-size:13px;line-height:1.9}
+    .action-buttons{display:flex;flex-direction:column;gap:12px;width:100%;max-width:360px;margin:28px auto 0}
+    .action-button{display:flex;align-items:center;justify-content:center;min-height:50px;padding:14px 18px;border-radius:9px;font-size:14px;font-weight:700;line-height:1.6;text-decoration:none;transition:background-color .2s,opacity .2s}
+    .register-button{color:#fff;background:var(--blue);border:1px solid var(--blue)}.register-button:hover{background:var(--blue-hover)}
+    .contact-button{color:var(--blue);background:#fff;border:1px solid #bfdbfe}.contact-button:hover{background:#eff6ff}
+    .official-button{color:#374151;background:#f9fafb;border:1px solid #d1d5db}.official-button:hover{background:#f3f4f6}
+    .action-button:focus-visible{outline:3px solid #93c5fd;outline-offset:3px}
+    .action-note{margin:12px 0 0;color:var(--muted);font-size:12px;line-height:1.8}
+    .card-footer{margin-top:30px;padding-top:20px;border-top:1px solid var(--border);color:#9ca3af;font-size:12px;line-height:1.7}
+    /* ページ最下部中央の法務リンク */
+    .site-footer{width:100%;max-width:900px;margin:24px auto 0;padding:18px 10px 4px;text-align:center}
+    .legal-links{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px 14px;color:#6b7280;font-size:12px;line-height:1.8}
+    .legal-links a{color:#6b7280;text-decoration:none}
+    .legal-links a:hover{color:var(--blue);text-decoration:underline}
+    .legal-separator{color:#cbd5e1}
+    @media(max-width:480px){body{padding:14px}.login-card{padding:34px 20px 26px;border-radius:20px}h1{font-size:25px}.lead{font-size:14px}.site-footer{margin-top:16px;padding-top:12px}.legal-links{gap:6px 10px;font-size:11px}}
+  </style>
+</head>
+<body>
+  <main class="login-card">
+    <img src="./assets/rakubure-logo.png" alt="楽ブレ" class="logo">
+    <h1>楽ブレへようこそ</h1>
+    <p class="lead">Googleアカウントでログインして、<br>履歴書・職務経歴書などの作成をはじめましょう。</p>
+ 
+    <div id="g_id_onload"
+      data-client_id="490441638610-hb6vqjd0o1a608n8glubko8kta5el407.apps.googleusercontent.com"
+      data-callback="handleGoogleCredential"
+      data-auto_prompt="false"></div>
+ 
+    <div class="google-login">
+      <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline"
+        data-text="signin_with" data-shape="rectangular" data-logo_alignment="left" data-width="320"></div>
+    </div>
+ 
+    <div id="loading" class="loading">Google認証を確認しています…</div>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+ 
+    <div class="divider">初めてご利用の方</div>
+    <div class="action-buttons">
+      <a id="registerButton" class="action-button register-button"
+        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E7%84%A1%E6%96%99%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%E3%81%AE%E4%BB%B6&amp;body=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%E3%80%82%0D%0A%0D%0A%E4%BB%A5%E4%B8%8B%E3%82%92%E3%81%94%E8%A8%98%E8%BC%89%E3%81%AE%E4%B8%8A%E3%80%81%E9%80%81%E4%BF%A1%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%E7%A8%AE%E5%88%A5%EF%BC%9A%E7%84%A1%E6%96%99%E3%83%88%E3%83%A9%E3%82%A4%E3%82%A2%E3%83%AB%0D%0A%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%9A%0D%0A%E3%83%95%E3%83%AA%E3%82%AC%E3%83%8A%EF%BC%9A%0D%0A%E4%BC%9A%E7%A4%BE%E5%90%8D%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E9%80%A3%E7%B5%A1%E5%85%88%0D%0A%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%EF%BC%9A%0D%0A%E9%80%A3%E7%B5%A1%E3%81%8C%E3%81%A4%E3%81%8F%E9%9B%BB%E8%A9%B1%E7%95%AA%E5%8F%B7%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%0D%0A%E5%86%85%E5%AE%B9%E3%82%92%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E6%8B%85%E5%BD%93%E8%80%85%E3%82%88%E3%82%8A%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%AB%E3%81%A6%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%99%E3%80%82">
+        新規登録・無料トライアル申請
+      </a>
+ 
+      <a id="contactButton" class="action-button contact-button"
+        href="mailto:info.versionk@gmail.com?subject=%E6%A5%BD%E3%83%96%E3%83%AC%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%AE%E4%BB%B6&amp;body=%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%E3%80%82%0D%0A%0D%0A%E4%BB%A5%E4%B8%8B%E3%82%92%E3%81%94%E8%A8%98%E8%BC%89%E3%81%AE%E4%B8%8A%E3%80%81%E9%80%81%E4%BF%A1%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%E7%A8%AE%E5%88%A5%EF%BC%9A%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%81%9B%0D%0A%E3%81%8A%E5%90%8D%E5%89%8D%EF%BC%9A%0D%0A%E3%83%95%E3%83%AA%E3%82%AC%E3%83%8A%EF%BC%9A%0D%0A%E4%BC%9A%E7%A4%BE%E5%90%8D%EF%BC%88%E4%BB%BB%E6%84%8F%EF%BC%89%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E9%80%A3%E7%B5%A1%E5%85%88%0D%0A%E3%83%A1%E3%83%BC%E3%83%AB%E3%82%A2%E3%83%89%E3%83%AC%E3%82%B9%EF%BC%9A%0D%0A%E9%80%A3%E7%B5%A1%E3%81%8C%E3%81%A4%E3%81%8F%E9%9B%BB%E8%A9%B1%E7%95%AA%E5%8F%B7%EF%BC%9A%0D%0A%0D%0A%E2%96%A0%E3%81%9D%E3%81%AE%E4%BB%96%E3%81%AE%E3%81%8A%E5%95%8F%E3%81%84%E5%90%88%E3%82%8F%E3%81%9B%0D%0A%0D%0A%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%E2%94%81%0D%0A%0D%0A%E5%86%85%E5%AE%B9%E3%82%92%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E3%81%93%E3%81%AE%E3%81%BE%E3%81%BE%E9%80%81%E4%BF%A1%E3%81%97%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82%0D%0A%E7%A2%BA%E8%AA%8D%E5%BE%8C%E3%80%81%E6%8B%85%E5%BD%93%E8%80%85%E3%82%88%E3%82%8A%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%AB%E3%81%A6%E3%81%94%E9%80%A3%E7%B5%A1%E3%81%84%E3%81%9F%E3%81%97%E3%81%BE%E3%81%99%E3%80%82">
+        お問い合わせ
+      </a>
+ 
+      <a id="officialButton" class="action-button official-button"
+        href="https://infoversionk-collab.github.io/rakubure-hp/"
+        target="_blank" rel="noopener noreferrer">楽ブレ公式サイト</a>
+    </div>
+ 
+    <p class="action-note">無料トライアルは、管理者による確認・承認後にご利用いただけます。</p>
+    <div class="divider">ご利用について</div>
+    <p class="notice">ログインにはGoogleアカウントを使用します。<br>認証・利用権限が確認された場合のみ、<br>楽ブレ本体ページへ移動します。</p>
+    <div class="card-footer">© 2026 Version-K / 楽ブレ</div>
+  </main>
+ 
+  <!-- ページの最下部中央に表示する法務リンク -->
+  <footer class="site-footer">
+    <nav class="legal-links" aria-label="法務・運営情報">
+      <a href="https://infoversionk-collab.github.io/rakubure-hp/about.html" target="_blank" rel="noopener noreferrer">運営者情報・利用規約</a>
+      <span class="legal-separator" aria-hidden="true">|</span>
+      <a href="https://infoversionk-collab.github.io/rakubure-hp/tokutei.html" target="_blank" rel="noopener noreferrer">特定商取引法に基づく表記</a>
+      <span class="legal-separator" aria-hidden="true">|</span>
+      <a href="https://infoversionk-collab.github.io/rakubure-hp/privacy.html" target="_blank" rel="noopener noreferrer">プライバシーポリシー</a>
+    </nav>
+  </footer>
+ 
+  <script>
+    "use strict";
+ 
+    const RAKUBURE_LOGIN_CONFIG = {
+      GOOGLE_CLIENT_ID:
+        "490441638610-hb6vqjd0o1a608n8glubko8kta5el407.apps.googleusercontent.com",
+      GAS_WEB_APP_URL:
+        "https://script.google.com/macros/s/AKfycbybptovZ67BMtkDaC7tRBLHFoQS9DXbr43oeEiSBmOfsXBTK3bwA800baKvpOMOo0yn/exec",
+      APP_URL: "./index.html"
+    };
+ 
+    async function handleGoogleCredential(response) {
+      if (!response || !response.credential) {
+        showStatus("Googleログイン情報を取得できませんでした。もう一度お試しください。", "error");
+        return;
+      }
+ 
+      setLoading(true);
+      showStatus("Googleアカウントを確認しています…");
+      sessionStorage.removeItem("RAKUBURE_GOOGLE_CREDENTIAL");
+      sessionStorage.removeItem("RAKUBURE_GOOGLE_EMAIL");
+ 
+      try {
+        const gasResponse = await fetch(RAKUBURE_LOGIN_CONFIG.GAS_WEB_APP_URL, {
+          method: "POST",
+          headers: {"Content-Type": "text/plain;charset=UTF-8"},
+          body: JSON.stringify({
+            action: "auth",
+            googleCredential: response.credential
+          }),
+          redirect: "follow",
+          cache: "no-store"
+        });
+ 
+        if (!gasResponse.ok) {
+          throw new Error("GASからHTTP " + gasResponse.status + " が返されました。デプロイ設定を確認してください。");
+        }
+ 
+        const result = await gasResponse.json();
+ 
+        if (!result || result.success !== true || result.authenticated !== true) {
+          throw new Error(result && (result.message || result.error)
+            ? (result.message || result.error)
+            : "このGoogleアカウントは利用できないか、認証に失敗しました。");
+        }
+ 
+        sessionStorage.setItem("RAKUBURE_GOOGLE_CREDENTIAL", response.credential);
+        sessionStorage.setItem("RAKUBURE_GOOGLE_EMAIL", String(result.email || ""));
+        showStatus("認証に成功しました。楽ブレを起動します。", "success");
+ 
+        window.setTimeout(() => {
+          window.location.replace(RAKUBURE_LOGIN_CONFIG.APP_URL);
+        }, 400);
+      } catch (error) {
+        console.error("Rakubure login error:", error);
+        sessionStorage.removeItem("RAKUBURE_GOOGLE_CREDENTIAL");
+        sessionStorage.removeItem("RAKUBURE_GOOGLE_EMAIL");
+ 
+        let detail = error && error.message ? error.message : "不明なエラー";
+        if (error instanceof TypeError || /Failed to fetch|Load failed/i.test(detail)) {
+          detail = "GASとの通信に失敗しました。Webアプリのデプロイ設定、URL、ブラウザの通信制限を確認してください。";
+        }
+        showStatus("ログインを完了できませんでした。\n" + detail, "error");
+      } finally {
+        setLoading(false);
+      }
+    }
+ 
+    function showStatus(message, type = "") {
+      const status = document.getElementById("status");
+      status.textContent = message;
+      status.className = "status";
+      if (type) status.classList.add(type);
+    }
+ 
+    function setLoading(isLoading) {
+      document.getElementById("loading").classList.toggle("show", isLoading);
+    }
+ 
+    window.addEventListener("load", () => {
+      if (!RAKUBURE_LOGIN_CONFIG.GOOGLE_CLIENT_ID) {
+        showStatus("Google Client IDが設定されていません。", "error");
+      }
+      if (!window.google || !window.google.accounts) {
+        showStatus("Googleログインを読み込めませんでした。ネットワークを確認して再読み込みしてください。", "error");
+      }
+    });
+  </script>
+</body>
+</html>
+
+4. 利用規約・特商法・プライバシーポリシーの戻るボタン
+対象ファイル：rakubure-hp/about.html、rakubure-hp/tokutei.html、rakubure-hp/privacy.html
+各ページにある「公式HPへ戻る」「楽ブレ公式HPへ戻る」などの既存リンクだけを、次のコードへ置き換えてください。ページ本文は削除・置換しないでください。
+<a class="back-link" href="https://infoversionk-collab.github.io/rakubure/">楽ブレに戻る →</a>
+ロゴも楽ブレ本体へ戻したい場合は、ロゴを囲む a タグの href も上記URLへ変更します。各法的ページの末尾にある戻るリンクも同様に変更してください。
+5. 決済表記について
+利用者向けの表示名は「クレジットカード決済」に統一します。ただし、決済手数料を購入者に別途負担させることを前提にした文言は、契約中の決済サービスの規約・法令を確認するまで公開しないでください。必要に応じて、決済手数料を通常の販売価格に含める設計を検討してください。
+6. 公開前チェックリスト
+GitHub上で現在の index.html／login.html／公式HP index.html をバックアップ
+本書の各コードを対象ファイルに反映し、ファイル名と配置先を確認
+about.html／tokutei.html／privacy.html の戻るリンクが楽ブレ本体へ遷移するか確認
+お問い合わせボタンで宛先・件名・本文が入力済みのメール作成画面が開くか確認
+Googleログイン、ログアウト、PDFアップロード、書類生成、保存をテスト
+PCとスマートフォンの両方でレイアウトを確認
+料金・無料トライアル・決済条件が実際の運用と一致しているか確認
