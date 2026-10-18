@@ -70,8 +70,7 @@
       </a>
  
       <a id="officialButton" class="action-button official-button"
-        href="https://infoversionk-collab.github.io/rakubure-hp/"
-        target="_blank" rel="noopener noreferrer">楽ブレ公式サイト</a>
+        href="https://infoversionk-collab.github.io/rakubure-hp/">楽ブレ公式サイト</a>
     </div>
  
     <p class="action-note">無料トライアルは、管理者による確認・承認後にご利用いただけます。</p>
@@ -170,6 +169,12 @@
       document.getElementById("loading").classList.toggle("show", isLoading);
     }
  
+    // 公式サイトボタンは同じタブで開き、遷移を確実にする
+    document.getElementById("officialButton")?.addEventListener("click", function (event) {
+      event.preventDefault();
+      window.location.href = "https://infoversionk-collab.github.io/rakubure-hp/";
+    });
+
     window.addEventListener("load", () => {
       if (!RAKUBURE_LOGIN_CONFIG.GOOGLE_CLIENT_ID) {
         showStatus("Google Client IDが設定されていません。", "error");
