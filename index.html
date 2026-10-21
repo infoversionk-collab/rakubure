@@ -790,7 +790,8 @@
       <label for="textInput" style="display:block;font-weight:900;margin-bottom:8px;">テキスト入力（任意）</label>
       <p style="margin:0 0 10px;color:#71819a;font-size:13px;">面談メモ、職歴、自己PRなどを入力できます。PDFと一緒に入力すると、両方の情報をまとめて分析します。</p>
       <textarea id="textInput" rows="7" maxlength="30000" placeholder="例：職歴、担当業務、実績、保有資格、希望職種、面談で確認した内容など" style="width:100%;resize:vertical;padding:14px;border:1px solid #cbd8e8;border-radius:12px;font:inherit;line-height:1.6;"></textarea>
-      <small style="display:block;color:#71819a;margin-top:6px;">最大30,000文字。PDFのみ・テキストのみ・両方の入力に対応します。</small>
+      <div id="textCount" aria-live="polite" style="margin-top:8px;font-size:13px;font-weight:800;color:#334155;text-align:right;">現在の文字数：0/30,000文字</div>
+      <small style="display:block;color:#71819a;margin-top:4px;">最大30,000文字。PDFのみ・テキストのみ・両方の入力に対応します。</small>
     </div>
 
   </article>
@@ -1256,6 +1257,15 @@ const dropzone = $("#dropzone");
 const filePanel = $("#filePanel");
 
 const textInput = $("#textInput");
+const textCount = $("#textCount");
+const TEXT_MAX_LENGTH = 30000;
+
+function updateTextCount() {
+  if (!textInput || !textCount) return;
+  const count = textInput.value.length;
+  textCount.textContent = `現在の文字数：${count.toLocaleString("ja-JP")}/${TEXT_MAX_LENGTH.toLocaleString("ja-JP")}文字`;
+  textCount.style.color = count >= TEXT_MAX_LENGTH ? "#b91c1c" : "#334155";
+}
 
 const consent = $("#consent");
 
@@ -1647,7 +1657,11 @@ if (defaultStorageOption) {
 
 consent.addEventListener("change", updateGenerateState);
 
-textInput.addEventListener("input", updateGenerateState);
+textInput.addEventListener("input", () => {
+  updateTextCount();
+  updateGenerateState();
+});
+updateTextCount();
 
 function updateGenerateState() {
 
