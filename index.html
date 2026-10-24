@@ -794,6 +794,14 @@
       <small style="display:block;color:#71819a;margin-top:4px;">最大30,000文字。PDFのみ・テキストのみ・両方の入力に対応します。</small>
     </div>
 
+    <div style="margin-top:20px;border:1px solid #c9dcff;border-radius:18px;padding:18px;background:linear-gradient(135deg,#f7fbff,#fff);">
+      <label for="creationInstructions" style="display:block;font-weight:900;margin-bottom:8px;">AI作成指示（任意）</label>
+      <p style="margin:0 0 10px;color:#71819a;font-size:13px;">候補者情報とは分けて、作成したい書類の方向性を指定できます。例：IT業界向け、営業事務向け、未経験転職向け、強調したい経験、文章の長さなど。</p>
+      <textarea id="creationInstructions" rows="5" maxlength="5000" placeholder="例：IT業界の営業事務向けに作成してください。事務経験、PCスキル、業務改善の経験を強調し、未経験の業務を経験済みとして書かないでください。" style="width:100%;resize:vertical;padding:14px;border:1px solid #b8cfff;border-radius:12px;font:inherit;line-height:1.6;"></textarea>
+      <div id="instructionCount" aria-live="polite" style="margin-top:8px;font-size:13px;font-weight:800;color:#334155;text-align:right;">現在の文字数：0/5,000文字</div>
+      <small style="display:block;color:#71819a;margin-top:4px;">この欄は書類の構成・強調点・文章表現を指定する欄です。候補者の経歴や資格などの事実情報を変更する用途には使いません。</small>
+    </div>
+
   </article>
 
   <div class="connector">↓</div>
@@ -1259,6 +1267,9 @@ const filePanel = $("#filePanel");
 const textInput = $("#textInput");
 const textCount = $("#textCount");
 const TEXT_MAX_LENGTH = 30000;
+const creationInstructionsInput = $("#creationInstructions");
+const instructionCount = $("#instructionCount");
+const INSTRUCTION_MAX_LENGTH = 5000;
 
 function updateTextCount() {
   if (!textInput || !textCount) return;
@@ -1266,6 +1277,18 @@ function updateTextCount() {
   textCount.textContent = `現在の文字数：${count.toLocaleString("ja-JP")}/${TEXT_MAX_LENGTH.toLocaleString("ja-JP")}文字`;
   textCount.style.color = count >= TEXT_MAX_LENGTH ? "#b91c1c" : "#334155";
 }
+
+function updateInstructionCount() {
+  if (!creationInstructionsInput || !instructionCount) return;
+  const count = creationInstructionsInput.value.length;
+  instructionCount.textContent = `現在の文字数：${count.toLocaleString("ja-JP")}/${INSTRUCTION_MAX_LENGTH.toLocaleString("ja-JP")}文字`;
+  instructionCount.style.color = count >= INSTRUCTION_MAX_LENGTH ? "#b91c1c" : "#334155";
+}
+
+if (textInput) textInput.addEventListener("input", updateTextCount);
+if (creationInstructionsInput) creationInstructionsInput.addEventListener("input", updateInstructionCount);
+updateTextCount();
+updateInstructionCount();
 
 const consent = $("#consent");
 
@@ -1858,6 +1881,7 @@ const requestBody = {
   googleCredential: googleCredential,
   files: encodedFiles,
   textContent: textContent,
+  creationInstructions: creationInstructionsInput ? creationInstructionsInput.value.trim() : "",
   documents: documents,
   consent: consent.checked
 };
