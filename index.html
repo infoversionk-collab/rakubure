@@ -1837,7 +1837,7 @@ generateBtn.addEventListener("click", async () => {
     const progressTimer = setInterval(() => {
       if (!progressRunning) return;
       const current = Number(progressPercent.textContent.replace("%", "")) || 35;
-      const next = Math.min(92, current + 1);
+      const next = Math.min(85, current + 1);
       let idx = 0;
       if (next >= 55) idx = 1;
       if (next >= 70) idx = 2;
@@ -1877,7 +1877,19 @@ if (!googleCredential) {
   return;
 }
 
+// 通信が途切れて再試行された場合に同じ生成処理を識別するID。
+// 通信結果が不明な場合は sessionStorage に残し、同じIDで再送する。
+const REQUEST_ID_KEY = "RAKUBURE_PENDING_REQUEST_ID";
+let clientRequestId = sessionStorage.getItem(REQUEST_ID_KEY);
+if (!clientRequestId) {
+  clientRequestId = (window.crypto && typeof window.crypto.randomUUID === "function")
+    ? window.crypto.randomUUID()
+    : ("rb-" + Date.now() + "-" + Math.random().toString(36).slice(2));
+  sessionStorage.setItem(REQUEST_ID_KEY, clientRequestId);
+}
+
 const requestBody = {
+  requestId: clientRequestId,
   googleCredential: googleCredential,
   files: encodedFiles,
   textContent: textContent,
@@ -1937,6 +1949,10 @@ response = await fetch(GAS_WEB_APP_URL, {
   console.log("GAS API RESPONSE:", apiResult);
 
   if (!apiResult || apiResult.success !== true) {
+    // 重複応答ではIDを保持し、同じ処理を新しいIDで再実行しない。
+    if (!apiResult || apiResult.duplicate !== true) {
+      sessionStorage.removeItem(REQUEST_ID_KEY);
+    }
     throw new Error(
       apiResult && (apiResult.error || apiResult.message)
         ? (apiResult.error || apiResult.message)
@@ -1944,6 +1960,7 @@ response = await fetch(GAS_WEB_APP_URL, {
     );
   }
 
+  sessionStorage.removeItem(REQUEST_ID_KEY);
   setProgress(100, "生成が完了しました。元データを編集できます。");
 
   renderApiResult(apiResult);
