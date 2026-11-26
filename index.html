@@ -397,6 +397,11 @@
   .progress-track{height:8px;background:#e9eef5;border-radius:99px;overflow:hidden;margin:13px 0}
 
   .progress-track span{display:block;height:100%;width:0;min-width:0;border-radius:99px;background:linear-gradient(90deg,#1476ef,#8b3ff1);transition:width .35s ease}
+  .progress-warning{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;border:1px solid #f1d48b;border-radius:12px;background:#fff9e9;color:#76520b;font-size:12px;line-height:1.65}
+  .progress-warning strong{display:block;margin-bottom:2px;color:#684500}
+  .cancel-generation{display:block;width:100%;margin-top:14px;padding:12px 18px;border:1px solid #d92d20;border-radius:12px;background:#fff;color:#c5221f;font-weight:900}
+  .cancel-generation:hover{background:#fff3f2}
+  .cancel-generation:disabled{opacity:.55;cursor:wait}
 
   .hidden{display:none!important}
 
@@ -878,6 +883,14 @@
       </div>
       <div class="progress-track"><span id="progressBar"></span></div>
       <small id="progressText">処理を開始しています...</small>
+      <div class="progress-warning" role="note">
+        <span aria-hidden="true">⚠</span>
+        <div>
+          <strong>書類生成中の画面操作について</strong>
+          別のタブへ移動すると、ブラウザの仕様により進捗表示の更新が遅れる場合があります。生成中はこのページを開いたままにしてください。ページの更新・終了を行うと通信が中断され、生成結果を受け取れない場合があります。
+        </div>
+      </div>
+      <button class="cancel-generation" id="cancelGenerationBtn" type="button">■ 生成中止</button>
     </div>
   </article>
   <div class="connector">↓</div>
@@ -1303,6 +1316,7 @@ const progressBar = $("#progressBar");
 const progressText = $("#progressText");
 
 const progressPercent = $("#progressPercent");
+const cancelGenerationBtn = $("#cancelGenerationBtn");
 
 const result = $("#result");
 
@@ -1311,7 +1325,7 @@ const resultGrid = $("#resultGrid");
 const requiredElements = {
   fileInput, dropzone, filePanel, textInput, consent, generateBtn,
   generateNote, progress, progressBar, progressText,
-  progressPercent, result, resultGrid
+  progressPercent, cancelGenerationBtn, result, resultGrid
 };
 const missingElements = Object.entries(requiredElements)
   .filter(([, element]) => !element)
@@ -1731,6 +1745,18 @@ function updateGenerateState() {
 const GAS_WEB_APP_URL =
 "https://script.google.com/macros/s/AKfycbybptovZ67BMtkDaC7tRBLHFoQS9DXbr43oeEiSBmOfsXBTK3bwA800baKvpOMOo0yn/exec";
 
+const REQUEST_ID_KEY = "RAKUBURE_PENDING_REQUEST_ID";
+let activeRequestId = "";
+let isGenerationInProgress = false;
+let cancelRequestSent = false;
+let gasRequestStarted = false;
+
+function createRakubureRequestId() {
+  return (window.crypto && typeof window.crypto.randomUUID === "function")
+    ? window.crypto.randomUUID()
+    : ("rb-" + Date.now() + "-" + Math.random().toString(36).slice(2));
+}
+
 function setProgress(percent, message) {
 
   const value = Math.max(0, Math.min(100, Number(percent) || 0));
@@ -1775,16 +1801,94 @@ function animateProgress(start, end, duration = 1200) {
 
 }
 
+cancelGenerationBtn.addEventListener("click", async () => {
+  if (!isGenerationInProgress || !activeRequestId || cancelRequestSent) return;
+  const confirmed = confirm(
+    "書類生成を中止しますか？\\n\\n" +
+    "中止要求後も、実行中のOCR・Gemini通信などが終了するまで少し時間がかかる場合があります。\\n" +
+    "すでに作成済みのファイルは残る場合があります。"
+  );
+  if (!confirmed) return;
+
+  cancelRequestSent = true;
+  cancelGenerationBtn.disabled = true;
+  cancelGenerationBtn.textContent = "中止処理中...";
+  setProgress(
+    Number(progressPercent.textContent.replace("%", "")) || 0,
+    gasRequestStarted
+      ? "生成中止を要求しています。安全に停止できるまでお待ちください..."
+      : "送信前の処理を中止しています..."
+  );
+
+  // PDFのBase64変換中など、まだGASへ送信していない場合はブラウザ側で送信を止める。
+  if (!gasRequestStarted) return;
+
+  try {
+    const googleCredential = sessionStorage.getItem("RAKUBURE_GOOGLE_CREDENTIAL");
+    if (!googleCredential) throw new Error("ログイン情報が確認できません。再ログインしてください。");
+
+    const cancelResponse = await fetch(GAS_WEB_APP_URL, {
+      method: "POST",
+      mode: "cors",
+      credentials: "omit",
+      redirect: "follow",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "text/plain;charset=UTF-8",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        action: "cancel",
+        requestId: activeRequestId,
+        googleCredential: googleCredential
+      })
+    });
+    const cancelText = await cancelResponse.text();
+    let cancelResult = {};
+    try { cancelResult = JSON.parse(cancelText); } catch (_) {}
+    if (!cancelResponse.ok || cancelResult.success !== true) {
+      throw new Error(cancelResult.error || cancelResult.message || "中止要求を受け付けられませんでした。");
+    }
+    setProgress(
+      Number(progressPercent.textContent.replace("%", "")) || 0,
+      "中止要求を受け付けました。現在の処理が安全に終了するまでお待ちください..."
+    );
+    cancelGenerationBtn.textContent = "中止処理中...";
+  } catch (error) {
+    cancelRequestSent = false;
+    cancelGenerationBtn.disabled = false;
+    cancelGenerationBtn.textContent = "■ 生成中止";
+    alert("生成中止の要求に失敗しました。\\n" + (error.message || String(error)));
+  }
+});
+
+window.addEventListener("beforeunload", (event) => {
+  if (!isGenerationInProgress) return;
+  event.preventDefault();
+  event.returnValue = "";
+});
+
 generateBtn.addEventListener("click", async () => {
 
   if (generateBtn.disabled || (!state.files.length && !textInput.value.trim())) return;
+
+  activeRequestId = sessionStorage.getItem(REQUEST_ID_KEY) || createRakubureRequestId();
+  sessionStorage.setItem(REQUEST_ID_KEY, activeRequestId);
+  isGenerationInProgress = true;
+  cancelRequestSent = false;
+  gasRequestStarted = false;
+  cancelGenerationBtn.disabled = false;
+  cancelGenerationBtn.textContent = "■ 生成中止";
+  cancelGenerationBtn.classList.remove("hidden");
 
   const documents = getSelectedDocuments();
 
   if (documents.length === 0) {
 
     alert("作成する書類を1つ以上選択してください。");
-
+    isGenerationInProgress = false;
+    cancelGenerationBtn.classList.add("hidden");
+    sessionStorage.removeItem(REQUEST_ID_KEY);
     return;
 
   }
@@ -1792,7 +1896,9 @@ generateBtn.addEventListener("click", async () => {
   if (!consent.checked) {
 
     alert("個人情報の取り扱いへの確認が必要です。");
-
+    isGenerationInProgress = false;
+    cancelGenerationBtn.classList.add("hidden");
+    sessionStorage.removeItem(REQUEST_ID_KEY);
     return;
 
   }
@@ -1821,8 +1927,10 @@ generateBtn.addEventListener("click", async () => {
         mimeType: file.type || "application/pdf",
         fileBase64: await fileToBase64(file)
       });
+      if (cancelRequestSent) throw new Error("書類生成を中止しました。");
     }
 
+    if (cancelRequestSent) throw new Error("書類生成を中止しました。");
     const textContent = textInput.value.trim();
     setProgress(35, "PDFとテキストの入力内容をまとめてAI分析しています...");
 
@@ -1835,7 +1943,7 @@ generateBtn.addEventListener("click", async () => {
       "書類データを生成しています..."
     ];
     const progressTimer = setInterval(() => {
-      if (!progressRunning) return;
+      if (!progressRunning || cancelRequestSent) return;
       const current = Number(progressPercent.textContent.replace("%", "")) || 35;
       const next = Math.min(85, current + 1);
       let idx = 0;
@@ -1868,28 +1976,22 @@ if (!googleCredential) {
   );
 
   if (goToLogin) {
+    isGenerationInProgress = false;
+    sessionStorage.removeItem(REQUEST_ID_KEY);
     window.location.href = loginUrl;
   } else {
     progress.classList.add("hidden");
     generateBtn.disabled = false;
+    isGenerationInProgress = false;
+    sessionStorage.removeItem(REQUEST_ID_KEY);
   }
 
   return;
 }
 
-// 通信が途切れて再試行された場合に同じ生成処理を識別するID。
-// 通信結果が不明な場合は sessionStorage に残し、同じIDで再送する。
-const REQUEST_ID_KEY = "RAKUBURE_PENDING_REQUEST_ID";
-let clientRequestId = sessionStorage.getItem(REQUEST_ID_KEY);
-if (!clientRequestId) {
-  clientRequestId = (window.crypto && typeof window.crypto.randomUUID === "function")
-    ? window.crypto.randomUUID()
-    : ("rb-" + Date.now() + "-" + Math.random().toString(36).slice(2));
-  sessionStorage.setItem(REQUEST_ID_KEY, clientRequestId);
-}
-
+// 生成開始時に発行したrequestIdを、生成要求と中止要求で共通利用する。
 const requestBody = {
-  requestId: clientRequestId,
+  requestId: activeRequestId,
   googleCredential: googleCredential,
   files: encodedFiles,
   textContent: textContent,
@@ -1901,6 +2003,7 @@ const requestBody = {
 let response;
 let apiResult;
 
+gasRequestStarted = true;
 response = await fetch(GAS_WEB_APP_URL, {
     method: "POST",
     mode: "cors",
@@ -1985,6 +2088,13 @@ response = await fetch(GAS_WEB_APP_URL, {
     ? error.message
     : String(error || "不明なエラー");
 
+  if (/中止されました|生成を中止しました/.test(errorMessage) || cancelRequestSent) {
+    sessionStorage.removeItem(REQUEST_ID_KEY);
+    setProgress(0, "書類生成を中止しました。");
+    alert("書類生成を中止しました。\\n\\n生成中に作成済みのファイルがある場合は、Google Driveに残っている可能性があります。");
+    return;
+  }
+
   if (/Load failed|Failed to fetch|NetworkError/i.test(errorMessage)) {
     errorMessage =
       "GAS Web APIとの通信に失敗しました。\n\n" +
@@ -1998,6 +2108,11 @@ response = await fetch(GAS_WEB_APP_URL, {
   alert("書類の生成に失敗しました。\n\n" + errorMessage);
 
 } finally {
+  isGenerationInProgress = false;
+  gasRequestStarted = false;
+  activeRequestId = "";
+  cancelGenerationBtn.disabled = true;
+  cancelGenerationBtn.classList.add("hidden");
   updateGenerateState();
 }
 });
